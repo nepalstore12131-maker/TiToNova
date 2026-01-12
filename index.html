@@ -3,32 +3,39 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RestroAI — AI Assistant for Restaurants</title>
-  <meta name="description" content="Premium AI assistant for restaurants — automate reservations, orders, and customer support 24/7 across WhatsApp & website." />
-  <meta name="theme-color" content="#070A10" />
+  <title>Titonova — Premium AI Assistant for Restaurants</title>
+  <meta name="description" content="Titonova helps restaurants automate reservations, orders, and customer support 24/7 across website + WhatsApp. Premium experience, startup pricing." />
+  <meta name="theme-color" content="#070A10"/>
 
+  <!-- Canonical -->
+  <link rel="canonical" href="https://titonova.com/" />
+
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg:#060913;
-      --bg2:#040611;
-      --text:#ECF2FF;
-      --muted:rgba(236,242,255,.72);
-      --line:rgba(255,255,255,.10);
+      --bg0:#060814;
+      --bg1:#070A10;
       --panel:rgba(255,255,255,.06);
       --panel2:rgba(255,255,255,.09);
+      --line:rgba(255,255,255,.12);
+      --text:#EEF2FF;
+      --muted:rgba(238,242,255,.70);
+      --muted2:rgba(238,242,255,.55);
       --gold:#F5C76A;
       --gold2:#D7A64B;
-      --teal:#78F0E0;
-      --shadow: 0 24px 80px rgba(0,0,0,.55);
-      --radius: 18px;
-      --radius2: 26px;
-      --max: 1180px;
+      --aqua:#7FE7D7;
+      --shadow: 0 24px 90px rgba(0,0,0,.62);
+      --shadow2: 0 16px 50px rgba(0,0,0,.45);
+      --r12:12px;
+      --r16:16px;
+      --r20:20px;
+      --r24:24px;
+      --max:1180px;
     }
-
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -36,689 +43,1008 @@
       font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
       background:
-        radial-gradient(900px 600px at 12% 8%, rgba(245,199,106,.18), transparent 60%),
-        radial-gradient(900px 650px at 88% 12%, rgba(120,240,224,.13), transparent 60%),
-        radial-gradient(1000px 700px at 50% 108%, rgba(245,199,106,.11), transparent 62%),
-        linear-gradient(180deg, var(--bg2) 0%, var(--bg) 55%, #060913 100%);
+        radial-gradient(1100px 700px at 12% -10%, rgba(245,199,106,.22), transparent 60%),
+        radial-gradient(900px 650px at 90% 10%, rgba(127,231,215,.14), transparent 58%),
+        radial-gradient(900px 650px at 55% 110%, rgba(245,199,106,.10), transparent 56%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       overflow-x:hidden;
     }
-
-    /* subtle grain */
-    body:before{
-      content:"";
-      position:fixed; inset:-20%;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
-      opacity:.05;
-      pointer-events:none;
-      transform:rotate(10deg);
-      z-index:-1;
-    }
-
     a{color:inherit;text-decoration:none}
     .container{max-width:var(--max); margin:0 auto; padding:0 22px;}
-    .row{display:flex; gap:14px; align-items:center; flex-wrap:wrap}
+    .grain{
+      pointer-events:none; position:fixed; inset:0; z-index:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+      mix-blend-mode:overlay; opacity:.22;
+    }
 
     /* NAV */
     .nav{
       position:sticky; top:0; z-index:50;
-      background:rgba(6,9,19,.55);
-      backdrop-filter: blur(14px);
-      border-bottom:1px solid var(--line);
+      background:rgba(6,8,20,.55);
+      backdrop-filter: blur(12px);
+      border-bottom:1px solid rgba(255,255,255,.08);
     }
     .nav-inner{
       display:flex; align-items:center; justify-content:space-between;
-      padding:14px 0;
-      gap:16px;
+      padding:14px 0; gap:16px;
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-      font-weight:800; letter-spacing:.2px;
-    }
-    .logo{
+    .brand{display:flex; align-items:center; gap:12px; font-weight:900; letter-spacing:-.2px;}
+    .mark{
       width:40px; height:40px; border-radius:14px;
       background:
-        radial-gradient(14px 14px at 30% 30%, rgba(255,255,255,.58), transparent 60%),
-        linear-gradient(145deg, rgba(245,199,106,.98), rgba(120,240,224,.62));
-      border:1px solid rgba(255,255,255,.20);
-      box-shadow: 0 18px 40px rgba(245,199,106,.16);
+        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.55), transparent 60%),
+        linear-gradient(135deg, rgba(245,199,106,.98), rgba(127,231,215,.70));
+      border:1px solid rgba(255,255,255,.18);
+      box-shadow: 0 16px 40px rgba(245,199,106,.18);
+      position:relative; overflow:hidden;
     }
-    .brand span{color:var(--gold)}
-    .links{
-      display:flex; gap:18px; align-items:center;
-      color:var(--muted);
-      font-weight:650; font-size:14px;
+    .mark:after{
+      content:""; position:absolute; inset:-40%;
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+      transform:rotate(25deg);
+      animation: shine 5.5s linear infinite;
+      opacity:.7;
     }
-    .links a{
-      padding:9px 10px; border-radius:12px;
-      transition:.18s ease;
+    @keyframes shine{
+      0%{transform:translateX(-70%) rotate(25deg)}
+      60%{transform:translateX(70%) rotate(25deg)}
+      100%{transform:translateX(70%) rotate(25deg)}
     }
-    .links a:hover{
-      background:rgba(255,255,255,.06);
-      color:var(--text);
+    .name{display:flex; flex-direction:column; line-height:1;}
+    .name b{font-size:15px}
+    .name span{font-size:12px; color:var(--muted)}
+    .nav-links{
+      display:flex; align-items:center; gap:18px;
+      color:var(--muted); font-weight:800; font-size:13px;
     }
+    .nav-links a{padding:9px 10px; border-radius:12px; transition:.2s ease;}
+    .nav-links a:hover{background:rgba(255,255,255,.06); color:var(--text)}
+    .nav-cta{display:flex; align-items:center; gap:10px}
+
+    /* Buttons */
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
-      gap:10px;
-      padding:12px 14px;
+      gap:10px; padding:12px 14px;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.16);
       background:rgba(255,255,255,.06);
       color:var(--text);
-      font-weight:750;
-      font-size:14px;
+      font-weight:900; font-size:13px;
       cursor:pointer;
-      transition:.18s ease;
-      user-select:none;
-      white-space:nowrap;
+      transition: transform .18s ease, background .18s ease;
+      user-select:none; white-space:nowrap;
     }
     .btn:hover{transform:translateY(-1px); background:rgba(255,255,255,.09)}
     .btn.primary{
-      background:linear-gradient(135deg, rgba(245,199,106,.98), rgba(215,166,75,.86));
-      border:1px solid rgba(255,255,255,.20);
-      color:#141414;
-      box-shadow: 0 18px 48px rgba(245,199,106,.18);
+      background:linear-gradient(135deg, rgba(245,199,106,.98), rgba(215,166,75,.90));
+      border:1px solid rgba(255,255,255,.22);
+      color:#171717;
+      box-shadow: 0 18px 45px rgba(245,199,106,.20);
     }
     .btn.primary:hover{filter:saturate(1.05)}
-    .btn.ghost{
-      background:transparent;
-      border:1px solid rgba(245,199,106,.35);
+    .btn.ghost{background:transparent; border:1px solid rgba(245,199,106,.35);}
+    .btn.small{padding:10px 12px; border-radius:12px; font-size:12.5px}
+
+    .pill{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px; border-radius:999px;
+      border:1px solid rgba(245,199,106,.22);
+      background:rgba(245,199,106,.08);
+      color:rgba(245,199,106,.95);
+      font-weight:900; font-size:12px; letter-spacing:.2px;
     }
-    .btn.sm{padding:10px 12px; border-radius:12px; font-size:13px}
+    .pill i{
+      width:8px; height:8px; border-radius:999px;
+      background:var(--aqua);
+      box-shadow:0 0 0 4px rgba(127,231,215,.14);
+      display:inline-block;
+    }
 
     /* HERO */
-    .hero{padding:64px 0 22px; position:relative;}
+    .hero{position:relative; z-index:1; padding:70px 0 30px;}
     .hero-grid{
       display:grid;
-      grid-template-columns: 1.12fr .88fr;
+      grid-template-columns: 1.18fr .82fr;
       gap:26px;
       align-items:stretch;
     }
-    .pill{
-      display:inline-flex; align-items:center; gap:10px;
-      padding:8px 12px;
-      border-radius:999px;
-      border:1px solid rgba(245,199,106,.26);
-      background:rgba(245,199,106,.09);
-      color:rgba(245,199,106,.96);
-      font-weight:750;
-      font-size:12px;
-    }
-    .pill b{color:#141414; background:linear-gradient(135deg, rgba(245,199,106,.98), rgba(120,240,224,.42));
-      padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.18)}
     h1{
       margin:16px 0 12px;
-      font-size:clamp(36px, 4.2vw, 58px);
-      line-height:1.03;
-      letter-spacing:-1.2px;
+      font-size:clamp(38px, 4.2vw, 60px);
+      line-height:1.02;
+      letter-spacing:-1.3px;
     }
-    .sub{
+    .lead{
       margin:0 0 18px;
       color:var(--muted);
-      font-size:16px;
-      line-height:1.6;
-      max-width:60ch;
+      font-size:16.5px;
+      line-height:1.62;
+      max-width:58ch;
+      font-weight:700;
     }
-    .actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;}
-    .kpis{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;}
-    .kpi{
-      padding:12px 12px;
-      border-radius:16px;
+    .hero-actions{display:flex; gap:12px; flex-wrap:wrap; margin-top:18px;}
+    .trust-row{
+      margin-top:26px;
+      display:flex; flex-wrap:wrap; gap:14px;
+      color:var(--muted2);
+      font-weight:800; font-size:12.5px;
+      align-items:center;
+    }
+    .chip{
+      padding:10px 12px;
+      border-radius:999px;
       background:rgba(255,255,255,.05);
-      border:1px solid var(--line);
-      min-width:168px;
+      border:1px solid rgba(255,255,255,.10);
     }
-    .kpi strong{display:block; font-size:16px}
-    .kpi span{display:block; margin-top:3px; color:var(--muted); font-size:12px; font-weight:650}
 
     /* Premium card */
     .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
-      border:1px solid var(--line);
-      border-radius:var(--radius2);
-      box-shadow: var(--shadow);
-      overflow:hidden;
+      border-radius:var(--r24);
+      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
       position:relative;
+      overflow:hidden;
     }
     .card:before{
       content:"";
-      position:absolute; inset:-2px;
-      background:radial-gradient(600px 220px at 18% 12%, rgba(245,199,106,.22), transparent 60%),
-                 radial-gradient(620px 260px at 90% 18%, rgba(120,240,224,.14), transparent 60%);
-      pointer-events:none;
-      opacity:.85;
+      position:absolute; inset:-40%;
+      background:
+        radial-gradient(closest-side, rgba(127,231,215,.14), transparent 62%),
+        radial-gradient(closest-side, rgba(245,199,106,.14), transparent 62%);
+      opacity:.9; pointer-events:none;
     }
-    .card-inner{position:relative; padding:18px;}
+    .card-inner{position:relative; z-index:1; padding:18px;}
+    .mini-title{
+      font-size:12px; font-weight:900; letter-spacing:.22em;
+      color:rgba(245,199,106,.95);
+      text-transform:uppercase;
+      margin:0 0 10px;
+    }
 
-    /* Product mock (premium) */
-    .mock{
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(6,9,19,.55);
+    /* Demo widget */
+    .demo-wrap{
+      display:grid;
+      grid-template-rows: auto 1fr auto;
+      min-height:420px;
+      border-radius:20px;
+      background:rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.10);
       overflow:hidden;
     }
-    .mock-top{
-      display:flex; justify-content:space-between; align-items:center;
-      padding:12px 14px;
-      border-bottom:1px solid rgba(255,255,255,.10);
+    .demo-top{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 14px;
+      border-bottom:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.04);
     }
-    .dots{display:flex; gap:6px; align-items:center}
-    .dot{width:10px; height:10px; border-radius:50%; background:rgba(255,255,255,.22)}
-    .dot:nth-child(1){background:rgba(255,107,107,.7)}
-    .dot:nth-child(2){background:rgba(245,199,106,.75)}
-    .dot:nth-child(3){background:rgba(120,240,224,.7)}
-    .mock-title{font-weight:800; font-size:13px; color:rgba(236,242,255,.88)}
-    .mock-body{padding:14px}
-    .chat{
-      display:flex; flex-direction:column; gap:10px;
-      min-height:240px;
+    .demo-top .left{display:flex; gap:10px; align-items:center}
+    .bot-dot{
+      width:10px; height:10px; border-radius:999px;
+      background:var(--aqua);
+      box-shadow:0 0 0 6px rgba(127,231,215,.10);
+    }
+    .demo-top b{font-size:13px}
+    .demo-top span{font-size:12px; color:var(--muted2); font-weight:800}
+    .demo-body{
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      overflow:auto;
     }
     .bubble{
-      max-width:85%;
+      max-width:92%;
       padding:11px 12px;
       border-radius:16px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:rgba(236,242,255,.92);
-      font-size:13px;
+      font-size:13.5px;
       line-height:1.45;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.05);
+      color:rgba(238,242,255,.92);
+      font-weight:700;
     }
-    .bubble.ai{
-      background:rgba(245,199,106,.09);
-      border-color:rgba(245,199,106,.22);
-    }
-    .bubble.me{
+    .bubble.user{
       margin-left:auto;
-      background:rgba(120,240,224,.09);
-      border-color:rgba(120,240,224,.20);
+      background:linear-gradient(135deg, rgba(245,199,106,.95), rgba(215,166,75,.85));
+      color:#161616;
+      border:1px solid rgba(255,255,255,.22);
     }
-    .input{
-      display:flex; gap:10px; margin-top:12px;
-      padding-top:12px; border-top:1px solid rgba(255,255,255,.10);
+    .quick{display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;}
+    .qbtn{
+      border-radius:999px;
+      padding:9px 10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.05);
+      color:rgba(238,242,255,.86);
+      font-weight:900; font-size:12px;
+      cursor:pointer;
+      transition:.18s ease;
     }
-    .field{
-      flex:1;
-      padding:12px 12px;
+    .qbtn:hover{transform:translateY(-1px); background:rgba(255,255,255,.09)}
+    .demo-input{
+      display:flex; gap:10px;
+      padding:12px;
+      border-top:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+    }
+    .demo-input input{
+      width:100%;
       border-radius:14px;
       border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.05);
+      background:rgba(0,0,0,.22);
       color:var(--text);
+      padding:12px 12px;
       outline:none;
+      font-weight:800;
+      font-size:13.5px;
     }
-    .field::placeholder{color:rgba(236,242,255,.45)}
+    .demo-input input::placeholder{color:rgba(238,242,255,.45)}
     .send{min-width:96px}
 
-    /* SECTION */
-    section{padding:56px 0}
-    .section-head{
-      display:flex; align-items:flex-end; justify-content:space-between;
-      gap:20px; flex-wrap:wrap;
-      margin-bottom:18px;
+    /* Sections */
+    .section{position:relative; z-index:1; padding:72px 0;}
+    .section h2{
+      margin:0 0 10px;
+      font-size:clamp(26px, 2.4vw, 38px);
+      letter-spacing:-.6px;
+      line-height:1.1;
     }
-    .h2{
-      font-size: clamp(24px, 2.6vw, 34px);
-      margin:0;
-      letter-spacing:-.7px;
-    }
-    .lead{margin:0; color:var(--muted); max-width:68ch; line-height:1.6}
-    .grid3{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:14px;
-      margin-top:18px;
-    }
-    .feature{
-      padding:16px;
-      border-radius:18px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
-      transition:.18s ease;
-      position:relative;
-      overflow:hidden;
-      min-height:148px;
-    }
-    .feature:before{
-      content:"";
-      position:absolute; inset:-1px;
-      background:radial-gradient(400px 160px at 18% 10%, rgba(245,199,106,.14), transparent 55%),
-                 radial-gradient(400px 180px at 90% 18%, rgba(120,240,224,.10), transparent 60%);
-      opacity:.0; transition:.18s ease;
-      pointer-events:none;
-    }
-    .feature:hover{transform:translateY(-2px); background:rgba(255,255,255,.06)}
-    .feature:hover:before{opacity:1}
-    .ico{
-      width:38px; height:38px; border-radius:14px;
-      display:inline-flex; align-items:center; justify-content:center;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(255,255,255,.06);
-      margin-bottom:10px;
-    }
-    .feature h3{margin:0 0 6px; font-size:15px; letter-spacing:-.2px}
-    .feature p{margin:0; color:var(--muted); font-size:13px; line-height:1.55}
-
-    /* LOGO STRIP */
-    .logos{
-      margin-top:26px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.04);
-      border-radius:18px;
-      overflow:hidden;
-    }
-    .marquee{
-      display:flex; gap:18px;
-      padding:12px 0;
-      width: max-content;
-      animation: scroll 22s linear infinite;
-    }
-    .logo-pill{
-      display:flex; align-items:center; justify-content:center;
-      padding:10px 14px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.05);
-      color:rgba(236,242,255,.78);
-      font-weight:750;
-      font-size:12px;
-      letter-spacing:.2px;
-      min-width:140px;
-    }
-    @keyframes scroll{
-      from{transform:translateX(0)}
-      to{transform:translateX(-50%)}
+    .sub{
+      margin:0 0 26px;
+      color:var(--muted);
+      font-size:15.5px;
+      line-height:1.6;
+      max-width:70ch;
+      font-weight:700;
     }
 
-    /* PRICING */
-    .pricing{
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap:14px;
-      margin-top:18px;
-    }
-    .plan{
+    /* Feature grid */
+    .grid3{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;}
+    .fcard{
+      border-radius:var(--r20);
       padding:18px;
-      border-radius:22px;
-      border:1px solid var(--line);
       background:rgba(255,255,255,.05);
-      position:relative;
-      overflow:hidden;
-      min-height:320px;
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+      transition:.18s ease;
     }
-    .plan.reco{
-      background:linear-gradient(180deg, rgba(245,199,106,.12), rgba(255,255,255,.05));
-      border-color:rgba(245,199,106,.26);
-      box-shadow: 0 24px 70px rgba(245,199,106,.10);
+    .fcard:hover{transform:translateY(-2px); background:rgba(255,255,255,.07)}
+    .icon{
+      width:44px; height:44px;
+      border-radius:16px;
+      background:rgba(245,199,106,.10);
+      border:1px solid rgba(245,199,106,.24);
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900; color:rgba(245,199,106,.95);
+      margin-bottom:12px;
+    }
+    .fcard b{display:block; margin-bottom:6px; font-size:15px}
+    .fcard span{color:var(--muted); font-size:13.5px; line-height:1.55; font-weight:700}
+
+    /* Pricing */
+    .pricing{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; align-items:stretch;}
+    .price{
+      border-radius:var(--r24);
+      padding:18px;
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow2);
+      position:relative;
+    }
+    .price.featured{
+      background:linear-gradient(180deg, rgba(245,199,106,.14), rgba(255,255,255,.05));
+      border:1px solid rgba(245,199,106,.22);
+      box-shadow: 0 22px 70px rgba(245,199,106,.14);
+      transform: translateY(-6px);
     }
     .tag{
       position:absolute; top:14px; right:14px;
-      padding:7px 10px;
+      padding:8px 10px;
       border-radius:999px;
-      border:1px solid rgba(245,199,106,.30);
-      background:rgba(245,199,106,.10);
-      font-size:12px; font-weight:800;
-      color:rgba(245,199,106,.95);
+      background:rgba(127,231,215,.10);
+      border:1px solid rgba(127,231,215,.22);
+      color:rgba(127,231,215,.95);
+      font-weight:900; font-size:12px;
     }
-    .plan h3{margin:0 0 6px; font-size:16px}
-    .price{
-      font-size:34px;
-      font-weight:850;
-      letter-spacing:-.8px;
-      margin:10px 0 4px;
-    }
-    .price span{font-size:12px; font-weight:750; color:var(--muted)}
-    .list{margin:14px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px}
-    .list li{
-      display:flex; gap:10px; align-items:flex-start;
-      color:rgba(236,242,255,.86);
-      font-size:13px;
-    }
-    .check{
-      width:18px; height:18px; border-radius:6px;
-      display:inline-flex; align-items:center; justify-content:center;
-      background:rgba(120,240,224,.10);
-      border:1px solid rgba(120,240,224,.20);
-      flex:0 0 auto;
-      margin-top:1px;
-    }
-
-    /* TESTIMONIALS */
-    .grid2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-      margin-top:18px;
-    }
-    .quote{
-      padding:18px;
-      border-radius:22px;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.05);
+    .price h3{margin:0 0 4px; font-size:16px}
+    .price p{margin:0 0 14px; color:var(--muted); font-size:13.5px; line-height:1.55; font-weight:700}
+    .money{font-size:34px; font-weight:900; letter-spacing:-.7px; margin:8px 0 6px;}
+    .money small{font-size:13px; color:var(--muted2); font-weight:900}
+    ul{margin:14px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; font-size:13px; font-weight:800;}
+    li{display:flex; gap:10px; align-items:flex-start; color:rgba(238,242,255,.88);}
+    li i{
+      width:18px; height:18px; border-radius:999px;
+      background:rgba(127,231,215,.12);
+      border:1px solid rgba(127,231,215,.22);
+      flex:0 0 auto; margin-top:1px;
       position:relative;
-      overflow:hidden;
     }
-    .quote:before{
-      content:"";
-      position:absolute; inset:-1px;
-      background:radial-gradient(420px 220px at 22% 18%, rgba(245,199,106,.12), transparent 55%);
-      opacity:.8; pointer-events:none;
+    li i:after{
+      content:""; position:absolute; inset:4px 5px 5px 4px;
+      border-right:2px solid rgba(127,231,215,.95);
+      border-bottom:2px solid rgba(127,231,215,.95);
+      transform:rotate(45deg);
     }
-    .quote > *{position:relative}
-    .q{margin:0; color:rgba(236,242,255,.90); line-height:1.6; font-size:14px}
-    .who{margin-top:12px; display:flex; align-items:center; gap:10px}
-    .ava{
-      width:40px; height:40px; border-radius:14px;
-      background:linear-gradient(135deg, rgba(245,199,106,.9), rgba(120,240,224,.45));
-      border:1px solid rgba(255,255,255,.18);
-      box-shadow: 0 18px 40px rgba(0,0,0,.25);
-    }
-    .who b{display:block; font-size:13px}
-    .who span{display:block; color:var(--muted); font-size:12px; font-weight:650}
+    .price .btn{width:100%; margin-top:16px}
 
     /* FAQ */
-    .faq{
-      margin-top:18px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:14px;
-    }
+    .faq{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
     details{
-      border:1px solid var(--line);
+      border-radius:var(--r20);
       background:rgba(255,255,255,.05);
-      border-radius:18px;
-      padding:14px 14px;
+      border:1px solid rgba(255,255,255,.10);
+      padding:16px 16px;
     }
     summary{
       cursor:pointer;
-      font-weight:800;
-      font-size:13px;
-      letter-spacing:-.2px;
+      font-weight:900;
+      font-size:13.5px;
+      color:rgba(238,242,255,.92);
       list-style:none;
     }
     summary::-webkit-details-marker{display:none}
     details p{
       margin:10px 0 0;
       color:var(--muted);
-      font-size:13px;
+      font-size:13.5px;
       line-height:1.6;
+      font-weight:700;
     }
 
-    /* CTA */
+    /* CTA strip */
     .cta{
+      border-radius:var(--r24);
       padding:22px;
-      border-radius:26px;
-      border:1px solid rgba(245,199,106,.24);
-      background:linear-gradient(180deg, rgba(245,199,106,.14), rgba(255,255,255,.04));
-      box-shadow: 0 24px 70px rgba(245,199,106,.10);
-      display:flex; align-items:center; justify-content:space-between;
-      gap:16px; flex-wrap:wrap;
+      background:linear-gradient(135deg, rgba(245,199,106,.18), rgba(127,231,215,.10));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow2);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:18px;
+      overflow:hidden;
     }
-    .cta h3{margin:0; font-size:18px; letter-spacing:-.3px}
-    .cta p{margin:6px 0 0; color:var(--muted); max-width:64ch; line-height:1.55; font-size:13px}
+    .cta h3{margin:0 0 6px; font-size:18px}
+    .cta p{margin:0; color:var(--muted); font-size:13.5px; line-height:1.5; font-weight:700}
+    .cta .btn{min-width:190px}
 
-    /* FOOTER */
+    /* Footer */
     footer{
-      padding:22px 0 36px;
-      color:rgba(236,242,255,.55);
-      font-size:12px;
+      padding:34px 0 50px;
+      border-top:1px solid rgba(255,255,255,.08);
+      color:var(--muted2);
+      font-weight:700;
+      position:relative; z-index:1;
     }
-    .foot{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:14px; flex-wrap:wrap;
-      border-top:1px solid var(--line);
-      padding-top:18px;
-    }
-    .mini-links{display:flex; gap:12px; flex-wrap:wrap}
-    .mini-links a{color:rgba(236,242,255,.65)}
-    .mini-links a:hover{color:var(--text)}
+    .foot{display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap;}
+    .foot a{color:var(--muted); font-weight:900}
+    .foot a:hover{color:var(--text)}
+    .tiny{font-size:12px; color:rgba(238,242,255,.45); font-weight:800; margin-top:8px; max-width:72ch}
 
-    /* MODAL */
+    /* Floating demo button */
+    .fab{
+      position:fixed; right:18px; bottom:18px; z-index:80;
+      border-radius:999px;
+      padding:12px 14px;
+      background:linear-gradient(135deg, rgba(245,199,106,.98), rgba(215,166,75,.90));
+      color:#161616;
+      border:1px solid rgba(255,255,255,.25);
+      box-shadow: 0 18px 50px rgba(245,199,106,.18);
+      font-weight:900;
+      cursor:pointer;
+      display:flex; align-items:center; gap:10px;
+      transition:.18s ease;
+    }
+    .fab:hover{transform:translateY(-2px)}
+    .fab .dot{
+      width:10px; height:10px; border-radius:999px; background:var(--aqua);
+      box-shadow:0 0 0 6px rgba(127,231,215,.14);
+    }
+
+    /* Modal */
     .modal{
       position:fixed; inset:0;
+      display:none; place-items:center;
       background:rgba(0,0,0,.55);
-      display:none;
-      align-items:center; justify-content:center;
+      backdrop-filter: blur(8px);
+      z-index:90;
       padding:18px;
-      z-index:100;
     }
-    .modal.open{display:flex}
+    .modal.open{display:grid}
     .modal-card{
-      width:min(560px, 100%);
-      border-radius:26px;
-      border:1px solid rgba(255,255,255,.14);
-      background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      width:min(980px, 100%);
+      border-radius:var(--r24);
+      background:rgba(7,10,16,.70);
+      border:1px solid rgba(255,255,255,.12);
       box-shadow: var(--shadow);
       overflow:hidden;
-      position:relative;
     }
-    .modal-card:before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:radial-gradient(520px 220px at 18% 10%, rgba(245,199,106,.20), transparent 60%),
-                 radial-gradient(520px 240px at 90% 18%, rgba(120,240,224,.12), transparent 60%);
-      pointer-events:none;
-      opacity:.9;
+    .modal-head{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.04);
     }
-    .modal-inner{position:relative; padding:18px}
-    .modal-top{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .modal-head b{font-size:13.5px}
     .x{
-      width:40px; height:40px; border-radius:14px;
-      display:inline-flex; align-items:center; justify-content:center;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      cursor:pointer;
-    }
-    .x:hover{background:rgba(255,255,255,.09)}
-    .form{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    .form .full{grid-column:1/-1}
-    label{display:block; font-size:12px; color:rgba(236,242,255,.70); font-weight:700; margin:0 0 6px}
-    input, textarea, select{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.05);
       color:var(--text);
+      font-weight:900;
+      cursor:pointer;
+    }
+    .modal-body{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:0;
+      min-height:520px;
+    }
+    .modal-left{padding:18px; border-right:1px solid rgba(255,255,255,.08)}
+    .modal-right{padding:18px}
+    .form{display:grid; gap:10px; margin-top:10px;}
+    .field{display:grid; gap:6px;}
+    label{font-size:12px; color:var(--muted2); font-weight:900}
+    input, textarea, select{
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      color:var(--text);
+      padding:12px 12px;
       outline:none;
-      font-family:inherit;
+      font-weight:800;
+      font-size:13.5px;
     }
-    textarea{min-height:92px; resize:vertical}
-    input::placeholder, textarea::placeholder{color:rgba(236,242,255,.45)}
-    .note{margin-top:10px; color:rgba(236,242,255,.55); font-size:12px; line-height:1.5}
+    textarea{min-height:110px; resize:vertical}
+    .note{font-size:12px; color:rgba(238,242,255,.50); font-weight:800; line-height:1.5; margin-top:10px;}
 
-    /* reveal animations */
-    .reveal{opacity:0; transform:translateY(10px); transition:.5s ease}
-    .reveal.in{opacity:1; transform:none}
-
-    /* responsive */
+    /* Responsive */
     @media (max-width: 980px){
-      .hero-grid{grid-template-columns: 1fr; }
-      .grid3{grid-template-columns: 1fr; }
-      .pricing{grid-template-columns: 1fr; }
-      .grid2{grid-template-columns: 1fr; }
-      .faq{grid-template-columns: 1fr; }
-      .links{display:none}
+      .hero-grid{grid-template-columns:1fr;}
+      .grid3{grid-template-columns:1fr;}
+      .pricing{grid-template-columns:1fr;}
+      .faq{grid-template-columns:1fr;}
+      .nav-links{display:none}
+      .modal-body{grid-template-columns:1fr}
+      .modal-left{border-right:none; border-bottom:1px solid rgba(255,255,255,.08)}
+      .price.featured{transform:none}
     }
+
+    /* Reveal */
+    .reveal{opacity:0; transform:translateY(12px); transition: .55s ease}
+    .reveal.in{opacity:1; transform:none}
   </style>
 </head>
 
 <body>
-  <!-- NAV -->
+  <div class="grain" aria-hidden="true"></div>
+
   <header class="nav">
     <div class="container">
       <div class="nav-inner">
-        <a class="brand" href="#top" aria-label="Home">
-          <div class="logo"></div>
-          <div>Restro<span>AI</span></div>
+        <a class="brand" href="#top" aria-label="Titonova home">
+          <div class="mark" aria-hidden="true"></div>
+          <div class="name">
+            <b>Titonova</b>
+            <span>Restaurant AI Automation</span>
+          </div>
         </a>
 
-        <nav class="links" aria-label="Primary">
+        <nav class="nav-links" aria-label="Primary">
           <a href="#features">Features</a>
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
           <a href="#faq">FAQ</a>
         </nav>
 
-        <div class="row">
-          <button class="btn ghost sm" id="openDemoTop">Book demo</button>
-          <a class="btn primary" href="#pricing">Get free 7-day trial</a>
+        <div class="nav-cta">
+          <button class="btn ghost small" id="openDemoTop">Open Live Demo</button>
+          <a class="btn primary small" href="#pricing">Get Free 7-Day Trial</a>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- HERO -->
   <main id="top" class="hero">
     <div class="container">
       <div class="hero-grid">
+
         <div class="reveal">
-          <div class="pill"><b>NEW</b> AI assistant for restaurants — WhatsApp + website</div>
-          <h1>Premium automation for orders, reservations & customer support.</h1>
-          <p class="sub">
-            RestroAI helps restaurants respond instantly, capture more orders, and reduce missed calls —
-            with a branded AI assistant that works 24/7 across your website and WhatsApp.
+          <div class="pill"><i></i> Startup pricing • Premium experience</div>
+          <h1>Automate orders & reservations — <span style="color:var(--gold)">without missing customers</span>.</h1>
+          <p class="lead">
+            <b>Titonova</b> is a premium AI assistant built for restaurants. It answers menu questions, takes reservations,
+            captures takeaway orders, and sends confirmations — 24/7 on your website and WhatsApp.
           </p>
 
-          <div class="actions">
-            <button class="btn primary" id="openDemoHero">Book a free demo</button>
-            <a class="btn" href="#features">See features</a>
-            <a class="btn ghost" href="#pricing">View pricing</a>
+          <div class="hero-actions">
+            <button class="btn primary" id="openDemoHero">Try the Live Demo</button>
+            <a class="btn" href="#pricing">See Pricing</a>
+            <a class="btn ghost" href="#how">How it Works</a>
           </div>
 
-          <div class="kpis">
-            <div class="kpi"><strong>24/7 Replies</strong><span>Never miss customers</span></div>
-            <div class="kpi"><strong>Fast setup</strong><span>Live in 1–2 days</span></div>
-            <div class="kpi"><strong>Branded</strong><span>Your tone & menu</span></div>
-          </div>
-
-          <div class="logos reveal" style="margin-top:24px;">
-            <div class="marquee" aria-hidden="true">
-              <div class="logo-pill">Restaurant Partners</div>
-              <div class="logo-pill">Cafe & Bistro</div>
-              <div class="logo-pill">Food Truck</div>
-              <div class="logo-pill">Cloud Kitchen</div>
-              <div class="logo-pill">Dine-In & Takeout</div>
-              <div class="logo-pill">Restaurant Partners</div>
-              <div class="logo-pill">Cafe & Bistro</div>
-              <div class="logo-pill">Food Truck</div>
-              <div class="logo-pill">Cloud Kitchen</div>
-              <div class="logo-pill">Dine-In & Takeout</div>
-            </div>
+          <div class="trust-row" aria-label="Highlights">
+            <div class="chip">⚡ Setup in 24–48 hours</div>
+            <div class="chip">📲 WhatsApp + Website</div>
+            <div class="chip">🧾 Order & reservation logs</div>
+            <div class="chip">🔒 Secure setup</div>
           </div>
         </div>
 
-        <!-- Premium mock -->
-        <div class="card reveal">
+        <div class="card reveal" style="transition-delay:.08s">
           <div class="card-inner">
-            <div class="mock">
-              <div class="mock-top">
-                <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-                <div class="mock-title">Live Demo — Restaurant AI</div>
-                <button class="btn sm" id="fillDemo">Try sample</button>
+            <div class="mini-title">Live Demo</div>
+            <div class="demo-wrap">
+              <div class="demo-top">
+                <div class="left">
+                  <div class="bot-dot"></div>
+                  <div>
+                    <b>Titonova Assistant</b><br/>
+                    <span>Online • replies instantly</span>
+                  </div>
+                </div>
+                <button class="btn small" id="resetChat">Reset</button>
               </div>
-              <div class="mock-body">
-                <div class="chat" id="chat">
-                  <div class="bubble ai">Hi 👋 I’m your restaurant assistant. I can take reservations, share menu info, and help with takeout orders. How can I help?</div>
-                  <div class="bubble me">Table for 2 tonight at 7?</div>
-                  <div class="bubble ai">Sure! What’s your name and phone number? (Example: “Amit, 469-000-0000”)</div>
-                </div>
 
-                <div class="input">
-                  <input id="msg" class="field" placeholder="Type like a customer… (e.g., “Any vegetarian options?”)" />
-                  <button class="btn primary send" id="send">Send</button>
+              <div class="demo-body" id="chatBody">
+                <div class="bubble">
+                  Namaste 👋 Welcome! I can help with <b>menu</b>, <b>reservations</b>, and <b>takeaway orders</b>.
+                  <div class="quick" style="margin-top:10px">
+                    <button class="qbtn" data-q="Show me the menu">Show me the menu</button>
+                    <button class="qbtn" data-q="Book a table for 2 at 7pm">Book a table</button>
+                    <button class="qbtn" data-q="I want to place a takeaway order">Takeaway order</button>
+                  </div>
                 </div>
-                <div class="note">This is a front-end demo UI. We customize your AI with your menu, hours, location, and brand tone.</div>
+              </div>
+
+              <div class="demo-input">
+                <input id="chatInput" placeholder="Type: ‘Book a table for 2 at 7pm’" />
+                <button class="btn primary send" id="sendBtn">Send</button>
               </div>
             </div>
+
+            <div class="note">This is a demo UI. Real setup uses your menu, hours, booking rules, and brand tone.</div>
           </div>
         </div>
 
       </div>
+
+      <!-- FEATURES -->
+      <section id="features" class="section">
+        <div class="reveal">
+          <h2>Built for restaurants. Designed like a big brand.</h2>
+          <p class="sub">
+            Your customers get instant answers. You get more bookings and fewer missed calls — with a clean, premium experience.
+          </p>
+        </div>
+
+        <div class="grid3">
+          <div class="fcard reveal">
+            <div class="icon">24/7</div>
+            <b>Instant replies</b>
+            <span>Hours, location, menu questions, allergies, parking — all answered immediately.</span>
+          </div>
+          <div class="fcard reveal" style="transition-delay:.06s">
+            <div class="icon">🪑</div>
+            <b>Reservations</b>
+            <span>Collects date/time/party size + phone, then confirms and reduces no-shows.</span>
+          </div>
+          <div class="fcard reveal" style="transition-delay:.12s">
+            <div class="icon">🍱</div>
+            <b>Takeaway capture</b>
+            <span>Collects items + quantities + pickup time + contact details for smooth operations.</span>
+          </div>
+          <div class="fcard reveal">
+            <div class="icon">📲</div>
+            <b>WhatsApp ready</b>
+            <span>Customers already use WhatsApp — your assistant fits their habit perfectly.</span>
+          </div>
+          <div class="fcard reveal" style="transition-delay:.06s">
+            <div class="icon">📈</div>
+            <b>Repeat customers</b>
+            <span>Collect contacts (with consent) and send offers to bring customers back.</span>
+          </div>
+          <div class="fcard reveal" style="transition-delay:.12s">
+            <div class="icon">🧾</div>
+            <b>Logs & insights</b>
+            <span>Track what customers ask, order, and book — then optimize your workflow.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW -->
+      <section id="how" class="section">
+        <div class="reveal">
+          <h2>Fast onboarding. Real results.</h2>
+          <p class="sub">We keep it simple so you launch quickly and refine using real customer messages.</p>
+        </div>
+
+        <div class="grid3">
+          <div class="fcard reveal">
+            <div class="icon">1</div>
+            <b>Share your details</b>
+            <span>Menu, hours, location, table rules, and takeaway flow.</span>
+          </div>
+          <div class="fcard reveal" style="transition-delay:.06s">
+            <div class="icon">2</div>
+            <b>We customize Titonova</b>
+            <span>Your brand tone + restaurant logic, so it feels native.</span>
+          </div>
+          <div class="fcard reveal" style="transition-delay:.12s">
+            <div class="icon">3</div>
+            <b>Go live + optimize</b>
+            <span>Launch on website (and WhatsApp on Growth+). Improve weekly.</span>
+          </div>
+        </div>
+
+        <div class="cta reveal" style="margin-top:18px;">
+          <div>
+            <h3>Want Titonova on your restaurant website?</h3>
+            <p>Start a free 7-day trial. If you like it, keep the plan and we’ll refine it with your real chats.</p>
+          </div>
+          <button class="btn primary" id="openTrial">Start Free Trial</button>
+        </div>
+      </section>
+
+      <!-- PRICING -->
+      <section id="pricing" class="section">
+        <div class="reveal">
+          <h2>Startup pricing. Premium support.</h2>
+          <p class="sub">Simple monthly plans. Cancel anytime.</p>
+        </div>
+
+        <div class="pricing">
+          <div class="price reveal">
+            <h3>Starter</h3>
+            <p>Website AI assistant for menu & customer questions.</p>
+            <div class="money">$39 <small>/ month</small></div>
+            <ul>
+              <li><i></i><span>Website chat widget</span></li>
+              <li><i></i><span>Menu + FAQs setup</span></li>
+              <li><i></i><span>Basic reservation capture</span></li>
+              <li><i></i><span>Email notifications</span></li>
+            </ul>
+            <button class="btn" onclick="openModal('Starter')">Get 7-Day Trial</button>
+          </div>
+
+          <div class="price featured reveal" style="transition-delay:.06s">
+            <div class="tag">Most Popular</div>
+            <h3>Growth</h3>
+            <p>Website + WhatsApp, reservations + takeaway capture.</p>
+            <div class="money">$89 <small>/ month</small></div>
+            <ul>
+              <li><i></i><span>Website + WhatsApp</span></li>
+              <li><i></i><span>Reservations + confirmations</span></li>
+              <li><i></i><span>Takeaway order capture</span></li>
+              <li><i></i><span>Customer contact collection</span></li>
+              <li><i></i><span>Priority tuning</span></li>
+            </ul>
+            <button class="btn primary" onclick="openModal('Growth')">Start Free Trial</button>
+          </div>
+
+          <div class="price reveal" style="transition-delay:.12s">
+            <h3>Scale</h3>
+            <p>Multi-location and advanced growth features.</p>
+            <div class="money">$199 <small>/ month</small></div>
+            <ul>
+              <li><i></i><span>Multi-location support</span></li>
+              <li><i></i><span>Advanced workflows</span></li>
+              <li><i></i><span>Campaigns (WhatsApp/SMS)</span></li>
+              <li><i></i><span>Analytics dashboard</span></li>
+              <li><i></i><span>Dedicated onboarding</span></li>
+            </ul>
+            <button class="btn" onclick="openModal('Scale')">Book Demo</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="section">
+        <div class="reveal">
+          <h2>FAQ</h2>
+          <p class="sub">Quick answers for restaurant owners.</p>
+        </div>
+
+        <div class="faq">
+          <details class="reveal">
+            <summary>Can Titonova take real reservations and orders?</summary>
+            <p>Yes. It collects details (time, party size, phone) for reservations and captures takeaway requests (items, quantity, pickup time). You can route confirmations to email/WhatsApp.</p>
+          </details>
+          <details class="reveal" style="transition-delay:.06s">
+            <summary>Does it work on WhatsApp?</summary>
+            <p>Yes — WhatsApp is included on the <b>Growth</b> plan and above.</p>
+          </details>
+          <details class="reveal">
+            <summary>How fast can we launch?</summary>
+            <p>Usually within 24–48 hours after we receive your menu, hours, and booking rules.</p>
+          </details>
+          <details class="reveal" style="transition-delay:.06s">
+            <summary>Is customer data safe?</summary>
+            <p>We follow best-practice access controls and only collect what you approve. You control what’s stored and how it’s used.</p>
+          </details>
+        </div>
+      </section>
+
+      <!-- FINAL CTA -->
+      <section class="section" style="padding-top:10px">
+        <div class="cta reveal">
+          <div>
+            <h3>Ready to launch Titonova on titonova.com?</h3>
+            <p>Start a free 7-day trial and see how many more bookings and orders you capture.</p>
+          </div>
+          <button class="btn primary" id="openTrial2">Start Free Trial</button>
+        </div>
+      </section>
+
     </div>
   </main>
 
-  <!-- FEATURES -->
-  <section id="features">
+  <footer>
     <div class="container">
-      <div class="section-head">
+      <div class="foot">
         <div>
-          <h2 class="h2 reveal">Everything restaurants need — in one AI assistant.</h2>
-          <p class="lead reveal">Start simple (support + reservations), then scale into orders, follow-ups, and promotions.</p>
+          <div class="brand" style="gap:10px">
+            <div class="mark" aria-hidden="true" style="width:34px;height:34px;border-radius:13px"></div>
+            <div class="name">
+              <b>Titonova</b>
+              <span>Restaurant AI Automation</span>
+            </div>
+          </div>
+          <div class="tiny">
+            © <span id="year"></span> Titonova • titonova.com — Premium landing template. Connect the trial form to your email/Firebase when ready.
+          </div>
         </div>
-        <div class="row reveal">
-          <button class="btn ghost" id="openDemoFeat">Get a demo</button>
-          <a class="btn" href="#pricing">See plans</a>
-        </div>
-      </div>
 
-      <div class="grid3">
-        <div class="feature reveal">
-          <div class="ico">📲</div>
-          <h3>WhatsApp ordering</h3>
-          <p>Customers can message to order. AI collects items, quantity, and pickup time.</p>
-        </div>
-        <div class="feature reveal">
-          <div class="ico">🪑</div>
-          <h3>Reservations 24/7</h3>
-          <p>Book tables automatically with name, phone, time, and party size.</p>
-        </div>
-        <div class="feature reveal">
-          <div class="ico">🍽️</div>
-          <h3>Menu + FAQs</h3>
-          <p>Answers menu questions, ingredients, allergies, hours, address, parking, and more.</p>
-        </div>
-        <div class="feature reveal">
-          <div class="ico">💬</div>
-          <h3>Website chatbot</h3>
-          <p>Add a premium chat widget to your site so visitors convert instantly.</p>
-        </div>
-        <div class="feature reveal">
-          <div class="ico">📈</div>
-          <h3>Lead capture</h3>
-          <p>Collect phone numbers and customer intent for follow-ups and repeat business.</p>
-        </div>
-        <div class="feature reveal">
-          <div class="ico">🎯</div>
-          <h3>Promotions & reactivation</h3>
-          <p>Send offers to returning customers (happy hour, lunch specials, weekend deals).</p>
+        <div style="display:flex; gap:18px; flex-wrap:wrap">
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+          <a href="#top">Back to top</a>
         </div>
       </div>
     </div>
-  </section>
+  </footer>
 
-  <!-- HOW IT WORKS -->
-  <section id="how">
-    <div class="container">
-      <div class="section-head">
-        <div>
-          <h2 class="h2 reveal">Launch in days, not months.</h2>
-          <p class="lead reveal">We set up your assistant using your menu, hours, location, and brand voice — then you’re live.</p>
-        </div>
+  <!-- Floating demo button -->
+  <button class="fab" id="openDemoFab"><span class="dot"></span> Live Demo</button>
+
+  <!-- Modal: Demo + Trial Form -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-label="Trial form">
+    <div class="modal-card">
+      <div class="modal-head">
+        <b>Start your free 7-day trial</b>
+        <button class="x" id="closeModal" aria-label="Close">✕</button>
       </div>
 
-      <div class="grid3">
-        <div class="feature reveal">
-          <div class="ico">1️⃣</div>
-          <h3>Collect your info</h3>
-          <p>Menu, hours, reservation rules, delivery/takeout steps, and your brand tone.</p>
+      <div class="modal-body">
+        <div class="modal-left">
+          <div class="mini-title">Demo Experience</div>
+          <div class="demo-wrap" style="min-height:420px">
+            <div class="demo-top">
+              <div class="left">
+                <div class="bot-dot"></div>
+                <div>
+                  <b>Titonova Assistant</b><br/>
+                  <span>Try menu / booking / order</span>
+                </div>
+              </div>
+              <button class="btn small" id="resetChat2">Reset</button>
+            </div>
+
+            <div class="demo-body" id="chatBody2">
+              <div class="bubble">
+                Welcome 👋 I can help with <b>menu</b>, <b>reservations</b>, and <b>takeaway orders</b>.
+                <div class="quick" style="margin-top:10px">
+                  <button class="qbtn" data-q="Show me the menu">Show me the menu</button>
+                  <button class="qbtn" data-q="Book a table for 2 at 7pm">Book a table</button>
+                  <button class="qbtn" data-q="Order momo and chow mein for pickup">Place an order</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="demo-input">
+              <input id="chatInput2" placeholder="Type a message…" />
+              <button class="btn primary send" id="sendBtn2">Send</button>
+            </div>
+          </div>
+
+          <div class="note">
+            Demo only (front-end). Later you can connect this to your real AI + WhatsApp backend.
+          </div>
         </div>
-        <div class="feature reveal">
-          <div class="ico">2️⃣</div>
-          <h3>Customize your AI</h3>
-          <p>We train your assistant to answer like your staff and follow your process.</p>
-        </div>
-        <div class="feature reveal">
-          <div class="ico">3️⃣</div>
-          <h3>Go live + improve</h3>
-          <p>Launch on website + WhatsApp. Then refine responses based on real chats.</p>
+
+        <div class="modal-right">
+          <div class="mini-title">Trial Request</div>
+
+          <form class="form" id="trialForm">
+            <div class="field">
+              <label for="plan">Plan</label>
+              <select id="plan" name="plan">
+                <option>Growth</option>
+                <option>Starter</option>
+                <option>Scale</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="restaurant">Restaurant Name</label>
+              <input id="restaurant" name="restaurant" placeholder="Your restaurant name" required />
+            </div>
+
+            <div class="field">
+              <label for="owner">Owner / Manager Name</label>
+              <input id="owner" name="owner" placeholder="Your name" required />
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone / WhatsApp</label>
+              <input id="phone" name="phone" placeholder="+1 (___) ___-____" required />
+            </div>
+
+            <div class="field">
+              <label for="city">City</label>
+              <input id="city" name="city" placeholder="Dallas" required />
+            </div>
+
+            <div class="field">
+              <label for="message">What do you want to automate?</label>
+              <textarea id="message" name="message" placeholder="Reservations, orders, menu questions…" required></textarea>
+            </div>
+
+            <button class="btn primary" type="submit">Submit Trial Request</button>
+
+            <div class="note" id="formNote">
+              This is demo-only. Hook this form to email/Firebase to receive leads automatically.
+            </div>
+          </form>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="cta reveal" style="margin-top:18px;">
-        <div>
-          <h3>Want a premium demo on your own restaurant name?</h3>
-          <p>We’ll show a working assistant for your menu and reservation flow. No pressure,
+  <script>
+    // Smooth anchor scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href');
+        const el = document.querySelector(id);
+        if(!el) return;
+        e.preventDefault();
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    });
+
+    // Reveal on scroll
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(en=>{ if(en.isIntersecting) en.target.classList.add('in'); });
+    }, {threshold:.12});
+    document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+    // Footer year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Modal open/close
+    const modal = document.getElementById('modal');
+    const planSel = document.getElementById('plan');
+
+    function openModal(plan="Growth"){
+      modal.classList.add('open');
+      planSel.value = plan;
+      setTimeout(()=>document.getElementById('restaurant').focus(), 100);
+      document.body.style.overflow = 'hidden';
+    }
+    function closeModal(){
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    window.openModal = openModal;
+
+    document.getElementById('openDemoTop').onclick = ()=>openModal("Growth");
+    document.getElementById('openDemoHero').onclick = ()=>openModal("Growth");
+    document.getElementById('openDemoFab').onclick = ()=>openModal("Growth");
+    document.getElementById('openTrial').onclick = ()=>openModal("Growth");
+    document.getElementById('openTrial2').onclick = ()=>openModal("Growth");
+    document.getElementById('closeModal').onclick = closeModal;
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+    window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+    // Chat demo logic (simple scripted responses)
+    function botReply(text, body){
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      b.innerHTML = text;
+      body.appendChild(b);
+      body.scrollTop = body.scrollHeight;
+    }
+    function userMsg(text, body){
+      const b = document.createElement('div');
+      b.className = 'bubble user';
+      b.textContent = text;
+      body.appendChild(b);
+      body.scrollTop = body.scrollHeight;
+    }
+
+    function respond(msg){
+      const m = msg.toLowerCase();
+      if(m.includes('menu')){
+        return `Sample menu 🍽️<br><br>
+          • Chicken Momo — $12<br>
+          • Veg Chow Mein — $11<br>
+          • Chicken Chow Mein — $12<br>
+          • Dal Bhat Set — $14<br><br>
+          Want to <b>order for pickup</b> or <b>book a table</b>?`;
+      }
+      if(m.includes('book') || m.includes('reservation') || m.includes('table')){
+        return `Sure ✅ Please share:<br>
+          1) Date<br>2) Time<br>3) Party size<br>4) Phone number<br><br>
+          Example: <b>Today, 7pm, 2 people, +1…</b>`;
+      }
+      if(m.includes('order') || m.includes('pickup') || m.includes('takeaway')){
+        return `Great! 🍱 Tell me the items + quantity.<br>
+          Example: <b>2 chicken momo, 1 veg chow mein</b><br><br>
+          I’ll ask for pickup time and phone number next.`;
+      }
+      if(m.includes('special')){
+        return `Today’s specials ✨<br><br>
+          • Jhol Momo (Chef’s pick)<br>
+          • Thakali Set<br>
+          • Masala Fries<br><br>
+          Want to order or reserve a table?`;
+      }
+      return `Got it ✅ I can help with <b>menu</b>, <b>reservations</b>, or <b>takeaway orders</b>.
+        Try: “Show me the menu” or “Book a table for 2 at 7pm”.`;
+    }
+
+    function bindChat(chatInputId, chatBodyId, sendBtnId, resetBtnId){
+      const input = document.getElementById(chatInputId);
+      const body = document.getElementById(chatBodyId);
+      const send = document.getElementById(sendBtnId);
+      const reset = document.getElementById(resetBtnId);
+
+      function sendMessage(){
+        const text = input.value.trim();
+        if(!text) return;
+        userMsg(text, body);
+        input.value = "";
+        setTimeout(()=>botReply(respond(text), body), 260);
+      }
+
+      send.addEventListener('click', sendMessage);
+      input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') sendMessage(); });
+
+      body.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.qbtn');
+        if(!btn) return;
+        const q = btn.getAttribute('data-q');
+        userMsg(q, body);
+        setTimeout(()=>botReply(respond(q), body), 240);
+      });
+
+      reset.addEventListener('click', ()=>{
+        body.innerHTML = `
+          <div class="bubble">
+            Welcome 👋 I can help with <b>menu</b>, <b>reservations</b>, and <b>takeaway orders</b>.
+            <div class="quick" style="margin-top:10px">
+              <button class="qbtn" data-q="Show me the menu">Show me the menu</button>
+              <button class="qbtn" data-q="Book a table for 2 at 7pm">Book a table</button>
+              <button class="qbtn" data-q="I want to place a takeaway order">Takeaway order</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    bindChat('chatInput', 'chatBody', 'sendBtn', 'resetChat');
+    bindChat('chatInput2', 'chatBody2', 'sendBtn2', 'resetChat2');
+
+    // Trial form: front-end success (no backend yet)
+    document.getElementById('trialForm').addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const note = document.getElementById('formNote');
+      note.innerHTML = "✅ Submitted! (Demo only) — Next step: connect this form to your email/Firebase so you receive leads automatically.";
+      note.style.color = "rgba(127,231,215,.95)";
+    });
+  </script>
+</body>
+</html>
