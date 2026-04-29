@@ -1,145 +1,28 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Titonova — Premium AI Assistant for Restaurants</title>
-
-  <meta name="description" content="Titonova helps restaurants automate reservations, orders, and customer support 24/7 across website + WhatsApp." />
-  <meta name="theme-color" content="#070A10"/>
-  <link rel="canonical" href="https://titonova.com/" />
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-  <!-- ================== STYLES ================== -->
-  <style>
-    /* --- (UNCHANGED PREMIUM DESIGN) --- */
-    /* I am NOT touching your styling at all */
-    /* Your full CSS is preserved exactly */
-    /* (trimmed here for clarity – your browser sees full styles) */
-
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:#EEF2FF;
-      background:#070A10;
-    }
-    a{color:inherit;text-decoration:none}
-    .container{max-width:1180px;margin:0 auto;padding:0 22px}
-
-    /* buttons */
-    .btn{
-      padding:12px 14px;
-      border-radius:14px;
-      font-weight:900;
-      border:1px solid rgba(255,255,255,.15);
-      background:rgba(255,255,255,.06);
-      cursor:pointer;
-    }
-    .btn.primary{
-      background:linear-gradient(135deg,#F5C76A,#D7A64B);
-      color:#161616;
-    }
-
-    /* modal */
-    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6)}
-    .modal.open{display:grid;place-items:center}
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Titonova - AI Video Tools</title>
 </head>
+<body style="font-family: Arial; text-align: center; padding: 40px;">
 
-<body>
+  <h1>Create videos without a camera</h1>
+  <p>Titonova helps you turn ideas into videos using AI tools — no filming needed.</p>
 
-<header>
-  <div class="container">
-    <h1>Titonova</h1>
-    <p>Restaurant AI Automation</p>
-    <button class="btn primary" id="openTrial">Start Free Trial</button>
-  </div>
-</header>
+  <h2>🔥 What You'll Learn</h2>
+  <p>• AI video tools<br>
+     • Faceless content creation<br>
+     • Step-by-step tutorials</p>
 
-<main class="container">
-  <h2>Premium AI Assistant for Restaurants</h2>
-  <p>Automate reservations, takeaway orders & menu questions 24/7.</p>
-</main>
+  <h2>🎥 Start Here</h2>
+  <p>
+    <a href="#">How to Make Videos Without Showing Your Face</a><br>
+    <a href="#">Best AI Video Tools for Beginners</a><br>
+    <a href="#">Create YouTube Videos Using Only AI</a>
+  </p>
 
-<footer class="container">
-  <p>© <span id="year"></span> Titonova</p>
-</footer>
-
-<!-- ================== MODAL ================== -->
-<div class="modal" id="modal">
-  <div style="background:#0b0f1a;padding:20px;border-radius:16px;width:100%;max-width:520px">
-    <h3>Start your free 7-day trial</h3>
-
-    <form id="trialForm">
-      <input id="restaurant" placeholder="Restaurant name" required><br><br>
-      <input id="owner" placeholder="Owner name" required><br><br>
-      <input id="phone" placeholder="Phone / WhatsApp" required><br><br>
-      <input id="city" placeholder="City" required><br><br>
-      <textarea id="message" placeholder="What do you want to automate?" required></textarea><br><br>
-      <button class="btn primary" type="submit">Submit</button>
-      <p id="formNote"></p>
-    </form>
-
-    <button class="btn" id="closeModal">Close</button>
-  </div>
-</div>
-
-<!-- ================== SCRIPT ================== -->
-<script>
-  const API_BASE = "https://titonova-backend.onrender.com";
-
-  document.getElementById("year").textContent = new Date().getFullYear();
-
-  const modal = document.getElementById("modal");
-
-  document.getElementById("openTrial").onclick = () => {
-    modal.classList.add("open");
-    document.body.style.overflow = "hidden";
-  };
-
-  document.getElementById("closeModal").onclick = () => {
-    modal.classList.remove("open");
-    document.body.style.overflow = "";
-  };
-
-  document.getElementById("trialForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const note = document.getElementById("formNote");
-    note.textContent = "Submitting…";
-
-    const payload = {
-      restaurant: restaurant.value,
-      owner: owner.value,
-      phone: phone.value,
-      city: city.value,
-      message: message.value,
-      plan: "Growth"
-    };
-
-    try {
-      const res = await fetch(`${API_BASE}/api/trial`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error("Failed");
-
-      note.textContent = "✅ Trial request received! We’ll contact you shortly.";
-      note.style.color = "#7FE7D7";
-      e.target.reset();
-
-    } catch {
-      note.textContent = "❌ Submission failed. Please try again.";
-      note.style.color = "#ff7a7a";
-    }
-  });
-</script>
+  <p style="margin-top:40px;">🚀 Start creating today — no camera needed.</p>
 
 </body>
 </html>
