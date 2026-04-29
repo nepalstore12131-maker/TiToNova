@@ -10,31 +10,75 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background: #f4f6f8;
+      color: #111827;
     }
 
-    header {
+    /* NAVBAR */
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 30px;
       background: #0f172a;
       color: white;
-      padding: 20px;
+    }
+
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 14px;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    /* HERO */
+    .hero {
       text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(to right, #0f172a, #1e293b);
+      color: white;
     }
 
-    header h1 {
-      margin: 0;
+    .hero h1 {
+      margin-bottom: 10px;
+      font-size: 32px;
     }
 
+    .hero p {
+      color: #cbd5f5;
+      font-size: 16px;
+    }
+
+    /* CONTAINER */
     .container {
       max-width: 900px;
       margin: auto;
-      padding: 20px;
+      padding: 30px 20px;
     }
 
+    /* POSTS */
     .post {
       background: white;
       padding: 20px;
       margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: 0.2s;
+    }
+
+    .post:hover {
+      transform: translateY(-3px);
+    }
+
+    .post h3 {
+      margin: 0;
+    }
+
+    .post p {
+      color: #555;
     }
 
     a {
@@ -42,21 +86,35 @@
       color: #2563eb;
     }
 
+    /* FOOTER */
     footer {
       text-align: center;
-      padding: 20px;
+      padding: 30px;
       color: gray;
+      font-size: 14px;
     }
   </style>
 
 </head>
 <body>
 
-  <header>
-    <h1>Titonova</h1>
-    <p>Create videos without a camera</p>
-  </header>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <h2 style="margin:0;">Titonova</h2>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="faceless-youtube-ai.html">Guides</a>
+      <a href="about.html">About</a>
+    </div>
+  </div>
 
+  <!-- HERO SECTION -->
+  <div class="hero">
+    <h1>Create Videos Without a Camera</h1>
+    <p>Learn how to use AI tools to create content — no filming, no experience needed.</p>
+  </div>
+
+  <!-- CONTENT -->
   <div class="container">
 
     <h2>Latest Posts</h2>
@@ -70,15 +128,17 @@
       <h3><a href="best-ai-video-tools.html">Best AI Video Tools for Beginners</a></h3>
       <p>Discover the easiest AI tools to start creating videos today.</p>
     </div>
+
     <div class="post">
-  <h3><a href="faceless-youtube-ai.html">Faceless YouTube Channels Using AI</a></h3>
-  <p>Learn how to start a YouTube channel without showing your face.</p>
-</div>
+      <h3><a href="faceless-youtube-ai.html">Faceless YouTube Channels Using AI</a></h3>
+      <p>Learn how to start a YouTube channel without showing your face.</p>
+    </div>
 
   </div>
 
+  <!-- FOOTER -->
   <footer>
-    © 2026 Titonova
+    © 2026 Titonova • Built with AI
   </footer>
 
 </body>
