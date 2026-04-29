@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Script Generator | Titonova</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0f172a;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px;
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .output {
+      background: white;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+
+    a {
+      display: inline-block;
+      margin-top: 20px;
+      color: #2563eb;
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>AI Video Script Generator</h1>
+
+  <p>Enter your topic and generate a simple video script.</p>
+
+  <input type="text" id="topic" placeholder="e.g. How to make money online">
+
+  <button onclick="generateScript()">Generate Script</button>
+
+  <div class="output" id="result"></div>
+
+  <a href="index.html">← Back to Home</a>
+
+</div>
+
+<script>
+function generateScript() {
+  let topic = document.getElementById("topic").value;
+
+  if (!topic) {
+    alert("Please enter a topic");
+    return;
+  }
+
+  let script = `
+Intro:
+Did you know about ${topic}? Here's what you need to know.
+
+Main Content:
+First, understand the basics of ${topic}.
+Then, apply simple strategies to improve results.
+Stay consistent and keep learning.
+
+Conclusion:
+Now you know how to start with ${topic}. Take action today!
+  `;
+
+  document.getElementById("result").innerText = script;
+}
+</script>
+
+</body>
+</html>
