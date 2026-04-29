@@ -23,7 +23,7 @@
       color: #0f172a;
     }
 
-    textarea, input {
+    input {
       width: 100%;
       padding: 10px;
       margin-top: 10px;
@@ -47,6 +47,7 @@
       padding: 15px;
       margin-top: 20px;
       border-radius: 10px;
+      white-space: pre-wrap;
     }
 
     a {
@@ -64,7 +65,7 @@
 
   <h1>AI Video Script Generator</h1>
 
-  <p>Enter your topic and generate a simple video script.</p>
+  <p>Enter your topic and generate a video script using AI.</p>
 
   <input type="text" id="topic" placeholder="e.g. How to make money online">
 
@@ -77,7 +78,7 @@
 </div>
 
 <script>
-function generateScript() {
+async function generateScript() {
   let topic = document.getElementById("topic").value;
 
   if (!topic) {
@@ -85,20 +86,24 @@ function generateScript() {
     return;
   }
 
-  let script = `
-Intro:
-Did you know about ${topic}? Here's what you need to know.
+  document.getElementById("result").innerText = "Generating...";
 
-Main Content:
-First, understand the basics of ${topic}.
-Then, apply simple strategies to improve results.
-Stay consistent and keep learning.
+  try {
+    const res = await fetch("http://localhost:3000/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ topic })
+    });
 
-Conclusion:
-Now you know how to start with ${topic}. Take action today!
-  `;
+    const data = await res.json();
 
-  document.getElementById("result").innerText = script;
+    document.getElementById("result").innerText = data.result;
+
+  } catch (error) {
+    document.getElementById("result").innerText = "Error connecting to AI";
+  }
 }
 </script>
 
