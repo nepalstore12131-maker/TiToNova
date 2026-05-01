@@ -3,6 +3,7 @@
 <head>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3740532472054503"
      crossorigin="anonymous"></script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
@@ -167,93 +168,85 @@
 
 <body>
 
-  <!-- HEADER -->
-  <header>
-    <div class="logo">Titonova</div>
+<header>
+  <div class="logo">Titonova</div>
 
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="#tools">Tools</a>
-      <a href="#about">About</a>
-      <a href="contact.html">Contact</a>
-      <a href="privacy.html">Privacy</a>
-      <a href="terms.html">Terms</a>
-      <a href="https://www.tiktok.com/@titonovaofficial" target="_blank">TikTok</a>
-    </nav>
-  </header>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="#tools">Tools</a>
+    <a href="#about">About</a>
+    <a href="contact.html">Contact</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="https://www.tiktok.com/@titonovaofficial" target="_blank">TikTok</a>
+  </nav>
+</header>
 
-  <!-- HERO -->
-  <div class="hero">
-    <h1>Turn Ideas into Videos with AI</h1>
-    <p>No camera. No editing. Just fast AI content creation.</p>
-    <a href="#tools" class="btn">Start Creating Free</a>
+<div class="hero">
+  <h1>Turn Ideas into Videos with AI</h1>
+  <p>No camera. No editing. Just fast AI content creation.</p>
+  <a href="#tools" class="btn">Start Creating Free</a>
 
-    <p style="margin-top:15px;">
-      Follow us on TikTok:
-      <a href="https://www.tiktok.com/@titonovaofficial" target="_blank" style="color:#60a5fa;">
-        @titonovaofficial
-      </a>
-    </p>
+  <p style="margin-top:15px;">
+    Follow us:
+    <a href="https://www.tiktok.com/@titonovaofficial" target="_blank" style="color:#60a5fa;">
+      @titonovaofficial
+    </a>
+  </p>
+</div>
+
+<section id="tools">
+  <h2 class="section-title">Free AI Script Generator</h2>
+
+  <div class="tool-box">
+    <h3>AI Video Script Generator</h3>
+
+    <textarea id="idea" placeholder="Example: Make a TikTok video about AI tools"></textarea>
+
+    <button class="btn" onclick="generateScript()">Generate Script</button>
+
+    <div id="output" class="output" style="display:none;"></div>
   </div>
+</section>
 
-  <!-- TOOL -->
-  <section id="tools">
-    <h2 class="section-title">Free AI Script Generator</h2>
+<section>
+  <h2 class="section-title">Why Titonova?</h2>
 
-    <div class="tool-box">
-      <h3>AI Video Script Generator</h3>
-
-      <textarea id="idea" placeholder="Example: Make a TikTok video about AI tools"></textarea>
-
-      <button class="btn" onclick="generateScript()">Generate Script</button>
-
-      <div id="output" class="output" style="display:none;"></div>
+  <div class="cards">
+    <div class="card">
+      <h3>No Camera Needed</h3>
+      <p>Create content without showing your face.</p>
     </div>
-  </section>
 
-  <!-- FEATURES -->
-  <section>
-    <h2 class="section-title">Why Titonova?</h2>
-
-    <div class="cards">
-      <div class="card">
-        <h3>No Camera Needed</h3>
-        <p>Create content without showing your face.</p>
-      </div>
-
-      <div class="card">
-        <h3>Fast Ideas</h3>
-        <p>Get scripts, hooks, and content instantly.</p>
-      </div>
-
-      <div class="card">
-        <h3>Beginner Friendly</h3>
-        <p>Easy tools for students and creators.</p>
-      </div>
+    <div class="card">
+      <h3>Fast Ideas</h3>
+      <p>Get scripts, hooks, and content instantly.</p>
     </div>
-  </section>
 
-  <!-- ABOUT -->
-  <section id="about">
-    <h2 class="section-title">About</h2>
+    <div class="card">
+      <h3>Beginner Friendly</h3>
+      <p>Easy tools for students and creators.</p>
+    </div>
+  </div>
+</section>
 
-    <p style="max-width:700px; margin:auto; text-align:center;">
-      Titonova is a simple AI platform helping creators generate video ideas,
-      scripts, and content faster using modern tools.
-    </p>
-  </section>
+<section id="about">
+  <h2 class="section-title">About</h2>
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2026 Titonova</p>
-    <p>
-      <a href="privacy.html">Privacy</a> |
-      <a href="terms.html">Terms</a> |
-      <a href="contact.html">Contact</a>
-    </p>
-  </footer>
+  <p style="max-width:700px; margin:auto; text-align:center;">
+    Titonova helps creators generate video scripts and ideas using AI.
+  </p>
+</section>
 
-  <!-- SCRIPT -->
+<footer>
+  <p>© 2026 Titonova</p>
+  <p>
+    <a href="privacy.html">Privacy</a> |
+    <a href="terms.html">Terms</a> |
+    <a href="contact.html">Contact</a>
+  </p>
+</footer>
+
 <script>
   async function generateScript() {
     const idea = document.getElementById("idea").value.trim();
@@ -269,24 +262,25 @@
     output.innerText = "Generating with AI...";
 
     try {
-      const response = await fetch("http://localhost:3000/generate-script", {
+      const response = await fetch("http://localhost:3000/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ idea })
+        body: JSON.stringify({ topic: idea })
       });
 
       const data = await response.json();
 
-      if (data.script) {
-        output.innerText = data.script;
+      if (data.result) {
+        output.innerText = data.result;
       } else {
-        output.innerText = "No script generated.";
+        output.innerText = "No response from AI.";
       }
 
     } catch (error) {
       output.innerText = "Error connecting to AI.";
+      console.error(error);
     }
   }
 </script>
