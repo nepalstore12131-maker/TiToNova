@@ -254,38 +254,42 @@
   </footer>
 
   <!-- SCRIPT -->
-  <script>
-    function generateScript() {
-      const idea = document.getElementById("idea").value.trim();
-      const output = document.getElementById("output");
+<script>
+  async function generateScript() {
+    const idea = document.getElementById("idea").value.trim();
+    const output = document.getElementById("output");
 
-      if (!idea) {
-        output.style.display = "block";
-        output.innerText = "Enter your idea first.";
-        return;
+    if (!idea) {
+      output.style.display = "block";
+      output.innerText = "Enter your idea first.";
+      return;
+    }
+
+    output.style.display = "block";
+    output.innerText = "Generating with AI...";
+
+    try {
+      const response = await fetch("http://localhost:3000/generate-script", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ idea })
+      });
+
+      const data = await response.json();
+
+      if (data.script) {
+        output.innerText = data.script;
+      } else {
+        output.innerText = "No script generated.";
       }
 
-      const script =
-`Video Idea: ${idea}
-
-Hook:
-Stop scrolling — this will save your time.
-
-Intro:
-Today I’ll show you how to use AI for this.
-
-Steps:
-1. Explain idea
-2. Show tool
-3. Give result
-
-Call to Action:
-Follow @titonovaofficial for more tools`;
-
-      output.style.display = "block";
-      output.innerText = script;
+    } catch (error) {
+      output.innerText = "Error connecting to AI.";
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>
