@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Titonova - AI Video Tools</title>
-  <meta name="description" content="Titonova helps you create video ideas, scripts, and content using AI tools." />
+
+  <title>Titonova - Free AI Video Tools</title>
+  <meta name="description" content="Titonova helps creators and students generate AI video scripts, content ideas, and faceless video plans for free." />
 
   <style>
     * {
@@ -22,7 +23,7 @@
     header {
       background: #020617;
       color: white;
-      padding: 20px 8%;
+      padding: 18px 8%;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -37,8 +38,12 @@
     nav a {
       color: white;
       text-decoration: none;
-      margin-left: 25px;
+      margin-left: 22px;
       font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #60a5fa;
     }
 
     .hero {
@@ -69,6 +74,11 @@
       display: inline-block;
       border: none;
       cursor: pointer;
+      font-size: 15px;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
     }
 
     section {
@@ -128,6 +138,11 @@
       color: #2563eb;
     }
 
+    .card p {
+      line-height: 1.6;
+      color: #374151;
+    }
+
     footer {
       text-align: center;
       padding: 30px;
@@ -135,18 +150,27 @@
       color: #94a3b8;
     }
 
-    @media (max-width: 700px) {
-      .hero h1 {
-        font-size: 34px;
-      }
+    footer a {
+      color: #60a5fa;
+      text-decoration: none;
+    }
 
+    @media (max-width: 700px) {
       header {
         flex-direction: column;
         gap: 15px;
       }
 
       nav a {
-        margin: 0 10px;
+        margin: 0 8px;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .hero p {
+        font-size: 16px;
       }
     }
   </style>
@@ -156,11 +180,13 @@
 
   <header>
     <div class="logo">Titonova</div>
+
     <nav>
       <a href="#">Home</a>
       <a href="#tools">Tools</a>
-      <a href="#posts">Guides</a>
+      <a href="#guides">Guides</a>
       <a href="#about">About</a>
+      <a href="https://www.tiktok.com/@titonovaofficial" target="_blank">TikTok</a>
     </nav>
   </header>
 
@@ -168,10 +194,17 @@
     <h1>Turn Ideas into Videos with AI</h1>
     <p>No camera. No editing skills. Create content faster with Titonova.</p>
     <a href="#tools" class="btn">Start Creating Free</a>
+
+    <p style="margin-top:18px; font-size:15px;">
+      🔥 Follow us on TikTok: 
+      <a href="https://www.tiktok.com/@titonovaofficial" target="_blank" style="color:#60a5fa;">
+        @titonovaofficial
+      </a>
+    </p>
   </div>
 
   <section id="tools">
-    <h2 class="section-title">Free AI Tool</h2>
+    <h2 class="section-title">Free AI Video Script Generator</h2>
 
     <div class="tool-box">
       <h2>AI Video Script Generator</h2>
@@ -191,12 +224,12 @@
     <div class="cards">
       <div class="card">
         <h3>No Camera Needed</h3>
-        <p>Create content ideas and scripts without showing your face.</p>
+        <p>Create video scripts and ideas without showing your face.</p>
       </div>
 
       <div class="card">
         <h3>Fast Content Ideas</h3>
-        <p>Get video topics, hooks, and script structure in seconds.</p>
+        <p>Get hooks, video structure, and call-to-actions quickly.</p>
       </div>
 
       <div class="card">
@@ -206,7 +239,7 @@
     </div>
   </section>
 
-  <section id="posts">
+  <section id="guides">
     <h2 class="section-title">Latest Guides</h2>
 
     <div class="cards">
@@ -229,6 +262,7 @@
 
   <section id="about">
     <h2 class="section-title">About Titonova</h2>
+
     <p style="max-width:700px; margin:auto; text-align:center; line-height:1.7;">
       Titonova is a simple AI tools platform built to help creators, students, and beginners make content faster.
       Our goal is to make AI tools easy to use for everyone.
@@ -236,7 +270,13 @@
   </section>
 
   <footer>
-    © 2026 Titonova. All rights reserved.
+    <p>© 2026 Titonova. All rights reserved.</p>
+    <p style="margin-top:10px;">
+      Follow us:
+      <a href="https://www.tiktok.com/@titonovaofficial" target="_blank">
+        TikTok
+      </a>
+    </p>
   </footer>
 
   <script>
@@ -266,7 +306,10 @@ Main Points:
 4. Share the final result.
 
 Call to Action:
-Follow Titonova for more AI tools and content ideas.`;
+Follow Titonova for more AI tools and content ideas.
+
+TikTok:
+@titonovaofficial`;
 
       output.style.display = "block";
       output.innerText = script;
