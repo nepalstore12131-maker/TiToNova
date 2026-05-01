@@ -1,151 +1,277 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3740532472054503"
-     crossorigin="anonymous"></script>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Titonova - AI Video Tools</title>
+  <meta name="description" content="Titonova helps you create video ideas, scripts, and content using AI tools." />
 
   <style>
-    body {
+    * {
       margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
       font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      background: #f8fafc;
       color: #111827;
     }
 
-    /* NAVBAR */
-    .navbar {
+    header {
+      background: #020617;
+      color: white;
+      padding: 20px 8%;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 15px 30px;
-      background: #0f172a;
-      color: white;
     }
 
-    .navbar a {
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    nav a {
       color: white;
       text-decoration: none;
-      margin-left: 20px;
+      margin-left: 25px;
       font-size: 14px;
     }
 
-    /* HERO */
     .hero {
-      text-align: center;
-      padding: 60px 20px;
-      background: linear-gradient(to right, #0f172a, #1e293b);
+      background: linear-gradient(135deg, #020617, #111827);
       color: white;
+      text-align: center;
+      padding: 90px 20px;
     }
 
     .hero h1 {
-      margin-bottom: 10px;
+      font-size: 48px;
+      margin-bottom: 15px;
     }
 
     .hero p {
-      color: #cbd5f5;
+      font-size: 18px;
+      color: #cbd5e1;
+      margin-bottom: 30px;
     }
 
-    /* CONTAINER */
-    .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 30px 20px;
-    }
-
-    /* POSTS / CARDS */
-    .post {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .post h3 {
-      margin: 0;
-    }
-
-    .post p {
-      color: #555;
-    }
-
-    a {
+    .btn {
+      background: #2563eb;
+      color: white;
+      padding: 14px 28px;
+      border-radius: 8px;
       text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      border: none;
+      cursor: pointer;
+    }
+
+    section {
+      padding: 60px 8%;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 35px;
+    }
+
+    .tool-box {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    textarea {
+      width: 100%;
+      height: 140px;
+      padding: 15px;
+      font-size: 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      margin: 20px 0;
+      resize: none;
+    }
+
+    .output {
+      margin-top: 20px;
+      background: #f1f5f9;
+      padding: 20px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
       color: #2563eb;
     }
 
-    h2 {
-      margin-top: 40px;
-    }
-
-    /* FOOTER */
     footer {
       text-align: center;
       padding: 30px;
-      color: gray;
-      font-size: 14px;
+      background: #020617;
+      color: #94a3b8;
+    }
+
+    @media (max-width: 700px) {
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      nav a {
+        margin: 0 10px;
+      }
     }
   </style>
-
 </head>
+
 <body>
 
-  <!-- NAVBAR -->
-  <div class="navbar">
-    <h2 style="margin:0;">Titonova</h2>
-    <div>
-      <a href="index.html">Home</a>
-      <a href="faceless-youtube-ai.html">Guides</a>
-      <a href="about.html">About</a>
-    </div>
-  </div>
+  <header>
+    <div class="logo">Titonova</div>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#tools">Tools</a>
+      <a href="#posts">Guides</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
 
-  <!-- HERO -->
   <div class="hero">
-    <h1>Create Videos Without a Camera</h1>
-    <p>Learn how to use AI tools to create content — no filming, no experience needed.</p>
+    <h1>Turn Ideas into Videos with AI</h1>
+    <p>No camera. No editing skills. Create content faster with Titonova.</p>
+    <a href="#tools" class="btn">Start Creating Free</a>
   </div>
 
-  <!-- CONTENT -->
-  <div class="container">
+  <section id="tools">
+    <h2 class="section-title">Free AI Tool</h2>
 
-    <!-- BLOG -->
-    <h2>📚 Latest Posts</h2>
+    <div class="tool-box">
+      <h2>AI Video Script Generator</h2>
+      <p>Enter your video idea and get a simple script instantly.</p>
 
-    <div class="post">
-      <h3><a href="how-to-make-videos-without-camera.html">How to Make Videos Without a Camera</a></h3>
-      <p>Learn how to create videos using AI tools without filming anything.</p>
+      <textarea id="idea" placeholder="Example: Make a TikTok video about best AI tools for students"></textarea>
+
+      <button class="btn" onclick="generateScript()">Generate Script</button>
+
+      <div id="output" class="output" style="display:none;"></div>
     </div>
+  </section>
 
-    <div class="post">
-      <h3><a href="best-ai-video-tools.html">Best AI Video Tools for Beginners</a></h3>
-      <p>Discover the easiest AI tools to start creating videos today.</p>
+  <section>
+    <h2 class="section-title">Why Use Titonova?</h2>
+
+    <div class="cards">
+      <div class="card">
+        <h3>No Camera Needed</h3>
+        <p>Create content ideas and scripts without showing your face.</p>
+      </div>
+
+      <div class="card">
+        <h3>Fast Content Ideas</h3>
+        <p>Get video topics, hooks, and script structure in seconds.</p>
+      </div>
+
+      <div class="card">
+        <h3>Made for Beginners</h3>
+        <p>Simple tools for students, creators, and new businesses.</p>
+      </div>
     </div>
+  </section>
 
-    <div class="post">
-      <h3><a href="faceless-youtube-ai.html">Faceless YouTube Channels Using AI</a></h3>
-      <p>Learn how to start a YouTube channel without showing your face.</p>
+  <section id="posts">
+    <h2 class="section-title">Latest Guides</h2>
+
+    <div class="cards">
+      <div class="card">
+        <h3>How to Make Videos Without a Camera</h3>
+        <p>Learn simple ways to create faceless content using AI.</p>
+      </div>
+
+      <div class="card">
+        <h3>Best AI Video Tools for Beginners</h3>
+        <p>Discover beginner-friendly tools for creating videos faster.</p>
+      </div>
+
+      <div class="card">
+        <h3>Faceless YouTube Channel Ideas</h3>
+        <p>Start a channel without showing your face.</p>
+      </div>
     </div>
+  </section>
 
-    <!-- TOOLS -->
-    <h2>🛠 Free AI Tools</h2>
+  <section id="about">
+    <h2 class="section-title">About Titonova</h2>
+    <p style="max-width:700px; margin:auto; text-align:center; line-height:1.7;">
+      Titonova is a simple AI tools platform built to help creators, students, and beginners make content faster.
+      Our goal is to make AI tools easy to use for everyone.
+    </p>
+  </section>
 
-    <div class="post">
-      <h3><a href="tool-script-generator.html">AI Script Generator</a></h3>
-      <p>Generate video scripts instantly using AI-style prompts.</p>
-    </div>
-
-  </div>
-
-  <!-- FOOTER -->
   <footer>
-    © 2026 Titonova • Blog + Tools Platform
+    © 2026 Titonova. All rights reserved.
   </footer>
+
+  <script>
+    function generateScript() {
+      const idea = document.getElementById("idea").value.trim();
+      const output = document.getElementById("output");
+
+      if (!idea) {
+        output.style.display = "block";
+        output.innerText = "Please enter your video idea first.";
+        return;
+      }
+
+      const script =
+`Video Idea: ${idea}
+
+Hook:
+Stop scrolling — this can help you save time.
+
+Intro:
+Today I’ll show you a simple way to use AI for this idea.
+
+Main Points:
+1. Explain the problem clearly.
+2. Show the AI tool or method.
+3. Give a quick example.
+4. Share the final result.
+
+Call to Action:
+Follow Titonova for more AI tools and content ideas.`;
+
+      output.style.display = "block";
+      output.innerText = script;
+    }
+  </script>
 
 </body>
 </html>
