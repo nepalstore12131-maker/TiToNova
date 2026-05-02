@@ -1,25 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Terms - Titonova</title>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#04050a" />
+  <title>Terms & Conditions — Titonova</title>
+  <meta name="description" content="Titonova terms of service. The rules for using our free AI video script generator and related tools." />
+  <link rel="canonical" href="https://titonova.com/terms.html" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
   <style>
-    body { font-family: Arial; padding: 40px; max-width: 800px; margin:auto; }
+    :root {
+      --bg: #04050a;
+      --surface: #14172a;
+      --border: rgba(255,255,255,0.06);
+      --border2: rgba(255,255,255,0.12);
+      --accent: #6366f1;
+      --accent2: #a855f7;
+      --accent-glow: rgba(99,102,241,0.35);
+      --text: #f5f6ff;
+      --text2: #9ca3c4;
+      --text3: #5a6285;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    ::selection { background: var(--accent); color: #fff; }
+
+    .page-mesh { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+    .mesh-orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.3; }
+    .mesh-orb.o1 { width: 480px; height: 480px; background: #4f46e5; top: -10%; left: -10%; }
+    .mesh-orb.o2 { width: 420px; height: 420px; background: #a855f7; top: 50%; right: -10%; }
+
+    header {
+      position: sticky;
+      top: 0; z-index: 100;
+      background: rgba(4,5,10,0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      padding: 0 6%;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fff 30%, var(--accent2) 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .logo-mark::before {
+      content: ''; width: 10px; height: 10px;
+      border: 2px solid white; border-radius: 2px;
+      transform: rotate(45deg);
+    }
+    .back-link {
+      color: var(--text2); text-decoration: none;
+      font-size: 14px; padding: 8px 14px;
+      border-radius: 8px;
+      transition: color 0.2s, background 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .back-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 80px 6% 60px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .eyebrow::before {
+      content: ''; width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    .updated {
+      font-size: 13.5px;
+      color: var(--text3);
+      margin-bottom: 48px;
+    }
+
+    .doc {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 40px 44px;
+    }
+
+    .doc h2 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 32px;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .doc h2:first-child { margin-top: 0; }
+
+    .doc p {
+      font-size: 15.5px;
+      color: var(--text2);
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+
+    .doc strong { color: var(--text); font-weight: 600; }
+
+    .doc ul {
+      list-style: none; padding: 0; margin: 12px 0;
+    }
+    .doc ul li {
+      font-size: 15px;
+      color: var(--text2);
+      padding: 6px 0 6px 22px;
+      position: relative;
+      line-height: 1.65;
+    }
+    .doc ul li::before {
+      content: '';
+      position: absolute;
+      left: 4px; top: 14px;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .doc a {
+      color: #c4b5fd;
+      text-decoration: underline;
+      text-decoration-color: rgba(168,85,247,0.4);
+      text-underline-offset: 3px;
+    }
+    .doc a:hover { color: var(--accent2); }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 30px 6%;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text3);
+    }
+    footer a { color: var(--text2); text-decoration: none; margin: 0 8px; transition: color 0.2s; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 700px) {
+      .container { padding: 50px 5% 40px; }
+      .doc { padding: 28px 24px; }
+    }
   </style>
 </head>
 <body>
 
-<h1>Terms & Conditions</h1>
+<div class="page-mesh" aria-hidden="true">
+  <div class="mesh-orb o1"></div>
+  <div class="mesh-orb o2"></div>
+</div>
 
-<p>By using Titonova, you agree to use it responsibly.</p>
+<header>
+  <a href="index.html" class="logo"><span class="logo-mark"></span> Titonova</a>
+  <a href="index.html" class="back-link">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    Back to home
+  </a>
+</header>
 
-<p>All AI-generated content is for informational purposes only.</p>
+<section class="container">
+  <div class="eyebrow">Legal</div>
+  <h1>Terms &amp; Conditions</h1>
+  <div class="updated">Last updated: May 2026</div>
 
-<p>We are not responsible for how users use generated content.</p>
+  <div class="doc">
+    <h2>Acceptance of terms</h2>
+    <p>By accessing or using Titonova, you agree to these terms. If you don't agree, please don't use the service. We may update these terms occasionally — continued use means you accept the updates.</p>
 
-<p>We may update these terms anytime.</p>
+    <h2>Use of the service</h2>
+    <p>Titonova is a free creative tool. You agree to use it responsibly and lawfully:</p>
+    <ul>
+      <li>Don't use the tool to generate harmful, deceptive, or illegal content.</li>
+      <li>Don't attempt to abuse, overload, or reverse-engineer the service.</li>
+      <li>Don't use the service to impersonate others or spread misinformation.</li>
+    </ul>
 
-<p><a href="index.html">Back to Home</a></p>
+    <h2>AI-generated content</h2>
+    <p>All content generated by Titonova is provided <strong>"as is"</strong> for informational and creative purposes. AI output can be inaccurate, biased, or incomplete. Always review and edit before publishing or making decisions based on it.</p>
+
+    <h2>Ownership</h2>
+    <p>You own what you create with Titonova. You're free to use generated scripts personally or commercially. We make no copyright claim on output you generate. You're responsible for ensuring your use of generated content complies with applicable laws and platform rules.</p>
+
+    <h2>Limitation of liability</h2>
+    <p>Titonova is offered free of charge with no warranties. We are not responsible for how users apply or distribute generated content, or for any losses arising from use of the service. To the maximum extent permitted by law, our liability is limited.</p>
+
+    <h2>Service availability</h2>
+    <p>We aim to keep the tool available, but we don't guarantee uninterrupted service. Features may change, be added, or be removed at any time.</p>
+
+    <h2>Changes to terms</h2>
+    <p>We may update these terms anytime. Material changes will be reflected on this page with a new "last updated" date.</p>
+
+    <h2>Contact</h2>
+    <p>Questions about these terms? Email <a href="mailto:titonova001@gmail.com">titonova001@gmail.com</a>.</p>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 Titonova — Free AI Video Tools</div>
+  <div style="margin-top:10px;">
+    <a href="index.html">Home</a> ·
+    <a href="about.html">About</a> ·
+    <a href="contact.html">Contact</a> ·
+    <a href="privacy.html">Privacy</a>
+  </div>
+</footer>
 
 </body>
 </html>

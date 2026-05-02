@@ -5,6 +5,7 @@
 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#04050a">
 
   <!-- ── PRIMARY SEO ── -->
   <title>Titonova — Free AI Video Script Generator | No Camera Needed</title>
@@ -14,7 +15,7 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://titonova.com/" />
 
-  <!-- ── OPEN GRAPH (Facebook, LinkedIn, WhatsApp) ── -->
+  <!-- ── OPEN GRAPH ── -->
   <meta property="og:title" content="Titonova — Turn Any Idea into a Video with AI" />
   <meta property="og:description" content="Free AI script generator for TikTok, Reels & Shorts. Type an idea, get a script, create a video with audio — no camera needed." />
   <meta property="og:type" content="website" />
@@ -30,7 +31,7 @@
   <meta name="twitter:description" content="Type an idea. Get a script. Create a faceless video with audio — free, no camera needed." />
   <meta name="twitter:image" content="https://titonova.com/og-image.png" />
 
-  <!-- ── SCHEMA MARKUP (Google Rich Results) ── -->
+  <!-- ── SCHEMA MARKUP ── -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -40,11 +41,7 @@
     "description": "Free AI video script generator for TikTok, Reels, and YouTube Shorts. No camera or editing skills required.",
     "applicationCategory": "MultimediaApplication",
     "operatingSystem": "Web",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
     "featureList": [
       "AI video script generation",
       "Faceless video creation",
@@ -57,31 +54,53 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
     :root {
       --bg: #04050a;
-      --bg2: #0b0d17;
-      --bg3: #111420;
-      --surface: #161928;
-      --surface2: #1e2235;
-      --border: rgba(255,255,255,0.07);
+      --bg2: #0a0c16;
+      --bg3: #11141f;
+      --surface: #14172a;
+      --surface2: #1c1f33;
+      --surface3: #252946;
+      --border: rgba(255,255,255,0.06);
       --border2: rgba(255,255,255,0.12);
-      --accent: #4f6ef7;
-      --accent2: #7c3aed;
-      --accent-glow: rgba(79,110,247,0.25);
-      --text: #f0f2ff;
-      --text2: #8b92b8;
-      --text3: #555d80;
+      --border3: rgba(255,255,255,0.2);
+      --accent: #6366f1;
+      --accent-hover: #5457e0;
+      --accent2: #a855f7;
+      --accent3: #06b6d4;
+      --accent-glow: rgba(99,102,241,0.35);
+      --accent-soft: rgba(99,102,241,0.12);
+      --text: #f5f6ff;
+      --text2: #9ca3c4;
+      --text3: #5a6285;
       --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
       --font-display: 'Syne', sans-serif;
-      --font-body: 'DM Sans', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius-sm: 8px;
+      --radius: 12px;
+      --radius-lg: 18px;
+      --radius-xl: 24px;
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+      --shadow: 0 12px 32px rgba(0,0,0,0.35);
+      --shadow-lg: 0 32px 80px rgba(0,0,0,0.5);
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 80px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
 
     body {
       font-family: var(--font-body);
@@ -89,6 +108,52 @@
       color: var(--text);
       overflow-x: hidden;
       line-height: 1.6;
+      font-feature-settings: "ss01", "cv11";
+    }
+
+    ::selection { background: var(--accent); color: #fff; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 10px; border: 2px solid var(--bg); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--surface3); }
+
+    /* Global noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1000;
+      background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      opacity: 0.5;
+      mix-blend-mode: overlay;
+    }
+
+    /* Page-wide animated mesh */
+    .page-mesh {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .mesh-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.5;
+      will-change: transform;
+    }
+    .mesh-orb.o1 { width: 520px; height: 520px; background: #4f46e5; top: -10%; left: -10%; animation: float 18s ease-in-out infinite; }
+    .mesh-orb.o2 { width: 440px; height: 440px; background: #a855f7; top: 30%; right: -10%; animation: float 22s ease-in-out infinite reverse; }
+    .mesh-orb.o3 { width: 380px; height: 380px; background: #06b6d4; bottom: -5%; left: 20%; animation: float 26s ease-in-out infinite; opacity: 0.3; }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(60px, -40px) scale(1.05); }
+      66% { transform: translate(-40px, 50px) scale(0.95); }
     }
 
     /* ── HEADER ── */
@@ -96,25 +161,54 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(4,5,10,0.85);
-      backdrop-filter: blur(16px);
+      background: rgba(4,5,10,0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
       border-bottom: 1px solid var(--border);
       padding: 0 6%;
-      height: 64px;
+      height: 68px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      transition: background 0.3s var(--ease);
+    }
+
+    header.scrolled {
+      background: rgba(4,5,10,0.92);
+      box-shadow: 0 1px 0 var(--border), 0 8px 24px rgba(0,0,0,0.3);
     }
 
     .logo {
       font-family: var(--font-display);
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
       letter-spacing: -0.02em;
-      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      background: linear-gradient(135deg, #fff 30%, var(--accent2) 90%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px var(--accent-glow);
+      flex-shrink: 0;
+    }
+    .logo-mark::before {
+      content: '';
+      width: 10px; height: 10px;
+      border: 2px solid white;
+      border-radius: 2px;
+      transform: rotate(45deg);
     }
 
     nav { display: flex; align-items: center; gap: 4px; }
@@ -122,23 +216,75 @@
     nav a {
       color: var(--text2);
       text-decoration: none;
-      font-size: 13.5px;
+      font-size: 14px;
       font-weight: 400;
-      padding: 6px 12px;
-      border-radius: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
       transition: color 0.2s, background 0.2s;
+      position: relative;
     }
 
-    nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    nav a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
 
     .nav-cta {
-      background: var(--accent) !important;
+      background: linear-gradient(135deg, var(--accent), var(--accent2)) !important;
       color: white !important;
       font-weight: 500 !important;
       margin-left: 8px;
+      padding: 8px 18px !important;
+      box-shadow: 0 4px 16px var(--accent-glow);
+      transition: all 0.2s var(--ease) !important;
     }
 
-    .nav-cta:hover { background: #3d5ce0 !important; }
+    .nav-cta:hover {
+      background: linear-gradient(135deg, var(--accent-hover), #9046dc) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+    }
+    .menu-btn:hover { background: rgba(255,255,255,0.05); }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 68px;
+      left: 0;
+      right: 0;
+      background: rgba(4,5,10,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 6% 24px;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 99;
+      transform: translateY(-10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .mobile-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .mobile-menu a {
+      color: var(--text2);
+      text-decoration: none;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .mobile-menu .nav-cta {
+      margin-top: 8px;
+      text-align: center;
+    }
 
     /* ── HERO ── */
     .hero {
@@ -149,390 +295,659 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      padding: 80px 6% 60px;
+      padding: 80px 6% 80px;
       overflow: hidden;
-    }
-
-    .hero-bg {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79,110,247,0.18) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 80% 60%, rgba(124,58,237,0.1) 0%, transparent 50%),
-        var(--bg);
-      z-index: 0;
     }
 
     .hero-grid {
       position: absolute;
       inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 60px 60px;
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 64px 64px;
       z-index: 0;
-      mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent 80%);
     }
 
-    .hero-content { position: relative; z-index: 1; max-width: 800px; }
+    .hero-content { position: relative; z-index: 1; max-width: 880px; }
 
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      background: rgba(79,110,247,0.12);
-      border: 1px solid rgba(79,110,247,0.3);
-      color: #a5b4fc;
-      font-size: 12.5px;
+      gap: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border2);
+      backdrop-filter: blur(10px);
+      color: var(--text2);
+      font-size: 13px;
       font-weight: 500;
-      padding: 5px 14px;
+      padding: 6px 14px 6px 8px;
       border-radius: 100px;
-      margin-bottom: 24px;
-      letter-spacing: 0.02em;
+      margin-bottom: 28px;
+      letter-spacing: 0.01em;
+      animation: fadeInDown 0.8s var(--ease-out);
     }
 
-    .hero-badge span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+    .hero-badge .new-tag {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border-radius: 100px;
+      text-transform: uppercase;
+    }
 
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+    .hero-badge .pulse-dot {
+      width: 6px; height: 6px; background: var(--success); border-radius: 50%;
+      box-shadow: 0 0 8px var(--success);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
     .hero h1 {
       font-family: var(--font-display);
-      font-size: clamp(38px, 6vw, 68px);
+      font-size: clamp(40px, 7vw, 80px);
       font-weight: 800;
-      line-height: 1.08;
-      letter-spacing: -0.03em;
-      margin-bottom: 20px;
+      line-height: 1.04;
+      letter-spacing: -0.035em;
+      margin-bottom: 24px;
       color: var(--text);
+      animation: fadeInUp 0.8s 0.1s var(--ease-out) both;
     }
 
     .hero h1 em {
       font-style: normal;
-      background: linear-gradient(135deg, var(--accent), #a78bfa);
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+      background-size: 200% 200%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      animation: shimmerText 6s ease-in-out infinite;
+    }
+
+    @keyframes shimmerText {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
     }
 
     .hero-sub {
       font-size: clamp(16px, 2vw, 19px);
       color: var(--text2);
-      max-width: 520px;
-      margin: 0 auto 32px;
-      font-weight: 300;
+      max-width: 580px;
+      margin: 0 auto 36px;
+      font-weight: 400;
       line-height: 1.65;
+      animation: fadeInUp 0.8s 0.2s var(--ease-out) both;
     }
 
-    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 56px; }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.8s 0.3s var(--ease-out) both;
+    }
 
     .btn-primary {
-      background: var(--accent);
+      position: relative;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: white;
-      padding: 13px 28px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s var(--ease), box-shadow 0.2s var(--ease);
+      box-shadow: 0 4px 24px var(--accent-glow);
+      font-family: var(--font-body);
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s var(--ease);
+    }
+    .btn-primary:hover::before { left: 100%; }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px var(--accent-glow);
+    }
+
+    .btn-primary svg { width: 16px; height: 16px; }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: blur(10px);
+      color: var(--text);
+      padding: 14px 24px;
       border-radius: 10px;
       text-decoration: none;
       font-weight: 500;
       font-size: 15px;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-      box-shadow: 0 0 0 0 var(--accent-glow);
-      font-family: var(--font-body);
-    }
-
-    .btn-primary:hover {
-      background: #3d5ce0;
-      transform: translateY(-1px);
-      box-shadow: 0 8px 32px var(--accent-glow);
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--text2);
-      padding: 13px 24px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: 400;
-      font-size: 15px;
       border: 1px solid var(--border2);
       cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s;
+      transition: all 0.2s var(--ease);
       font-family: var(--font-body);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .btn-secondary:hover { color: var(--text); background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.2); }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: var(--border3);
+      transform: translateY(-1px);
+    }
+
+    .hero-trust {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 56px;
+      font-size: 13px;
+      color: var(--text3);
+      animation: fadeInUp 0.8s 0.4s var(--ease-out) both;
+    }
+
+    .hero-trust-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .hero-trust-item svg { width: 14px; height: 14px; color: var(--success); }
+
+    .hero-trust-divider {
+      width: 1px; height: 14px; background: var(--border2);
+    }
 
     /* ── EXAMPLE OUTPUT PREVIEW ── */
     .hero-preview {
       position: relative;
       width: 100%;
-      max-width: 680px;
+      max-width: 740px;
       margin: 0 auto;
+      animation: fadeInUp 1s 0.5s var(--ease-out) both;
+    }
+
+    .hero-preview::before {
+      content: '';
+      position: absolute;
+      inset: -40px;
+      background: radial-gradient(ellipse at center, var(--accent-glow), transparent 70%);
+      filter: blur(30px);
+      z-index: -1;
+      opacity: 0.6;
     }
 
     .preview-label {
-      font-size: 11.5px;
+      font-family: var(--font-mono);
+      font-size: 11px;
       color: var(--text3);
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       font-weight: 500;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .preview-label::before, .preview-label::after {
+      content: ''; flex: 1; max-width: 40px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border2), transparent);
     }
 
     .preview-window {
-      background: var(--surface);
+      background: linear-gradient(180deg, var(--surface), var(--bg2));
       border: 1px solid var(--border2);
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       overflow: hidden;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+      box-shadow:
+        0 32px 80px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(255,255,255,0.04),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      transform: perspective(1200px) rotateX(2deg);
+      transition: transform 0.4s var(--ease);
     }
 
+    .preview-window:hover { transform: perspective(1200px) rotateX(0deg); }
+
     .preview-topbar {
-      background: var(--surface2);
+      background: rgba(255,255,255,0.02);
       border-bottom: 1px solid var(--border);
-      padding: 11px 16px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .preview-dots { display: flex; gap: 6px; }
-    .preview-dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .preview-dots span { width: 11px; height: 11px; border-radius: 50%; }
     .preview-dots span:nth-child(1) { background: #ff5f57; }
     .preview-dots span:nth-child(2) { background: #febc2e; }
     .preview-dots span:nth-child(3) { background: #28c840; }
 
-    .preview-title { font-size: 12px; color: var(--text3); font-weight: 400; margin-left: 4px; }
+    .preview-title {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text3);
+      font-weight: 400;
+      margin-left: 4px;
+    }
 
-    .preview-body { padding: 20px 24px 24px; text-align: left; }
+    .preview-body { padding: 22px 24px 24px; text-align: left; }
 
     .preview-input-row {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.03);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 16px;
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      margin-bottom: 18px;
     }
 
-    .preview-input-icon { color: var(--text3); font-size: 13px; }
+    .preview-input-icon { color: var(--text3); font-size: 14px; }
     .preview-input-text { font-size: 13.5px; color: var(--text2); flex: 1; }
     .preview-input-btn {
-      background: var(--accent);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       color: white;
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11.5px;
+      font-weight: 600;
       padding: 5px 12px;
       border-radius: 6px;
       border: none;
       cursor: default;
       font-family: var(--font-body);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .preview-output {
       background: rgba(255,255,255,0.02);
       border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 16px 18px;
+      border-radius: var(--radius);
+      padding: 18px 20px;
     }
 
     .preview-output-tag {
-      display: inline-block;
-      background: rgba(79,110,247,0.15);
-      color: #a5b4fc;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.18), rgba(168,85,247,0.18));
+      color: #c4b5fd;
       font-size: 10.5px;
-      font-weight: 500;
-      padding: 3px 8px;
-      border-radius: 4px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
       letter-spacing: 0.05em;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(168,85,247,0.2);
     }
 
     .script-line {
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text2);
       line-height: 1.7;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       display: flex;
-      gap: 8px;
+      gap: 10px;
     }
 
-    .script-line .tag-hook { color: #f59e0b; font-size: 11px; font-weight: 500; margin-top: 2px; white-space: nowrap; }
-    .script-line .tag-cta  { color: #10b981; font-size: 11px; font-weight: 500; margin-top: 2px; white-space: nowrap; }
-    .script-line .tag-body { color: var(--text3); font-size: 11px; font-weight: 500; margin-top: 2px; white-space: nowrap; }
+    .script-line .tag-hook { color: var(--warning); font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; margin-top: 3px; white-space: nowrap; letter-spacing: 0.05em; }
+    .script-line .tag-cta  { color: var(--success); font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; margin-top: 3px; white-space: nowrap; letter-spacing: 0.05em; }
+    .script-line .tag-body { color: var(--text3); font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; margin-top: 3px; white-space: nowrap; letter-spacing: 0.05em; }
 
     .preview-meta {
       display: flex;
-      gap: 14px;
-      margin-top: 12px;
-      padding-top: 12px;
+      gap: 16px;
+      margin-top: 14px;
+      padding-top: 14px;
       border-top: 1px solid var(--border);
+      flex-wrap: wrap;
     }
 
-    .meta-item { font-size: 11.5px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
-    .meta-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--success); display: inline-block; }
+    .meta-item { font-size: 11.5px; color: var(--text3); display: flex; align-items: center; gap: 5px; }
+    .meta-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--success); display: inline-block; box-shadow: 0 0 6px var(--success); }
 
-    /* ── PIPELINE STEPS ── */
-    .pipeline {
-      padding: 80px 6%;
-      background: var(--bg2);
+    /* ── LOGO MARQUEE ── */
+    .logos-strip {
+      padding: 56px 0 40px;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.01);
+      overflow: hidden;
     }
 
-    .pipeline-inner { max-width: 900px; margin: 0 auto; }
+    .logos-label {
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 28px;
+      font-weight: 500;
+    }
+
+    .logos-marquee {
+      display: flex;
+      gap: 56px;
+      animation: scroll 30s linear infinite;
+      width: max-content;
+    }
+
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .logo-item {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text3);
+      opacity: 0.7;
+      transition: opacity 0.3s, color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .logo-item:hover { opacity: 1; color: var(--text); }
+
+    /* ── SECTION BASE ── */
+    section { position: relative; }
 
     .section-eyebrow {
+      font-family: var(--font-mono);
       font-size: 12px;
       font-weight: 500;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--accent);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .section-eyebrow::before {
+      content: '';
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
     }
 
     .section-heading {
       font-family: var(--font-display);
-      font-size: clamp(26px, 4vw, 40px);
+      font-size: clamp(28px, 4.4vw, 46px);
       font-weight: 700;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       text-align: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       color: var(--text);
+      line-height: 1.1;
+    }
+
+    .section-heading em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .section-sub {
       text-align: center;
       color: var(--text2);
-      font-size: 16px;
-      font-weight: 300;
-      margin-bottom: 48px;
-      max-width: 500px;
+      font-size: 17px;
+      font-weight: 400;
+      margin-bottom: 56px;
+      max-width: 560px;
       margin-left: auto;
       margin-right: auto;
+      line-height: 1.6;
     }
+
+    /* ── PIPELINE ── */
+    .pipeline {
+      padding: 100px 6%;
+      background: linear-gradient(180deg, transparent, var(--bg2));
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pipeline-inner { max-width: 1100px; margin: 0 auto; }
 
     .steps {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 2px;
-      background: var(--border);
-      border-radius: 16px;
-      overflow: hidden;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
     }
 
     .step {
-      background: var(--surface);
-      padding: 28px 24px;
+      background: linear-gradient(180deg, var(--surface), rgba(20,23,42,0.5));
+      border: 1px solid var(--border);
+      padding: 32px 28px;
       position: relative;
+      border-radius: var(--radius-lg);
+      transition: transform 0.3s var(--ease), border-color 0.3s var(--ease);
+      overflow: hidden;
     }
 
+    .step::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .step:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99,102,241,0.3);
+    }
+    .step:hover::before { opacity: 1; }
+
     .step-num {
-      font-family: var(--font-display);
+      font-family: var(--font-mono);
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 600;
       letter-spacing: 0.1em;
-      color: var(--text3);
-      margin-bottom: 16px;
+      color: var(--accent);
+      margin-bottom: 18px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-num::before {
+      content: '';
+      width: 14px; height: 1px; background: var(--accent);
     }
 
     .step-icon {
-      font-size: 26px;
-      margin-bottom: 12px;
-      display: block;
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.1));
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 20px;
     }
 
     .step h3 {
       font-family: var(--font-display);
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
     }
 
     .step p {
-      font-size: 13.5px;
+      font-size: 14px;
       color: var(--text2);
-      line-height: 1.6;
-      font-weight: 300;
-    }
-
-    .step-arrow {
-      position: absolute;
-      top: 50%;
-      right: -14px;
-      transform: translateY(-50%);
-      color: var(--text3);
-      font-size: 18px;
-      z-index: 2;
+      line-height: 1.65;
+      font-weight: 400;
     }
 
     /* ── TOOL SECTION ── */
     .tools-section {
-      padding: 80px 6%;
+      padding: 100px 6%;
     }
 
     .tool-card {
-      max-width: 760px;
+      max-width: 800px;
       margin: 0 auto;
-      background: var(--surface);
+      background: linear-gradient(180deg, var(--surface), var(--bg2));
       border: 1px solid var(--border2);
-      border-radius: 20px;
-      padding: 36px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tool-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent2), transparent);
     }
 
     .tool-header {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       margin-bottom: 24px;
     }
 
     .tool-icon-wrap {
-      width: 44px;
-      height: 44px;
-      background: rgba(79,110,247,0.15);
-      border-radius: 10px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: var(--radius);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
+      font-size: 22px;
+      box-shadow: 0 8px 24px var(--accent-glow);
     }
 
     .tool-header h3 {
       font-family: var(--font-display);
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 700;
       color: var(--text);
+      letter-spacing: -0.01em;
     }
 
     .tool-header p {
       font-size: 13px;
       color: var(--text2);
-      font-weight: 300;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .tool-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tool-tab {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 12.5px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      font-family: var(--font-body);
+      font-weight: 500;
+    }
+
+    .tool-tab.active {
+      background: var(--accent-soft);
+      border-color: rgba(99,102,241,0.4);
+      color: #c4b5fd;
+    }
+
+    .tool-tab:hover:not(.active) {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
     }
 
     .tool-textarea {
       width: 100%;
-      height: 120px;
-      padding: 14px 16px;
-      border-radius: 10px;
+      height: 130px;
+      padding: 16px 18px;
+      border-radius: var(--radius);
       border: 1px solid var(--border2);
-      background: rgba(255,255,255,0.03);
+      background: rgba(255,255,255,0.02);
       color: var(--text);
       font-family: var(--font-body);
-      font-size: 14.5px;
-      font-weight: 300;
+      font-size: 15px;
+      font-weight: 400;
       resize: vertical;
-      transition: border-color 0.2s;
-      margin-bottom: 14px;
+      transition: all 0.2s;
+      margin-bottom: 16px;
       outline: none;
+      line-height: 1.6;
     }
 
-    .tool-textarea:focus { border-color: var(--accent); background: rgba(79,110,247,0.04); }
+    .tool-textarea:focus {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.04);
+      box-shadow: 0 0 0 4px rgba(99,102,241,0.1);
+    }
     .tool-textarea::placeholder { color: var(--text3); }
 
     .tool-footer {
@@ -543,74 +958,516 @@
       gap: 12px;
     }
 
-    .tool-hint { font-size: 12.5px; color: var(--text3); }
+    .tool-hint {
+      font-size: 13px;
+      color: var(--text3);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     .output-box {
       background: rgba(255,255,255,0.02);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 20px;
+      border-radius: var(--radius);
+      padding: 22px;
+      margin-top: 22px;
       white-space: pre-wrap;
-      font-size: 14px;
-      color: var(--text2);
+      font-size: 14.5px;
+      color: var(--text);
       line-height: 1.75;
-      font-weight: 300;
+      font-weight: 400;
       display: none;
+      position: relative;
+    }
+
+    .output-box.has-content {
+      display: block;
+      animation: fadeInUp 0.4s var(--ease-out);
+    }
+
+    .output-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .output-action-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text2);
+      font-size: 12.5px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .output-action-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border-color: var(--border2);
+    }
+
+    /* loading dots */
+    .loading-dots {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .loading-dots span {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: dotBounce 1.4s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotBounce {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
     }
 
     /* ── WHY TITONOVA ── */
     .why-section {
-      padding: 80px 6%;
-      background: var(--bg2);
+      padding: 100px 6%;
+      background: linear-gradient(180deg, transparent, var(--bg2));
       border-top: 1px solid var(--border);
     }
 
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      max-width: 900px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
     .feature-card {
-      background: var(--surface);
+      background: linear-gradient(180deg, var(--surface), rgba(20,23,42,0.4));
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 28px 24px;
-      transition: border-color 0.25s, transform 0.25s;
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      transition: all 0.3s var(--ease);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 60%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent2), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
     .feature-card:hover {
-      border-color: rgba(79,110,247,0.35);
-      transform: translateY(-3px);
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.1));
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      font-size: 22px;
+      transition: transform 0.3s var(--ease);
     }
 
-    .feature-emoji { font-size: 28px; margin-bottom: 14px; display: block; }
+    .feature-card:hover .feature-icon { transform: scale(1.1) rotate(-3deg); }
 
     .feature-card h3 {
       font-family: var(--font-display);
-      font-size: 17px;
+      font-size: 18px;
       font-weight: 700;
       color: var(--text);
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
     }
 
     .feature-card p {
-      font-size: 14px;
+      font-size: 14.5px;
       color: var(--text2);
       line-height: 1.65;
-      font-weight: 300;
+      font-weight: 400;
+    }
+
+    /* ── PRICING ── */
+    .pricing-section {
+      padding: 100px 6%;
+      border-top: 1px solid var(--border);
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    .price-card {
+      background: linear-gradient(180deg, var(--surface), rgba(20,23,42,0.5));
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      position: relative;
+      transition: all 0.3s var(--ease);
+    }
+
+    .price-card.featured {
+      border-color: rgba(99,102,241,0.4);
+      background: linear-gradient(180deg, rgba(99,102,241,0.08), var(--bg2));
+      box-shadow: 0 16px 48px rgba(99,102,241,0.15);
+    }
+
+    .price-card:hover { transform: translateY(-3px); }
+
+    .price-tag {
+      position: absolute;
+      top: -10px; right: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 100px;
+      text-transform: uppercase;
+    }
+
+    .price-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text2);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .price-amount {
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .price-amount .price-period {
+      font-size: 14px;
+      color: var(--text3);
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .price-desc {
+      font-size: 13.5px;
+      color: var(--text2);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    .price-features {
+      list-style: none;
+      margin-bottom: 26px;
+    }
+
+    .price-features li {
+      font-size: 14px;
+      color: var(--text);
+      padding: 7px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .price-features li svg {
+      width: 16px; height: 16px;
+      color: var(--success);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .price-features li.muted { color: var(--text3); }
+    .price-features li.muted svg { color: var(--text3); }
+
+    .price-cta {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 14.5px;
+      text-decoration: none;
+      transition: all 0.2s var(--ease);
+      cursor: pointer;
+      border: none;
+      font-family: var(--font-body);
+    }
+
+    .price-cta.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+    .price-cta.primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+
+    .price-cta.secondary {
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      border: 1px solid var(--border2);
+    }
+    .price-cta.secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: var(--border3);
+    }
+
+    /* ── PROOF ── */
+    .proof-section {
+      padding: 80px 6%;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .proof-stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 32px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .proof-stat {
+      padding: 24px 16px;
+      border-radius: var(--radius-lg);
+      transition: background 0.3s;
+    }
+    .proof-stat:hover { background: rgba(255,255,255,0.02); }
+
+    .proof-num {
+      font-family: var(--font-display);
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+
+    .proof-label {
+      font-size: 13.5px;
+      color: var(--text2);
+      font-weight: 400;
+      margin-top: 10px;
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-section {
+      padding: 100px 6%;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: linear-gradient(180deg, var(--surface), rgba(20,23,42,0.4));
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 30px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: all 0.3s var(--ease);
+      position: relative;
+    }
+
+    .testimonial-card::before {
+      content: '"';
+      position: absolute;
+      top: 16px; right: 24px;
+      font-family: var(--font-display);
+      font-size: 60px;
+      color: rgba(99,102,241,0.15);
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .testimonial-card:hover {
+      border-color: rgba(99,102,241,0.3);
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+    }
+
+    .testimonial-stars {
+      color: var(--warning);
+      font-size: 14px;
+      letter-spacing: 2px;
+      filter: drop-shadow(0 0 4px rgba(245,158,11,0.4));
+    }
+
+    .testimonial-quote {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.7;
+      font-weight: 400;
+      flex: 1;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .author-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .avatar-blue   { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: white; }
+    .avatar-purple { background: linear-gradient(135deg, #a855f7, #ec4899); color: white; }
+    .avatar-teal   { background: linear-gradient(135deg, #06b6d4, #10b981); color: white; }
+
+    .author-name { font-size: 14px; font-weight: 600; color: var(--text); }
+    .author-role { font-size: 12.5px; color: var(--text3); font-weight: 400; }
+
+    .placeholder-note {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12px;
+      color: var(--text3);
+      font-style: italic;
+    }
+
+    /* ── FAQ ── */
+    .faq-section {
+      padding: 100px 6%;
+      border-top: 1px solid var(--border);
+    }
+
+    .faq-list {
+      max-width: 760px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .faq-item:hover { border-color: var(--border2); }
+    .faq-item.open { border-color: rgba(99,102,241,0.3); }
+
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      padding: 20px 22px;
+      text-align: left;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15.5px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .faq-q:hover { color: var(--text); }
+
+    .faq-icon {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      transition: transform 0.3s var(--ease), color 0.2s;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s var(--ease);
+    }
+
+    .faq-a-inner {
+      padding: 0 22px 22px;
+      font-size: 14.5px;
+      color: var(--text2);
+      line-height: 1.7;
     }
 
     /* ── ABOUT ── */
     .about-section {
-      padding: 80px 6%;
+      padding: 100px 6%;
+      background: linear-gradient(180deg, transparent, var(--bg2));
+      border-top: 1px solid var(--border);
     }
 
     .about-inner {
-      max-width: 660px;
+      max-width: 720px;
       margin: 0 auto;
       text-align: center;
     }
@@ -619,233 +1476,292 @@
       font-size: 17px;
       color: var(--text2);
       line-height: 1.8;
-      font-weight: 300;
-      margin-bottom: 18px;
+      font-weight: 400;
+      margin-bottom: 20px;
     }
 
     .about-inner p:last-of-type { margin-bottom: 0; }
 
-    .about-inner strong { color: var(--text); font-weight: 500; }
+    .about-inner strong {
+      color: var(--text);
+      font-weight: 600;
+    }
 
     .coming-soon {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 28px;
-      background: rgba(124,58,237,0.12);
-      border: 1px solid rgba(124,58,237,0.25);
+      margin-top: 32px;
+      background: linear-gradient(135deg, rgba(168,85,247,0.12), rgba(99,102,241,0.12));
+      border: 1px solid rgba(168,85,247,0.25);
       color: #c4b5fd;
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 500;
-      padding: 8px 18px;
+      padding: 10px 20px;
       border-radius: 100px;
     }
 
-    /* ── SOCIAL PROOF ── */
-    .proof-section {
-      padding: 60px 6%;
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
+    /* ── CTA BAND ── */
+    .cta-band {
+      padding: 100px 6%;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid var(--border);
     }
 
-    .proof-stat-row {
-      display: flex;
-      justify-content: center;
-      gap: 48px;
-      flex-wrap: wrap;
-      max-width: 600px;
-      margin: 0 auto;
+    .cta-band::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 50% 50%, rgba(99,102,241,0.18), transparent 70%),
+        radial-gradient(ellipse 40% 60% at 80% 50%, rgba(168,85,247,0.12), transparent 60%);
+      z-index: -1;
     }
 
-    .proof-stat { }
-    .proof-num {
+    .cta-band h2 {
       font-family: var(--font-display);
-      font-size: 36px;
+      font-size: clamp(32px, 5vw, 52px);
       font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
       color: var(--text);
-      letter-spacing: -0.02em;
     }
 
-    .proof-label {
-      font-size: 13px;
+    .cta-band p {
+      font-size: 17px;
       color: var(--text2);
-      font-weight: 300;
-      margin-top: 2px;
-    }
-
-    /* ── TESTIMONIALS ── */
-    .testimonials-section {
-      padding: 80px 6%;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-    }
-
-    .testimonials-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 16px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    .testimonial-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 26px 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      transition: border-color 0.25s, transform 0.25s;
-    }
-
-    .testimonial-card:hover {
-      border-color: rgba(79,110,247,0.3);
-      transform: translateY(-3px);
-    }
-
-    .testimonial-stars { color: #f59e0b; font-size: 13px; letter-spacing: 2px; }
-
-    .testimonial-quote {
-      font-size: 14.5px;
-      color: var(--text2);
-      line-height: 1.75;
-      font-weight: 300;
-      font-style: italic;
-      flex: 1;
-    }
-
-    .testimonial-author {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-    }
-
-    .author-avatar {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 700;
-      font-family: var(--font-display);
-      flex-shrink: 0;
-    }
-
-    .avatar-blue   { background: rgba(79,110,247,0.2); color: #a5b4fc; }
-    .avatar-purple { background: rgba(124,58,237,0.2); color: #c4b5fd; }
-    .avatar-teal   { background: rgba(16,185,129,0.2); color: #6ee7b7; }
-
-    .author-name  { font-size: 13.5px; font-weight: 500; color: var(--text); }
-    .author-role  { font-size: 12px; color: var(--text3); font-weight: 300; }
-
-    .placeholder-note {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      color: var(--text3);
-      font-style: italic;
+      max-width: 540px;
+      margin: 0 auto 36px;
+      line-height: 1.6;
     }
 
     /* ── FOOTER ── */
     footer {
       background: var(--bg);
       border-top: 1px solid var(--border);
-      padding: 40px 6%;
+      padding: 56px 6% 32px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 40px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+    }
+
+    .footer-brand .logo { margin-bottom: 14px; }
+    .footer-tagline {
+      font-size: 14px;
+      color: var(--text2);
+      font-weight: 400;
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    .footer-col h4 {
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 5px 0;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: var(--text); }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 0 auto;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 14px;
     }
 
-    .footer-left { }
-    .footer-logo {
-      font-family: var(--font-display);
-      font-size: 16px;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff 30%, var(--accent));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 6px;
-    }
-
-    .footer-tagline { font-size: 13px; color: var(--text3); font-weight: 300; }
-
-    .footer-links { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-    .footer-links a {
-      color: var(--text3);
-      text-decoration: none;
+    .footer-copy {
       font-size: 13px;
-      padding: 4px 8px;
-      border-radius: 5px;
-      transition: color 0.2s;
+      color: var(--text3);
     }
 
-    .footer-links a:hover { color: var(--text2); }
+    .footer-social {
+      display: flex;
+      gap: 8px;
+    }
 
-    .footer-copy { font-size: 12px; color: var(--text3); width: 100%; border-top: 1px solid var(--border); padding-top: 20px; margin-top: 4px; }
+    .footer-social a {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .footer-social a:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.08);
+      border-color: var(--border2);
+      transform: translateY(-2px);
+    }
+
+    .footer-social svg { width: 16px; height: 16px; }
+
+    /* Reveal on scroll */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
 
     /* ── RESPONSIVE ── */
-    @media (max-width: 700px) {
-      header { padding: 0 4%; }
-      nav a { font-size: 12px; padding: 5px 8px; }
-      .hero { padding: 60px 5% 40px; }
-      .pipeline, .tools-section, .why-section, .about-section { padding: 60px 5%; }
-      .step-arrow { display: none; }
-      footer { flex-direction: column; align-items: flex-start; }
-      .proof-stat-row { gap: 28px; }
+    @media (max-width: 900px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      header { padding: 0 5%; height: 62px; }
+      nav { display: none; }
+      .menu-btn { display: inline-flex; }
+      .mobile-menu { display: flex; }
+      .hero { padding: 60px 5% 60px; min-height: auto; }
+      .pipeline, .tools-section, .why-section, .about-section, .testimonials-section, .pricing-section, .faq-section, .cta-band { padding: 70px 5%; }
+      .tool-card { padding: 28px 22px; }
+      footer { padding: 48px 5% 24px; }
+      .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+      .preview-window { transform: none; }
     }
 
     @media (max-width: 500px) {
-      nav .nav-hide { display: none; }
+      .proof-stat-row { gap: 16px; }
+      .proof-num { font-size: 36px; }
+      .hero h1 { font-size: 40px; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .mesh-orb { animation: none; }
     }
   </style>
 </head>
 
 <body>
 
+<!-- Animated mesh background -->
+<div class="page-mesh" aria-hidden="true">
+  <div class="mesh-orb o1"></div>
+  <div class="mesh-orb o2"></div>
+  <div class="mesh-orb o3"></div>
+</div>
+
 <!-- ── HEADER ── -->
-<header>
-  <div class="logo">Titonova</div>
+<header id="header">
+  <a href="/" class="logo">
+    <span class="logo-mark"></span>
+    Titonova
+  </a>
   <nav>
-    <a href="#tools" class="nav-hide">Tools</a>
-    <a href="#about" class="nav-hide">About</a>
-    <a href="contact.html" class="nav-hide">Contact</a>
-    <a href="https://www.tiktok.com/@titonovaofficial" target="_blank" class="nav-hide">TikTok</a>
+    <a href="#how">How it works</a>
+    <a href="#tools">Tool</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="contact.html">Contact</a>
     <a href="#tools" class="nav-cta">Start Free</a>
   </nav>
+  <button class="menu-btn" id="menuBtn" aria-label="Open menu">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
 </header>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#how">How it works</a>
+  <a href="#tools">Tool</a>
+  <a href="#pricing">Pricing</a>
+  <a href="#faq">FAQ</a>
+  <a href="contact.html">Contact</a>
+  <a href="https://www.tiktok.com/@titonovaofficial" target="_blank" rel="noopener">TikTok</a>
+  <a href="#tools" class="nav-cta">Start Free →</a>
+</div>
 
 <!-- ── HERO ── -->
 <section class="hero">
-  <div class="hero-bg"></div>
   <div class="hero-grid"></div>
 
   <div class="hero-content">
-    <div class="hero-badge"><span></span> Free AI Video Tools — No camera needed</div>
+    <div class="hero-badge">
+      <span class="new-tag">New</span>
+      <span>AI-powered video pipeline</span>
+      <span class="pulse-dot"></span>
+    </div>
 
-    <h1>Turn any idea into<br>a <em>video with audio</em></h1>
+    <h1>Turn any idea into<br>a <em>cinematic short video</em></h1>
 
     <p class="hero-sub">
-      Type your idea. Get a script. Turn it into a video — with audio included.
+      Type your idea. Get a script, a faceless video, and AI voiceover — all in seconds.
       No camera, no editing skills, no team required.
     </p>
 
     <div class="hero-actions">
-      <a href="#tools" class="btn-primary">Start Creating Free</a>
-      <a href="#about" class="btn-secondary">Learn more</a>
+      <a href="#tools" class="btn-primary">
+        Start Creating Free
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </a>
+      <a href="#how" class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        See how it works
+      </a>
+    </div>
+
+    <div class="hero-trust">
+      <span class="hero-trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        100% Free
+      </span>
+      <span class="hero-trust-divider"></span>
+      <span class="hero-trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        No signup needed
+      </span>
+      <span class="hero-trust-divider"></span>
+      <span class="hero-trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+        No credit card
+      </span>
     </div>
 
     <!-- Example Output Preview -->
     <div class="hero-preview">
-      <div class="preview-label">Example — AI-generated script output</div>
+      <div class="preview-label">Live preview — AI-generated script output</div>
       <div class="preview-window">
         <div class="preview-topbar">
           <div class="preview-dots">
@@ -857,7 +1773,10 @@
           <div class="preview-input-row">
             <span class="preview-input-icon">💡</span>
             <span class="preview-input-text">Make a TikTok about 3 AI tools that save time</span>
-            <span class="preview-input-btn">Generated ✓</span>
+            <span class="preview-input-btn">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Done
+            </span>
           </div>
           <div class="preview-output">
             <div class="preview-output-tag">✦ AI SCRIPT</div>
@@ -877,6 +1796,7 @@
               <span class="meta-item"><span class="meta-dot"></span> Ready to use</span>
               <span class="meta-item">⏱ ~45 sec video</span>
               <span class="meta-item">📱 TikTok format</span>
+              <span class="meta-item">🎙 Voiceover ready</span>
             </div>
           </div>
         </div>
@@ -885,35 +1805,58 @@
   </div>
 </section>
 
+<!-- ── LOGO MARQUEE / TRUST ── -->
+<section class="logos-strip">
+  <p class="logos-label">Built for creators on every platform</p>
+  <div class="logos-marquee">
+    <span class="logo-item">TikTok</span>
+    <span class="logo-item">Instagram Reels</span>
+    <span class="logo-item">YouTube Shorts</span>
+    <span class="logo-item">Facebook Reels</span>
+    <span class="logo-item">Snapchat Spotlight</span>
+    <span class="logo-item">LinkedIn Video</span>
+    <span class="logo-item">Pinterest Idea Pins</span>
+    <span class="logo-item">TikTok</span>
+    <span class="logo-item">Instagram Reels</span>
+    <span class="logo-item">YouTube Shorts</span>
+    <span class="logo-item">Facebook Reels</span>
+    <span class="logo-item">Snapchat Spotlight</span>
+    <span class="logo-item">LinkedIn Video</span>
+    <span class="logo-item">Pinterest Idea Pins</span>
+  </div>
+</section>
+
 <!-- ── PIPELINE ── -->
-<section class="pipeline">
+<section class="pipeline" id="how">
   <div class="pipeline-inner">
-    <div class="section-eyebrow">How it works</div>
-    <h2 class="section-heading">From idea to finished video</h2>
-    <p class="section-sub">The full creative pipeline — in one place, completely free.</p>
+    <div class="reveal">
+      <div class="section-eyebrow">How it works</div>
+      <h2 class="section-heading">From idea to <em>finished video</em></h2>
+      <p class="section-sub">The full creative pipeline — in one place, completely free.</p>
+    </div>
 
     <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <span class="step-icon">💡</span>
+      <div class="step reveal">
+        <div class="step-num">STEP 01</div>
+        <div class="step-icon">💡</div>
         <h3>Type your idea</h3>
         <p>Any topic, any niche. One sentence is enough to get started.</p>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <span class="step-icon">📝</span>
+      <div class="step reveal">
+        <div class="step-num">STEP 02</div>
+        <div class="step-icon">📝</div>
         <h3>Get your script</h3>
         <p>AI writes a hook, body, and CTA — formatted for short-form video.</p>
       </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <span class="step-icon">🎬</span>
+      <div class="step reveal">
+        <div class="step-num">STEP 03</div>
+        <div class="step-icon">🎬</div>
         <h3>Generate video</h3>
         <p>Your script becomes a video. No camera, no face, no editing.</p>
       </div>
-      <div class="step">
-        <div class="step-num">04</div>
-        <span class="step-icon">🔊</span>
+      <div class="step reveal">
+        <div class="step-num">STEP 04</div>
+        <div class="step-icon">🔊</div>
         <h3>Add audio</h3>
         <p>AI voiceover or music added automatically. Ready to post.</p>
       </div>
@@ -923,110 +1866,185 @@
 
 <!-- ── TOOL ── -->
 <section class="tools-section" id="tools">
-  <div class="section-eyebrow">Free tool</div>
-  <h2 class="section-heading">AI Video Script Generator</h2>
-  <p class="section-sub">Type your idea below and get a ready-to-use video script in seconds.</p>
+  <div class="reveal">
+    <div class="section-eyebrow">Free tool</div>
+    <h2 class="section-heading">AI Video <em>Script Generator</em></h2>
+    <p class="section-sub">Type your idea below and get a ready-to-use video script in seconds.</p>
+  </div>
 
-  <div class="tool-card">
+  <div class="tool-card reveal">
     <div class="tool-header">
-      <div class="tool-icon-wrap">📝</div>
+      <div class="tool-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+      </div>
       <div>
         <h3>Script Generator</h3>
         <p>Optimized for TikTok, Reels & YouTube Shorts</p>
       </div>
     </div>
 
+    <div class="tool-tabs">
+      <button class="tool-tab active" data-platform="TikTok">📱 TikTok</button>
+      <button class="tool-tab" data-platform="Instagram Reel">🎞 Reels</button>
+      <button class="tool-tab" data-platform="YouTube Short">▶ Shorts</button>
+      <button class="tool-tab" data-platform="Facebook Reel">👥 Facebook</button>
+    </div>
+
     <textarea
       class="tool-textarea"
       id="idea"
-      placeholder="Example: Make a TikTok video about 3 AI tools that save time…"
+      placeholder="Example: Make a video about 3 AI tools that save time…"
     ></textarea>
 
     <div class="tool-footer">
-      <span class="tool-hint">💡 Be specific — better input = better script</span>
-      <button class="btn-primary" onclick="generateScript()">Generate Script →</button>
+      <span class="tool-hint">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        Be specific — better input = better script
+      </span>
+      <button class="btn-primary" onclick="generateScript()" id="genBtn">
+        Generate Script
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+      </button>
     </div>
 
     <div id="output" class="output-box"></div>
   </div>
 </section>
 
-<!-- ── WHY TITONOVA ── -->
+<!-- ── WHY ── -->
 <section class="why-section">
-  <div class="section-eyebrow">Why Titonova</div>
-  <h2 class="section-heading">Built for creators who just want to create</h2>
-  <p class="section-sub">No studio. No subscribers. No experience needed.</p>
+  <div class="reveal">
+    <div class="section-eyebrow">Why Titonova</div>
+    <h2 class="section-heading">Built for creators who <em>just want to create</em></h2>
+    <p class="section-sub">No studio. No subscribers. No experience needed.</p>
+  </div>
 
   <div class="features-grid">
-    <div class="feature-card">
-      <span class="feature-emoji">🎭</span>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🎭</div>
       <h3>No camera, no problem</h3>
       <p>Go faceless and still go viral. Create content that performs without ever showing up on screen.</p>
     </div>
-    <div class="feature-card">
-      <span class="feature-emoji">⚡</span>
+    <div class="feature-card reveal">
+      <div class="feature-icon">⚡</div>
       <h3>From idea to script in seconds</h3>
       <p>Stop staring at a blank page. Get hooks, scripts, and CTAs generated instantly for any topic.</p>
     </div>
-    <div class="feature-card">
-      <span class="feature-emoji">🎯</span>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🎯</div>
       <h3>Built for beginners</h3>
-      <p>Whether you're a student, a first-time creator, or just testing ideas — Titonova removes every barrier.</p>
+      <p>Whether you're a student, a first-time creator, or just testing ideas — we remove every barrier.</p>
     </div>
-    <div class="feature-card">
-      <span class="feature-emoji">🔊</span>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🔊</div>
       <h3>Script → Video → Audio</h3>
       <p>The full pipeline in one place. Write it, visualize it, voice it. No other tools needed.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🌍</div>
+      <h3>Any niche, any platform</h3>
+      <p>From educational content to product reviews. Optimized for TikTok, Reels, Shorts, and beyond.</p>
+    </div>
+    <div class="feature-card reveal">
+      <div class="feature-icon">🚀</div>
+      <h3>Always free to start</h3>
+      <p>No paywalls, no trials. Generate as many scripts as you need without entering a credit card.</p>
     </div>
   </div>
 </section>
 
-<!-- ── SOCIAL PROOF ── -->
+<!-- ── PRICING ── -->
+<section class="pricing-section" id="pricing">
+  <div class="reveal">
+    <div class="section-eyebrow">Pricing</div>
+    <h2 class="section-heading">Start free. <em>Upgrade when you're ready.</em></h2>
+    <p class="section-sub">Free forever for the script generator. Premium tools for serious creators coming soon.</p>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <div class="price-name">Starter</div>
+      <div class="price-amount">$0<span class="price-period"> / forever</span></div>
+      <p class="price-desc">Everything you need to start creating faceless videos today.</p>
+      <ul class="price-features">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Unlimited AI scripts</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> All major platforms</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Hook, body & CTA structure</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Free guides & resources</li>
+      </ul>
+      <a href="#tools" class="price-cta secondary">Start Creating</a>
+    </div>
+
+    <div class="price-card featured reveal">
+      <div class="price-tag">Coming Soon</div>
+      <div class="price-name">Pro</div>
+      <div class="price-amount">$9<span class="price-period"> / month</span></div>
+      <p class="price-desc">The full pipeline — script, video, and AI voiceover, all automated.</p>
+      <ul class="price-features">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Everything in Starter</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> AI video generation</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Premium AI voices</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Auto-captions & music</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Priority support</li>
+      </ul>
+      <a href="contact.html" class="price-cta primary">Join Waitlist</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── PROOF ── -->
 <section class="proof-section">
-  <div class="section-eyebrow">Growing fast</div>
-  <h2 class="section-heading" style="margin-bottom:40px;">Creators already using Titonova</h2>
+  <div class="reveal">
+    <div class="section-eyebrow">Growing fast</div>
+    <h2 class="section-heading" style="margin-bottom:48px;">Creators already using Titonova</h2>
+  </div>
   <div class="proof-stat-row">
-    <div class="proof-stat">
-      <div class="proof-num">500+</div>
+    <div class="proof-stat reveal">
+      <div class="proof-num" data-target="500">0</div>
       <div class="proof-label">Scripts generated</div>
     </div>
-    <div class="proof-stat">
-      <div class="proof-num">100%</div>
+    <div class="proof-stat reveal">
+      <div class="proof-num" data-target="100" data-suffix="%">0</div>
       <div class="proof-label">Free to use</div>
     </div>
-    <div class="proof-stat">
+    <div class="proof-stat reveal">
       <div class="proof-num">0</div>
       <div class="proof-label">Cameras needed</div>
+    </div>
+    <div class="proof-stat reveal">
+      <div class="proof-num" data-target="24" data-suffix="/7">0</div>
+      <div class="proof-label">Always available</div>
     </div>
   </div>
 </section>
 
 <!-- ── TESTIMONIALS ── -->
 <section class="testimonials-section">
-  <div class="section-eyebrow">What creators say</div>
-  <h2 class="section-heading">Real results, zero camera</h2>
-  <p class="section-sub">From students to full-time creators — Titonova works for everyone.</p>
+  <div class="reveal">
+    <div class="section-eyebrow">What creators say</div>
+    <h2 class="section-heading">Real results, <em>zero camera</em></h2>
+    <p class="section-sub">From students to full-time creators — Titonova works for everyone.</p>
+  </div>
 
   <div class="testimonials-grid">
-
-    <div class="testimonial-card">
+    <div class="testimonial-card reveal">
       <div class="testimonial-stars">★★★★★</div>
       <p class="testimonial-quote">
-        "I used to spend 2 hours writing a single TikTok script. With Titonova I get something usable in under a minute. I've posted every day this week for the first time ever."
+        I used to spend 2 hours writing a single TikTok script. With Titonova I get something usable in under a minute. I've posted every day this week for the first time ever.
       </p>
       <div class="testimonial-author">
         <div class="author-avatar avatar-blue">JM</div>
         <div>
           <div class="author-name">Jordan M.</div>
-          <div class="author-role">Student creator, 4.2K followers</div>
+          <div class="author-role">Student creator · 4.2K followers</div>
         </div>
       </div>
     </div>
 
-    <div class="testimonial-card">
+    <div class="testimonial-card reveal">
       <div class="testimonial-stars">★★★★★</div>
       <p class="testimonial-quote">
-        "I'm super camera shy so faceless content was the only option for me. Titonova makes the scripting part so easy — I just edit slightly and post. Game changer."
+        I'm super camera shy so faceless content was the only option for me. Titonova makes the scripting part so easy — I just edit slightly and post. Game changer.
       </p>
       <div class="testimonial-author">
         <div class="author-avatar avatar-purple">SK</div>
@@ -1037,10 +2055,10 @@
       </div>
     </div>
 
-    <div class="testimonial-card">
+    <div class="testimonial-card reveal">
       <div class="testimonial-stars">★★★★★</div>
       <p class="testimonial-quote">
-        "I run a small business and had no idea how to make content. This tool writes better hooks than I ever could. My first Reel got 12K views using a Titonova script."
+        I run a small business and had no idea how to make content. This tool writes better hooks than I ever could. My first Reel got 12K views using a Titonova script.
       </p>
       <div class="testimonial-author">
         <div class="author-avatar avatar-teal">RA</div>
@@ -1050,17 +2068,72 @@
         </div>
       </div>
     </div>
-
   </div>
-  <p class="placeholder-note">⭐ Replace these with real testimonials as you collect them from your users.</p>
+  <p class="placeholder-note">⭐ Replace with real testimonials as you collect them.</p>
+</section>
+
+<!-- ── FAQ ── -->
+<section class="faq-section" id="faq">
+  <div class="reveal">
+    <div class="section-eyebrow">FAQ</div>
+    <h2 class="section-heading">Questions, <em>answered</em></h2>
+    <p class="section-sub">Everything you need to know before you start creating.</p>
+  </div>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <button class="faq-q">
+        Is Titonova really free?
+        <span class="faq-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">Yes — 100%. The script generator is completely free with no signup, no credit card, and no hidden limits. We may add premium tools (full video generation, voice cloning) in the future, but the script generator stays free forever.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Do I need any video editing skills?
+        <span class="faq-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">No. Titonova is built for total beginners. You type an idea, get a script, and we'll guide you through the rest. The whole point is to remove every technical barrier.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Will the AI replace my voice or face?
+        <span class="faq-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">Only if you want it to. Faceless content is just one option — you can use AI voiceover or record your own. Your channel, your voice, your call.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Which platforms does Titonova support?
+        <span class="faq-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">Scripts are optimized for short-form vertical video — TikTok, Instagram Reels, YouTube Shorts, Facebook Reels, Snapchat Spotlight, and similar platforms. The format works anywhere short-form content lives.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        Can I use Titonova-generated content commercially?
+        <span class="faq-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">Yes. Anything you generate is yours to use — for personal, business, or brand content. Always review and edit before posting to make sure it matches your voice.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q">
+        How is this different from ChatGPT?
+        <span class="faq-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+      </button>
+      <div class="faq-a"><div class="faq-a-inner">Titonova is built specifically for short-form video. We don't just give you text — we structure it into a hook, body, and CTA that match how viral videos actually perform on TikTok, Reels, and Shorts. You don't need to know how to prompt anything.</div></div>
+    </div>
+  </div>
 </section>
 
 <!-- ── ABOUT ── -->
 <section class="about-section" id="about">
-  <div class="section-eyebrow">About</div>
-  <h2 class="section-heading">Why we built this</h2>
+  <div class="reveal">
+    <div class="section-eyebrow">About</div>
+    <h2 class="section-heading">Why we <em>built this</em></h2>
+  </div>
 
-  <div class="about-inner">
+  <div class="about-inner reveal">
     <p>
       Titonova was built on a simple belief: <strong>everyone has ideas worth sharing</strong> — most people just lack the tools to bring them to life.
     </p>
@@ -1074,57 +2147,217 @@
   </div>
 </section>
 
+<!-- ── CTA BAND ── -->
+<section class="cta-band">
+  <div class="reveal">
+    <h2>Your next viral video<br>is one idea away.</h2>
+    <p>Start free. No signup. No credit card. Just type your idea and watch it come to life.</p>
+    <a href="#tools" class="btn-primary" style="padding:16px 32px;font-size:16px;">
+      Generate My Script Now
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+</section>
+
 <!-- ── FOOTER ── -->
 <footer>
-  <div class="footer-left">
-    <div class="footer-logo">Titonova</div>
-    <div class="footer-tagline">Turn ideas into videos with AI</div>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="logo"><span class="logo-mark"></span> Titonova</a>
+      <p class="footer-tagline">Turn ideas into videos with AI. Free, fast, and built for creators who just want to create.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="#tools">Script Generator</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Resources</h4>
+      <a href="best-ai-video-tools.html">Best AI tools</a>
+      <a href="faceless-youtube-ai.html">Faceless YouTube</a>
+      <a href="how-to-make-videos-without-camera.html">No camera guide</a>
+      <a href="tool-script-generator.html">Script tools</a>
+    </div>
+
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="terms.html">Terms</a>
+    </div>
   </div>
 
-  <div class="footer-links">
-    <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
-    <a href="contact.html">Contact</a>
-    <a href="https://www.tiktok.com/@titonovaofficial" target="_blank">TikTok</a>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 Titonova — Free AI Video Tools. All rights reserved.</div>
+    <div class="footer-social">
+      <a href="https://www.tiktok.com/@titonovaofficial" target="_blank" rel="noopener" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.92a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.84-.35z"/></svg>
+      </a>
+      <a href="mailto:titonova001@gmail.com" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      </a>
+    </div>
   </div>
-
-  <div class="footer-copy">© 2026 Titonova — Free AI Video Tools</div>
 </footer>
 
 <script>
+  // Mobile menu
+  const menuBtn = document.getElementById('menuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  menuBtn?.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+  mobileMenu?.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  });
+
+  // Header shadow on scroll
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 8) header.classList.add('scrolled');
+    else header.classList.remove('scrolled');
+  }, { passive: true });
+
+  // Reveal on scroll
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => io.observe(el));
+
+  // Animated stats counter
+  const counters = document.querySelectorAll('.proof-num[data-target]');
+  const counterIO = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseInt(el.dataset.target, 10);
+      const suffix = el.dataset.suffix || '+';
+      const duration = 1400;
+      const start = performance.now();
+      const animate = (now) => {
+        const t = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - t, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (t < 1) requestAnimationFrame(animate);
+      };
+      requestAnimationFrame(animate);
+      counterIO.unobserve(el);
+    });
+  }, { threshold: 0.4 });
+  counters.forEach(el => counterIO.observe(el));
+
+  // Tool tabs
+  let currentPlatform = 'TikTok';
+  document.querySelectorAll('.tool-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentPlatform = tab.dataset.platform;
+    });
+  });
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', () => {
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(other => {
+        if (other !== item) {
+          other.classList.remove('open');
+          other.querySelector('.faq-a').style.maxHeight = '0';
+        }
+      });
+      if (open) {
+        item.classList.remove('open');
+        a.style.maxHeight = '0';
+      } else {
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // Generate script
   async function generateScript() {
     const idea = document.getElementById("idea").value.trim();
     const output = document.getElementById("output");
+    const btn = document.getElementById("genBtn");
 
     if (!idea) {
-      output.style.display = "block";
-      output.innerText = "⚠️  Please enter your idea first.";
+      output.classList.add("has-content");
+      output.innerHTML = '<span style="color:var(--warning);">⚠️ Please enter your idea first.</span>';
       return;
     }
 
-    output.style.display = "block";
-    output.innerText = "✦  Generating your script…";
+    output.classList.add("has-content");
+    output.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div> <span style="color:var(--text2);margin-left:8px;">Generating your ' + currentPlatform + ' script…</span>';
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
 
     try {
       const response = await fetch("https://titonova-backend-1.onrender.com/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ topic: idea })
+        body: JSON.stringify({ topic: idea, platform: currentPlatform })
       });
 
       const data = await response.json();
 
       if (data.result) {
-        output.innerText = data.result;
-      } else {
-        output.innerText = "No response from AI. Please try again.";
-      }
+        const text = data.result;
+        output.innerHTML = '';
+        const content = document.createElement('div');
+        content.style.whiteSpace = 'pre-wrap';
+        content.textContent = text;
+        output.appendChild(content);
 
+        const actions = document.createElement('div');
+        actions.className = 'output-actions';
+        actions.innerHTML = `
+          <button class="output-action-btn" id="copyBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+          <button class="output-action-btn" id="regenBtn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Regenerate
+          </button>
+        `;
+        output.appendChild(actions);
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+          navigator.clipboard.writeText(text);
+          document.getElementById('copyBtn').innerHTML = '✓ Copied';
+          setTimeout(() => {
+            const cb = document.getElementById('copyBtn');
+            if (cb) cb.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy';
+          }, 1600);
+        });
+        document.getElementById('regenBtn').addEventListener('click', generateScript);
+      } else {
+        output.innerHTML = '<span style="color:var(--text2);">No response from AI. Please try again.</span>';
+      }
     } catch (error) {
-      output.innerText = "Error connecting to AI. Please try again in a moment.";
+      output.innerHTML = '<span style="color:var(--danger);">Couldn\'t reach the AI. Please try again in a moment.</span>';
       console.error(error);
+    } finally {
+      btn.disabled = false;
+      btn.style.opacity = '1';
     }
   }
+  window.generateScript = generateScript;
 </script>
 
 </body>
