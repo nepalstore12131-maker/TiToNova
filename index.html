@@ -633,6 +633,84 @@
       margin-top: 2px;
     }
 
+    /* ── TESTIMONIALS ── */
+    .testimonials-section {
+      padding: 80px 6%;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+
+    .testimonial-card:hover {
+      border-color: rgba(79,110,247,0.3);
+      transform: translateY(-3px);
+    }
+
+    .testimonial-stars { color: #f59e0b; font-size: 13px; letter-spacing: 2px; }
+
+    .testimonial-quote {
+      font-size: 14.5px;
+      color: var(--text2);
+      line-height: 1.75;
+      font-weight: 300;
+      font-style: italic;
+      flex: 1;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .author-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      flex-shrink: 0;
+    }
+
+    .avatar-blue   { background: rgba(79,110,247,0.2); color: #a5b4fc; }
+    .avatar-purple { background: rgba(124,58,237,0.2); color: #c4b5fd; }
+    .avatar-teal   { background: rgba(16,185,129,0.2); color: #6ee7b7; }
+
+    .author-name  { font-size: 13.5px; font-weight: 500; color: var(--text); }
+    .author-role  { font-size: 12px; color: var(--text3); font-weight: 300; }
+
+    .placeholder-note {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text3);
+      font-style: italic;
+    }
+
     /* ── FOOTER ── */
     footer {
       background: var(--bg);
@@ -880,6 +958,60 @@
       <div class="proof-label">Cameras needed</div>
     </div>
   </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials-section">
+  <div class="section-eyebrow">What creators say</div>
+  <h2 class="section-heading">Real results, zero camera</h2>
+  <p class="section-sub">From students to full-time creators — Titonova works for everyone.</p>
+
+  <div class="testimonials-grid">
+
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-quote">
+        "I used to spend 2 hours writing a single TikTok script. With Titonova I get something usable in under a minute. I've posted every day this week for the first time ever."
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar avatar-blue">JM</div>
+        <div>
+          <div class="author-name">Jordan M.</div>
+          <div class="author-role">Student creator, 4.2K followers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-quote">
+        "I'm super camera shy so faceless content was the only option for me. Titonova makes the scripting part so easy — I just edit slightly and post. Game changer."
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar avatar-purple">SK</div>
+        <div>
+          <div class="author-name">Sofia K.</div>
+          <div class="author-role">Faceless niche creator</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card">
+      <div class="testimonial-stars">★★★★★</div>
+      <p class="testimonial-quote">
+        "I run a small business and had no idea how to make content. This tool writes better hooks than I ever could. My first Reel got 12K views using a Titonova script."
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar avatar-teal">RA</div>
+        <div>
+          <div class="author-name">Rami A.</div>
+          <div class="author-role">Small business owner</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <p class="placeholder-note">⭐ Replace these with real testimonials as you collect them from your users.</p>
 </section>
 
 <!-- ── ABOUT ── -->
