@@ -11,7 +11,7 @@ export default async function SignupPage({ searchParams }: Props) {
   const success = Array.isArray(params.success) ? params.success[0] : params.success;
 
   return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><span style={{ color: "var(--muted)", fontSize: 12 }}>Already a member?</span><Link className="button secondary" href="/login">Log in</Link></div></header>
+    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><span style={{ color: "var(--muted)", fontSize: 12 }}>Already a member?</span><Link className="button secondary" href={role === "employer" ? "/employer/login" : "/login"}>Log in</Link></div></header>
     <main className="auth-wrap"><section className="auth-card">
       <div className="eyebrow">Create your account</div><h1>Join Titonova</h1><p className="auth-copy">Set up your account to prepare for Nepal’s new work marketplace.</p>
       {error === "setup" && <div className="setup-alert">Account services are being connected. Please try again later.</div>}

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 const one = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] ?? "" : value ?? "";
 const money = (min: number | null, max: number | null, currency: string) => {

@@ -70,13 +70,108 @@ export async function applyToJob(formData: FormData) {
 
 export async function reviewJob(formData: FormData) {
   const { supabase, user, role } = await getSignedInMember();
-  if (role !== "admin") redirect("/dashboard?error=admin-only");
+  if (role !== "admin") redirect("/admin/jobs?error=admin-only");
   const jobId = String(formData.get("job_id") ?? "");
   const status = String(formData.get("status") ?? "");
-  if (!/^[0-9a-f-]{36}$/i.test(jobId) || !["published", "rejected"].includes(status)) redirect("/dashboard?error=invalid");
+  if (!/^[0-9a-f-]{36}$/i.test(jobId) || !["published", "rejected"].includes(status)) redirect("/admin/jobs?error=invalid");
 
-  const { error } = await supabase.from("jobs").update({ status }).eq("id", jobId).eq("status", "pending_review");
-  if (error) redirect("/dashboard?error=review");
+  const { data, error } = await supabase.from("jobs").update({ status }).eq("id", jobId).eq("status", "pending_review").select("id").maybeSingle();
+  if (error || !data) redirect("/admin/jobs?error=review");
   void user;
-  redirect("/dashboard?success=job-reviewed");
+  redirect("/admin/jobs?success=reviewed");
+}
+
+export async function updateApplicationStatus(formData: FormData) {
+  const { supabase, user, role } = await getSignedInMember();
+  const applicationId = String(formData.get("application_id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(applicationId)) redirect("/dashboard/applications?error=invalid");
+
+  const allowed = role === "employer"
+    ? ["shortlisted", "rejected"]
+    : role === "freelancer" ? ["withdrawn"] : [];
+  if (!allowed.includes(status)) redirect("/dashboard/applications?error=role");
+
+  let query = supabase.from("applications").update({ status }).eq("id", applicationId);
+  if (role === "freelancer") query = query.eq("applicant_id", user.id).eq("status", "submitted");
+  const { data, error } = await query.select("id").maybeSingle();
+  if (error || !data) redirect(`/dashboard/applications/${applicationId}?error=save`);
+  redirect(`/dashboard/applications/${applicationId}?success=updated`);
+}
+
+export async function saveProfile(formData: FormData) {
+  const { supabase, user } = await getSignedInMember();
+  const fullName = String(formData.get("full_name") ?? "").trim();
+  const companyName = String(formData.get("company_name") ?? "").trim();
+  const headline = String(formData.get("headline") ?? "").trim();
+  const bio = String(formData.get("bio") ?? "").trim();
+  const location = String(formData.get("location") ?? "").trim();
+  const skills = String(formData.get("skills") ?? "").split(/[\n,]/).map((skill) => skill.trim()).filter(Boolean);
+  const portfolioUrl = String(formData.get("portfolio_url") ?? "").trim();
+  const linkedinUrl = String(formData.get("linkedin_url") ?? "").trim();
+  const isWebUrl = (value: string) => {
+    if (!value) return true;
+    try {
+      const parsed = new URL(value);
+      return parsed.protocol === "https:" || parsed.protocol === "http:";
+    } catch {
+      return false;
+    }
+  };
+
+  if (!fullName || fullName.length > 80 || companyName.length > 120 || headline.length > 120 || bio.length > 3000 || location.length > 120 || skills.length > 20 || skills.some((skill) => skill.length > 50) || portfolioUrl.length > 300 || linkedinUrl.length > 300 || !isWebUrl(portfolioUrl) || !isWebUrl(linkedinUrl)) {
+    redirect("/dashboard/profile?error=invalid");
+  }
+
+  const { error } = await supabase.from("profiles").update({
+    full_name: fullName,
+    company_name: companyName,
+    headline,
+    bio,
+    location,
+    skills,
+    portfolio_url: portfolioUrl,
+    linkedin_url: linkedinUrl,
+  }).eq("id", user.id);
+  if (error) redirect("/dashboard/profile?error=save");
+  redirect("/dashboard/profile?success=saved");
+}
+
+export async function updateJob(formData: FormData) {
+  const { supabase, user, role } = await getSignedInMember();
+  if (role !== "employer") redirect("/dashboard?error=employer-only");
+  const jobId = String(formData.get("job_id") ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(jobId)) redirect("/dashboard/jobs?error=invalid");
+
+  const { data: existing } = await supabase.from("jobs").select("status").eq("id", jobId).eq("employer_id", user.id).maybeSingle();
+  if (!existing || existing.status === "closed" || existing.status === "rejected") redirect("/dashboard/jobs?error=unavailable");
+
+  const title = String(formData.get("title") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const category = String(formData.get("category") ?? "").trim();
+  const location = String(formData.get("location") ?? "Remote").trim() || "Remote";
+  const workType = String(formData.get("work_type") ?? "contract");
+  const payMinValue = String(formData.get("pay_min") ?? "").trim();
+  const payMaxValue = String(formData.get("pay_max") ?? "").trim();
+  const allowedTypes = new Set(["full_time", "part_time", "contract", "freelance"]);
+  const payMin = payMinValue ? Number(payMinValue) : null;
+  const payMax = payMaxValue ? Number(payMaxValue) : null;
+  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || category.length > 80 || location.length > 120 || !allowedTypes.has(workType) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
+    redirect(`/dashboard/jobs/${jobId}/edit?error=invalid`);
+  }
+
+  const status = existing.status === "published" ? "pending_review" : existing.status;
+  const { error } = await supabase.from("jobs").update({ title, description, category, location, work_type: workType, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
+  if (error) redirect(`/dashboard/jobs/${jobId}/edit?error=save`);
+  redirect("/dashboard/jobs?success=updated");
+}
+
+export async function closeJob(formData: FormData) {
+  const { supabase, user, role } = await getSignedInMember();
+  if (role !== "employer") redirect("/dashboard?error=employer-only");
+  const jobId = String(formData.get("job_id") ?? "");
+  if (!/^[0-9a-f-]{36}$/i.test(jobId)) redirect("/dashboard/jobs?error=invalid");
+  const { data, error } = await supabase.from("jobs").update({ status: "closed" }).eq("id", jobId).eq("employer_id", user.id).eq("status", "published").select("id").maybeSingle();
+  if (error || !data) redirect("/dashboard/jobs?error=close");
+  redirect("/dashboard/jobs?success=closed");
 }

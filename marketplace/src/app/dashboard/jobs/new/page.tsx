@@ -1,13 +1,15 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createJob } from "@/app/jobs/actions";
+import { PortalShell } from "@/components/portal-shell";
 import { createClient } from "@/lib/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export default async function NewJobPage({ searchParams }: Props) {
   const supabase = await createClient();
-  if (!supabase) return <main className="dashboard"><div className="setup-alert">Employer posting will be available after the shared database is connected.</div></main>;
+  if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to post a job.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
@@ -15,8 +17,7 @@ export default async function NewJobPage({ searchParams }: Props) {
   const params = await searchParams;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
 
-  return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><Link className="text-button" href="/dashboard">Dashboard</Link></div></header>
+  return <PortalShell role="employer" activePath="/dashboard/jobs/new">
     <main className="auth-wrap"><section className="auth-card" style={{ width: "min(620px, 100%)" }}>
       <div className="eyebrow">Employer workspace</div><h1>Post a job</h1><p className="auth-copy">Submit a clear role description. New posts go to administrator review before they appear publicly.</p>
       {error === "invalid" && <div className="form-alert">Check the role details and pay range, then try again.</div>}
@@ -31,5 +32,5 @@ export default async function NewJobPage({ searchParams }: Props) {
         <button className="button full" type="submit">Submit for review →</button>
       </form>
     </section></main>
-  </div>;
+  </PortalShell>;
 }

@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { applyToJob } from "@/app/jobs/actions";
 import { createClient } from "@/lib/supabase/server";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export default async function JobDetailsPage({ params, searchParams }: Props) {
