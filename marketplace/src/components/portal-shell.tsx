@@ -22,6 +22,8 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/admin", label: "Overview" },
     { href: "/admin/jobs", label: "Review jobs" },
     { href: "/admin/listings", label: "All job posts" },
+    { href: "/admin/employers", label: "Employer review" },
+    { href: "/admin/reports", label: "Job reports" },
     { href: "/admin/applications", label: "Applications" },
     { href: "/admin/users", label: "Accounts" },
   ],
