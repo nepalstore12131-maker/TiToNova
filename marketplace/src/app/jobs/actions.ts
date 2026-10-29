@@ -22,13 +22,16 @@ export async function createJob(formData: FormData) {
   const category = String(formData.get("category") ?? "").trim();
   const location = String(formData.get("location") ?? "Remote").trim();
   const workType = String(formData.get("work_type") ?? "contract");
+  const payPeriod = String(formData.get("pay_period") ?? "unspecified");
+  const workMode = String(formData.get("work_mode") ?? "onsite");
+  const experienceLevel = String(formData.get("experience_level") ?? "any");
   const payMinValue = String(formData.get("pay_min") ?? "").trim();
   const payMaxValue = String(formData.get("pay_max") ?? "").trim();
   const allowedTypes = new Set(["full_time", "part_time", "contract", "freelance"]);
   const payMin = payMinValue ? Number(payMinValue) : null;
   const payMax = payMaxValue ? Number(payMaxValue) : null;
 
-  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || location.length > 120 || !allowedTypes.has(workType) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
+  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || location.length > 120 || !allowedTypes.has(workType) || !["unspecified","month","hour","project"].includes(payPeriod) || !["onsite","hybrid","remote"].includes(workMode) || !["any","entry","mid","senior"].includes(experienceLevel) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
     redirect("/dashboard/jobs/new?error=invalid");
   }
 
@@ -39,6 +42,9 @@ export async function createJob(formData: FormData) {
     category,
     location: location || "Remote",
     work_type: workType,
+    pay_period: payPeriod,
+    work_mode: workMode,
+    experience_level: experienceLevel,
     currency: "NPR",
     pay_min: payMin,
     pay_max: payMax,
@@ -181,17 +187,20 @@ export async function updateJob(formData: FormData) {
   const category = String(formData.get("category") ?? "").trim();
   const location = String(formData.get("location") ?? "Remote").trim() || "Remote";
   const workType = String(formData.get("work_type") ?? "contract");
+  const payPeriod = String(formData.get("pay_period") ?? "unspecified");
+  const workMode = String(formData.get("work_mode") ?? "onsite");
+  const experienceLevel = String(formData.get("experience_level") ?? "any");
   const payMinValue = String(formData.get("pay_min") ?? "").trim();
   const payMaxValue = String(formData.get("pay_max") ?? "").trim();
   const allowedTypes = new Set(["full_time", "part_time", "contract", "freelance"]);
   const payMin = payMinValue ? Number(payMinValue) : null;
   const payMax = payMaxValue ? Number(payMaxValue) : null;
-  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || category.length > 80 || location.length > 120 || !allowedTypes.has(workType) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
+  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || category.length > 80 || location.length > 120 || !allowedTypes.has(workType) || !["unspecified","month","hour","project"].includes(payPeriod) || !["onsite","hybrid","remote"].includes(workMode) || !["any","entry","mid","senior"].includes(experienceLevel) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
     redirect(`/dashboard/jobs/${jobId}/edit?error=invalid`);
   }
 
   const status = existing.status === "published" ? "pending_review" : existing.status;
-  const { error } = await supabase.from("jobs").update({ title, description, category, location, work_type: workType, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
+  const { error } = await supabase.from("jobs").update({ title, description, category, location, work_type: workType, pay_period: payPeriod, work_mode: workMode, experience_level: experienceLevel, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
   if (error) redirect(`/dashboard/jobs/${jobId}/edit?error=save`);
   redirect("/dashboard/jobs?success=updated");
 }

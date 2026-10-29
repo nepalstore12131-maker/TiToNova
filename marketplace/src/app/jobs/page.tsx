@@ -1,64 +1,46 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-
-type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
-const one = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] ?? "" : value ?? "";
-const money = (min: number | null, max: number | null, currency: string) => {
-  if (min === null && max === null) return "Pay discussed";
-  const format = (n: number) => new Intl.NumberFormat("en-NP").format(n);
-  return `${currency} ${min === null ? "—" : format(min)}–${max === null ? "—" : format(max)}`;
-};
-
-export default async function JobsPage({ searchParams }: Props) {
-  const params = await searchParams;
-  const q = one(params.q).trim().slice(0, 100);
-  const category = one(params.category).trim().slice(0, 80);
-  const location = one(params.location).trim().slice(0, 100);
-  const workType = one(params.work_type);
-  const supabase = await createClient();
-  let jobs: any[] = [];
-  let loadFailed = false;
-
-  if (supabase) {
-    let query = supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("status", "published").order("created_at", { ascending: false }).limit(60);
-    if (q) query = query.ilike("title", `%${q.replace(/[%_]/g, "\\$&")}%`);
-    if (category) query = query.eq("category", category);
-    if (location) query = query.ilike("location", `%${location.replace(/[%_]/g, "\\$&")}%`);
-    if (["full_time", "part_time", "contract", "freelance"].includes(workType)) query = query.eq("work_type", workType);
-    const result = await query;
-    if (result.error) loadFailed = true;
-    else jobs = result.data ?? [];
+import { categories, experienceLevels, workModes, formatNpr, skillMatches } from "@/lib/discovery";
+export const dynamic="force-dynamic";
+type Props={searchParams:Promise<Record<string,string|string[]|undefined>>};
+const one=(v:string|string[]|undefined)=>Array.isArray(v)?v[0]||"":v||"";
+export default async function JobsPage({searchParams}:Props){
+  const p=await searchParams;
+  const ne=one(p.lang)==="ne";
+  const t=(en:string,np:string)=>ne?np:en;
+  const q=one(p.q).trim().slice(0,100),category=one(p.category).slice(0,80),location=one(p.location).trim().slice(0,100),workType=one(p.work_type),experience=one(p.experience);
+  const period=one(p.period);
+  const mode=one(p.remote)==="1"?"remote":one(p.mode);
+  const salaryValue=Number(one(p.salary));
+  const salary=Number.isFinite(salaryValue)&&salaryValue>0?Math.min(1000000000,Math.floor(salaryValue)):0;
+  const page=Math.max(1,Math.min(10000,parseInt(one(p.page)||"1")||1));
+  const db=await createClient();
+  let jobs:any[]=[],failed=false,total=0,skills:string[]=[];
+  if(db){
+    const {data:{user}}=await db.auth.getUser();
+    if(user){const {data:profile}=await db.from("profiles").select("skills,role").eq("id",user.id).maybeSingle();if(profile?.role==="freelancer")skills=profile.skills||[];}
+    let query=db.from("jobs").select("id,employer_id,title,description,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)",{count:"exact"}).eq("status","published").order("created_at",{ascending:false}).order("id",{ascending:false});
+    if(q)query=query.ilike("title",`%${q.replace(/[%_]/g,"\\$&")}%`);
+    if(category)query=query.eq("category",category);
+    if(location)query=query.ilike("location",`%${location.replace(/[%_]/g,"\\$&")}%`);
+    if(["full_time","part_time","contract","freelance"].includes(workType))query=query.eq("work_type",workType);
+    if(workModes.includes(mode as typeof workModes[number]))query=query.eq("work_mode",mode);
+    if(experienceLevels.includes(experience as typeof experienceLevels[number]))query=query.eq("experience_level",experience);
+    if(["month","hour","project"].includes(period))query=query.eq("pay_period",period);
+    if(salary)query=query.eq("currency","NPR").gte("pay_min",salary);
+    const recommended=one(p.sort)==="recommended"&&skills.length>0;
+    const result=await (recommended?query.limit(120):query.range((page-1)*12,page*12-1));
+    failed=Boolean(result.error);jobs=result.data||[];total=result.count||0;
+    if(recommended){total=Math.min(total,120);jobs=jobs.map(job=>({...job,matches:skillMatches(job,skills)})).sort((a,b)=>b.matches.length-a.matches.length).slice((page-1)*12,page*12);}
   }
-
-  return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><nav className="nav-links"><Link href="/">Home</Link><Link href="/dashboard">Dashboard</Link></nav><div className="nav-actions"><Link className="text-button" href="/login">Log in</Link><Link className="button" href="/signup?role=employer">Post a job →</Link></div></header>
-    <main className="content">
-      <div className="section-heading"><div><div className="eyebrow">Find your next opportunity</div><h1 style={{ margin: "8px 0", fontSize: 38, letterSpacing: "-.055em" }}>Jobs in Nepal</h1><p>Search published roles from employers on Titonova.</p></div></div>
-      <form className="finder" action="/jobs" method="get">
-        <div className="field"><span aria-hidden="true">⌕</span><input type="search" name="q" defaultValue={q} placeholder="Job title or keyword" aria-label="Job title or keyword" /></div>
-        <div className="field"><span aria-hidden="true">⌖</span><input type="search" name="location" defaultValue={location} placeholder="Location or remote" aria-label="Location" /></div>
-        <div className="field"><span aria-hidden="true">▦</span><select name="category" defaultValue={category} aria-label="Category"><option value="">All categories</option><option>Design &amp; creative</option><option>Development</option><option>Marketing</option><option>Writing &amp; content</option><option>Business support</option><option>Other</option></select></div>
-        <div className="field"><span aria-hidden="true">↔</span><select name="work_type" defaultValue={workType} aria-label="Work type"><option value="">All work types</option><option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="freelance">Freelance</option></select></div>
-        <button className="button" type="submit">Search jobs</button>
-      </form>
-      {category && <p style={{ color: "var(--muted)", fontSize: 12, margin: "15px 2px" }}>Category: <strong>{category}</strong> · <Link href="/jobs" style={{ color: "var(--green)" }}>Clear</Link></p>}
-      {!supabase && <div className="setup-alert" role="status" style={{ marginTop: 20 }}>Job search is temporarily unavailable while the shared database is being connected.</div>}
-      {loadFailed && <div className="form-alert" role="alert" style={{ marginTop: 20 }}>We couldn’t load job listings. Refresh the page and try again.</div>}
-      {supabase && !loadFailed && jobs.length === 0 && <div className="dashboard-card" style={{ marginTop: 20 }}><h2 style={{ marginTop: 0, fontSize: 18 }}>No published jobs match yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>Try another search or check back as employers join.</p><Link className="button secondary" href="/signup?role=employer">Post the first opportunity →</Link></div>}
-      <div className="job-grid" style={{ marginTop: 20 }}>{jobs.map((job) => {
-        const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
-        const company = employer?.company_name || employer?.full_name || "Titonova employer";
-        return <article className="job-card" key={job.id}>
-          <div className="job-meta"><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">Published</span></div>
-          <h2 style={{ margin: "0 0 8px", fontSize: 15 }}><Link href={`/jobs/${job.id}`}>{job.title}</Link></h2>
-          <p className="desc">{job.description.slice(0, 150)}{job.description.length > 150 ? "…" : ""}</p>
-          <div className="tag-row"><span className="tag">{job.category}</span><span className="tag">{job.work_type.replaceAll("_", " ")}</span></div>
-          <div className="job-foot"><span>{new Date(job.created_at).toLocaleDateString("en-NP")}</span><strong>{money(job.pay_min, job.pay_max, job.currency)}</strong></div>
-        </article>;
-      })}</div>
-    </main>
-    <footer className="site-footer"><div>© 2026 Titonova Nepal</div><div className="footer-links"><Link href="/">Home</Link><Link href="/signup">Join</Link></div></footer>
-  </div>;
+  const link=(changes:Record<string,string>)=>{const params=new URLSearchParams();for(const [key,value]of Object.entries(p)){if(one(value))params.set(key,one(value));}for(const[k,v]of Object.entries(changes))params.set(k,v);return `/jobs?${params}`;};
+  const workNames:Record<string,string>={full_time:t("Full time","पूर्णकालीन"),part_time:t("Part time","आंशिक समय"),contract:t("Contract","करार"),freelance:t("Freelance","स्वतन्त्र काम")};
+  const modes:Record<string,string>={onsite:t("On site","कार्यालयमा"),hybrid:t("Hybrid","मिश्रित"),remote:t("Remote","घरबाट")};
+  const levels:Record<string,string>={any:t("Any experience","जुनसुकै अनुभव"),entry:t("Entry level","प्रारम्भिक"),mid:t("Mid level","मध्यम"),senior:t("Senior level","वरिष्ठ")};
+  return <div className="page-shell"><header className="site-header"><Link className="brand" href={ne?"/ne":"/"}><span className="brand-mark">↗</span> Titonova</Link><nav className="nav-links"><Link href="/dashboard">{t("Workspace","कार्यस्थल")}</Link><Link href={link({lang:ne?"en":"ne"})} lang={ne?"en":"ne"}>{ne?"English":"नेपाली"}</Link></nav><Link className="button" href="/dashboard/jobs/new">{t("Post a job","रोजगारी पोस्ट गर्नुहोस्")} ↗</Link></header><main className="content" lang={ne?"ne":"en"}><section className="discovery-hero"><div><div className="eyebrow">{t("Local talent. Real opportunity.","स्थानीय प्रतिभा। वास्तविक अवसर।")}</div><h1>{t("Find work worth doing.","आफ्नो सीपअनुसार काम खोज्नुहोस्।")}</h1><p>{t("Discover your next role with teams building in Nepal.","नेपालका कम्पनीहरूसँग आफ्नो अर्को अवसर खोज्नुहोस्।")}</p></div><span className="discovery-seal">{t("Made for Nepal","नेपालका लागि")}<strong>↗</strong></span></section>
+    <form className="discovery-filters" action="/jobs"><input type="hidden" name="lang" value={ne?"ne":"en"}/><label>{t("Role or keyword","पद वा शब्द")}<input name="q" type="search" defaultValue={q} placeholder={t("e.g. Designer, React","जस्तै: डिजाइनर, React")}/></label><label>{t("City or location","सहर वा स्थान")}<input name="location" defaultValue={location} placeholder={t("Kathmandu, Pokhara…","काठमाडौं, पोखरा…")}/></label><label>{t("Category","क्षेत्र")}<select name="category" defaultValue={category}><option value="">{t("All categories","सबै क्षेत्र")}</option>{categories.map(c=><option key={c}>{c}</option>)}</select></label><label>{t("Job type","कामको प्रकार")}<select name="work_type" defaultValue={workType}><option value="">{t("All types","सबै प्रकार")}</option>{Object.entries(workNames).map(([v,label])=><option value={v} key={v}>{label}</option>)}</select></label><label>{t("Work arrangement","कार्य व्यवस्था")}<select name="mode" defaultValue={mode}><option value="">{t("Anywhere","सबै स्थान")}</option>{Object.entries(modes).map(([v,label])=><option value={v} key={v}>{label}</option>)}</select></label><label>{t("Experience","अनुभव")}<select name="experience" defaultValue={experience}><option value="">{t("All levels","सबै स्तर")}</option>{Object.entries(levels).map(([v,label])=><option value={v} key={v}>{label}</option>)}</select></label><label>{t("Minimum advertised pay · NPR","न्यूनतम पारिश्रमिक · रु.")}<input type="number" name="salary" min="0" max="1000000000" step="1000" defaultValue={salary||""} placeholder="30,000"/></label><label>{t("Pay period","भुक्तानी अवधि")}<select name="period" defaultValue={period}><option value="">{t("Any period","सबै अवधि")}</option><option value="month">{t("Per month","प्रति महिना")}</option><option value="hour">{t("Per hour","प्रति घण्टा")}</option><option value="project">{t("Per project","प्रति परियोजना")}</option></select></label><label>{t("Sort by","क्रम")}<select name="sort" defaultValue={one(p.sort)}><option value="newest">{t("Newest first","नयाँ पहिले")}</option><option value="recommended">{t("My skill matches","मेरो सीपसँग मिल्ने")}</option></select></label><div className="filter-actions"><button className="button">{t("Find opportunities","अवसर खोज्नुहोस्")} ↗</button><Link href={ne?"/jobs?lang=ne":"/jobs"}>{t("Reset filters","फिल्टर हटाउनुहोस्")}</Link></div></form>
+    {one(p.sort)==="recommended"&&<p className="discovery-note">{skills.length?t("Ranked by skills in your profile among the latest 120 matching roles. A skill match is a guide, not a hiring guarantee.","पछिल्ला १२० मिल्दो पदमध्ये तपाईंको सीपअनुसार क्रमबद्ध।"):t("Add skills to your job seeker profile for matching. Showing newest roles for now.","सीपअनुसार अवसर पाउन आफ्नो प्रोफाइलमा सीप थप्नुहोस्।")}</p>}
+    <div className="discovery-results-heading"><h2>{t("Open opportunities","खुला अवसरहरू")}</h2><span>{new Intl.NumberFormat(ne?"ne-NP":"en-NP").format(total)} {t("roles found","अवसर भेटिए")}</span></div>
+    {(!db||failed)?<div className="form-alert" role="alert">{t("We couldn’t load jobs. Please try again shortly.","रोजगारी लोड हुन सकेन। कृपया फेरि प्रयास गर्नुहोस्।")}</div>:jobs.length===0?<section className="discovery-empty"><span>⌕</span><h2>{t("Your next opportunity is on its way.","नयाँ अवसरको प्रतीक्षा गर्नुहोस्।")}</h2><p>{t("Try fewer filters or check back as more teams join.","कम फिल्टर प्रयोग गर्नुहोस् वा पछि हेर्नुहोस्।")}</p><Link className="button secondary" href={ne?"/jobs?lang=ne":"/jobs"}>{t("See all roles","सबै पद हेर्नुहोस्")}</Link></section>:<div className="job-grid premium-job-grid">{jobs.map(job=>{const employer=Array.isArray(job.employer)?job.employer[0]:job.employer;const company=employer?.company_name||employer?.full_name||"Titonova employer";return <article className="job-card discovery-job" key={job.id}><div className="job-meta"><div className="company"><span className="company-mark">{company[0]}</span><div><Link className="company-name" href={`/companies/${job.employer_id}${ne?"?lang=ne":""}`}>{company}</Link><span className="company-place">{job.location}</span></div></div>{employer?.employer_verified&&<span className="verified-badge">✓ {t("Reviewed","समीक्षित")}</span>}</div><h2><Link href={`/jobs/${job.id}`}>{job.title}</Link></h2><p className="desc">{job.description.slice(0,150)}{job.description.length>150?"…":""}</p><div className="tag-row"><span className="tag">{workNames[job.work_type]||job.work_type}</span><span className="tag">{modes[job.work_mode]}</span>{job.experience_level!=="any"&&<span className="tag">{levels[job.experience_level]}</span>}</div>{job.matches?.length>0&&<p className="skill-match">✦ {job.matches.join(" · ")}</p>}<div className="job-foot"><span>{new Date(job.created_at).toLocaleDateString(ne?"ne-NP":"en-NP",{timeZone:"Asia/Kathmandu",month:"short",day:"numeric"})}</span><strong>{formatNpr(job.pay_min,job.pay_max,ne,job.currency)}<small>{job.pay_period==="month"?t(" / month"," / महिना"):job.pay_period==="hour"?t(" / hour"," / घण्टा"):job.pay_period==="project"?t(" / project"," / परियोजना"):""}</small></strong></div><Link className="discovery-job-link" href={`/jobs/${job.id}`}>{t("View opportunity","अवसर हेर्नुहोस्")} ↗</Link></article>;})}</div>}
+    <nav className="admin-pagination" aria-label="Job pages">{page>1&&<Link className="button secondary small" href={link({page:String(page-1)})}>← {t("Previous","अघिल्लो")}</Link>}<span>{t("Page","पृष्ठ")} {page} / {Math.max(1,Math.ceil(total/12))}</span>{page*12<total&&<Link className="button secondary small" href={link({page:String(page+1)})}>{t("Next","अर्को")} →</Link>}</nav></main><footer className="site-footer">Titonova · {t("Work and talent, connected in Nepal.","नेपालको काम र प्रतिभालाई जोड्दै।")}</footer></div>;
 }
