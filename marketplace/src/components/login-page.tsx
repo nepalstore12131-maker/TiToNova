@@ -43,6 +43,7 @@ export async function LoginPage({ role, searchParams }: Props) {
       {error === "invalid" && <div className="form-alert">Enter a valid email address and password.</div>}
       {error === "credentials" && <div className="form-alert">Those details didn’t match an account. Check your email and password, then try again.</div>}
       {error === "role" && <div className="form-alert">This account uses a different sign-in page. Choose the sign-in page that matches your account type.</div>}
+      {error === "profile" && <div className="form-alert">We couldn’t load your account profile. Please try again, and contact support if the problem continues.</div>}
       {error === "confirmation" && <div className="form-alert">That confirmation link may have expired. Sign in or request a new confirmation email.</div>}
       <form action={signIn} className="auth-form">
         <input type="hidden" name="expected_role" value={role} />
