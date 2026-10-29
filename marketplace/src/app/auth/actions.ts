@@ -1,10 +1,27 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 const allowedRoles = new Set(["freelancer", "employer"]);
+const pendingSignupCookie = "titonova_pending_signup_email";
+
+async function setPendingSignupEmail(email: string) {
+  const cookieStore = await cookies();
+  cookieStore.set(pendingSignupCookie, email, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/signup",
+    maxAge: 60 * 60,
+  });
+}
+
+async function clearPendingSignupEmail() {
+  const cookieStore = await cookies();
+  cookieStore.set(pendingSignupCookie, "", { httpOnly: true, path: "/signup", maxAge: 0 });
+}
 
 async function getEmailRedirect(next: string) {
   const requestHeaders = await headers();
@@ -58,7 +75,7 @@ export async function signUp(formData: FormData) {
     console.error("Titonova signup failed", { code: error.code, status: error.status });
     const errorType = error.code === "email_exists" || error.code === "user_already_exists"
       ? "exists"
-      : error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit"
+      : isRateLimit(error)
         ? "rate-limit"
         : error.code === "weak_password"
           ? "weak-password"
@@ -67,9 +84,19 @@ export async function signUp(formData: FormData) {
             : error.code === "signup_disabled" || error.code === "email_provider_disabled"
               ? "unavailable"
               : "try-again";
+    if (errorType === "rate-limit") {
+      await setPendingSignupEmail(email);
+      redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}error=rate-limit&resend=1`);
+    }
+    await clearPendingSignupEmail();
     redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}error=${errorType}`);
   }
-  if (data.session) redirect("/dashboard");
+  if (data.session) {
+    await supabase.auth.signOut();
+    await clearPendingSignupEmail();
+    redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}error=verification-disabled`);
+  }
+  await setPendingSignupEmail(email);
   redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}success=check-email`);
 }
 
@@ -81,6 +108,7 @@ export async function resendSignupConfirmation(formData: FormData) {
 
   const supabase = await createClient();
   if (!supabase) redirect("/signup?error=setup&resend=1");
+  await setPendingSignupEmail(email);
 
   const { error } = await supabase.auth.resend({
     type: "signup",
@@ -96,6 +124,26 @@ export async function resendSignupConfirmation(formData: FormData) {
   }
 
   redirect("/signup?success=resent");
+}
+
+export async function verifySignupCode(formData: FormData) {
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const token = String(formData.get("token") ?? "").replace(/\s/g, "");
+  if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\d{6}$/.test(token)) {
+    redirect("/signup?error=invalid-code");
+  }
+
+  const supabase = await createClient();
+  if (!supabase) redirect("/signup?error=setup");
+
+  const { data, error } = await supabase.auth.verifyOtp({ email, token, type: "email" });
+  if (error || !data.session) {
+    console.error("Titonova signup code verification failed", { code: error?.code, status: error?.status });
+    redirect(`/signup?error=${isRateLimit(error ?? {}) ? "rate-limit" : "invalid-code"}&resend=1`);
+  }
+
+  await clearPendingSignupEmail();
+  redirect("/dashboard");
 }
 
 export async function requestPasswordReset(formData: FormData) {
