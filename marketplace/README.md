@@ -12,7 +12,7 @@ The app is being built in stages. The live GitHub Pages preview stays untouched 
 
 The foundation includes email/password sign-up, separate freelancer/employer/admin sign-in pages, role-based workspaces, live job search, job posting and editing, job applications, profile editing, application review, and an administrator workspace for accounts, jobs, and applications. Supabase Postgres stores accounts, profiles, jobs, and applications; row-level security limits each member to the actions their role permits. Admin role assignment is intentionally separate from public sign-up.
 
-Main pages are separate: `/jobs`, `/jobs/[id]`, `/login`, `/employer/login`, `/admin/login`, `/signup`, `/dashboard`, `/dashboard/jobs`, `/dashboard/jobs/new`, `/dashboard/jobs/[id]/edit`, `/dashboard/applications`, `/dashboard/applications/[id]`, `/dashboard/profile`, `/admin`, `/admin/jobs`, `/admin/listings`, `/admin/applications`, and `/admin/users`.
+Main pages are separate: `/jobs`, `/jobs/[id]`, `/login`, `/employer/login`, `/admin/login`, `/signup`, `/forgot-password`, `/reset-password`, `/dashboard`, `/dashboard/jobs`, `/dashboard/jobs/new`, `/dashboard/jobs/[id]/edit`, `/dashboard/applications`, `/dashboard/applications/[id]`, `/dashboard/profile`, `/admin`, `/admin/jobs`, `/admin/listings`, `/admin/applications`, and `/admin/users`.
 
 ## Local setup
 

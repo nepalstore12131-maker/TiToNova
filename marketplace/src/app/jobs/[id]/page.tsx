@@ -15,7 +15,8 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Job details will be available after the shared database is connected.</div><Link href="/jobs">Back to jobs</Link></main>;
 
-  const { data: job } = await supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name)").eq("id", id).eq("status", "published").maybeSingle();
+  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name)").eq("id", id).eq("status", "published").maybeSingle();
+  if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };

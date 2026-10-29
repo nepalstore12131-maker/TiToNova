@@ -12,16 +12,20 @@ export default async function ApplicationsPage() {
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to view applications.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  const role = (profile?.role ?? "freelancer") as AccountRole;
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your account details. Refresh the page and try again.</div></main>;
+  const role = profile.role as AccountRole;
   if (role === "admin") redirect("/admin");
 
   let applications: any[] = [];
+  let loadFailed = false;
   if (role === "employer") {
     const result = await supabase.from("applications").select("id,status,created_at,job:jobs!applications_job_id_fkey(id,title),applicant:profiles!applications_applicant_id_fkey(full_name,headline)").order("created_at", { ascending: false }).limit(100);
+    loadFailed = Boolean(result.error);
     applications = result.data ?? [];
   } else {
     const result = await supabase.from("applications").select("id,status,created_at,job:jobs!applications_job_id_fkey(id,title,location)").eq("applicant_id", user.id).order("created_at", { ascending: false }).limit(100);
+    loadFailed = Boolean(result.error);
     applications = result.data ?? [];
   }
 
@@ -29,7 +33,7 @@ export default async function ApplicationsPage() {
     <div className="eyebrow">{role === "employer" ? "Hiring workspace" : "Your job search"}</div>
     <h1>{role === "employer" ? "Applications received" : "My applications"}</h1>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Open an application to review the candidate’s introduction and update its status." : "Open an application to see its details and current status."}</p>
-    {!applications?.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>No applications yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Applications to your published jobs will appear here." : "Find a role that fits and send your first application."}</p>{role === "freelancer" && <Link className="button" href="/jobs">Browse jobs →</Link>}</section> :
+    {loadFailed ? <div className="form-alert" role="alert">We couldn’t load applications. Refresh the page and try again.</div> : !applications.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>No applications yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Applications to your published jobs will appear here." : "Find a role that fits and send your first application."}</p>{role === "freelancer" && <Link className="button" href="/jobs">Browse jobs →</Link>}</section> :
       <div className="portal-table"><table><thead><tr><th>{role === "employer" ? "Candidate" : "Job"}</th><th>{role === "employer" ? "Job" : "Location"}</th><th>Status</th><th>Submitted</th><th></th></tr></thead><tbody>
         {applications.map((application) => {
           const job = Array.isArray(application.job) ? application.job[0] : application.job;

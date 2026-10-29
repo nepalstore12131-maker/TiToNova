@@ -13,11 +13,12 @@ export default async function ProfilePage({ searchParams }: Props) {
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to manage your profile.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const [{ data: profile }, params] = await Promise.all([
+  const [{ data: profile, error: profileError }, params] = await Promise.all([
     supabase.from("profiles").select("full_name,company_name,role,headline,bio,location,skills,portfolio_url,linkedin_url").eq("id", user.id).maybeSingle(),
     searchParams,
   ]);
-  const role = (profile?.role ?? "freelancer") as AccountRole;
+  if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your profile. Refresh the page and try again.</div></main>;
+  const role = profile.role as AccountRole;
   if (role === "admin") redirect("/admin");
 
   return <PortalShell role={role} activePath="/dashboard/profile">

@@ -12,7 +12,8 @@ export default async function NewJobPage({ searchParams }: Props) {
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to post a job.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your employer account. Refresh the page and try again.</div></main>;
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
   const params = await searchParams;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;

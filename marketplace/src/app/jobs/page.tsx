@@ -19,7 +19,7 @@ export default async function JobsPage({ searchParams }: Props) {
   const workType = one(params.work_type);
   const supabase = await createClient();
   let jobs: any[] = [];
-  let backendReady = Boolean(supabase);
+  let loadFailed = false;
 
   if (supabase) {
     let query = supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer:profiles!jobs_employer_id_fkey(full_name,company_name)").eq("status", "published").order("created_at", { ascending: false }).limit(60);
@@ -28,7 +28,7 @@ export default async function JobsPage({ searchParams }: Props) {
     if (location) query = query.ilike("location", `%${location.replace(/[%_]/g, "\\$&")}%`);
     if (["full_time", "part_time", "contract", "freelance"].includes(workType)) query = query.eq("work_type", workType);
     const result = await query;
-    if (result.error) backendReady = false;
+    if (result.error) loadFailed = true;
     else jobs = result.data ?? [];
   }
 
@@ -44,8 +44,9 @@ export default async function JobsPage({ searchParams }: Props) {
         <button className="button" type="submit">Search jobs</button>
       </form>
       {category && <p style={{ color: "var(--muted)", fontSize: 12, margin: "15px 2px" }}>Category: <strong>{category}</strong> · <Link href="/jobs" style={{ color: "var(--green)" }}>Clear</Link></p>}
-      {!backendReady && <div className="setup-alert" style={{ marginTop: 20 }}>The shared job database is being connected. Published roles will appear here when setup is complete.</div>}
-      {backendReady && jobs.length === 0 && <div className="dashboard-card" style={{ marginTop: 20 }}><h2 style={{ marginTop: 0, fontSize: 18 }}>No published jobs match yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>Try another search or check back as employers join.</p><Link className="button secondary" href="/signup?role=employer">Post the first opportunity →</Link></div>}
+      {!supabase && <div className="setup-alert" role="status" style={{ marginTop: 20 }}>Job search is temporarily unavailable while the shared database is being connected.</div>}
+      {loadFailed && <div className="form-alert" role="alert" style={{ marginTop: 20 }}>We couldn’t load job listings. Refresh the page and try again.</div>}
+      {supabase && !loadFailed && jobs.length === 0 && <div className="dashboard-card" style={{ marginTop: 20 }}><h2 style={{ marginTop: 0, fontSize: 18 }}>No published jobs match yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>Try another search or check back as employers join.</p><Link className="button secondary" href="/signup?role=employer">Post the first opportunity →</Link></div>}
       <div className="job-grid" style={{ marginTop: 20 }}>{jobs.map((job) => {
         const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
         const company = employer?.company_name || employer?.full_name || "Titonova employer";

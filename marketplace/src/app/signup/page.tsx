@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { signUp } from "@/app/auth/actions";
+import { resendSignupConfirmation, signUp } from "@/app/auth/actions";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -9,6 +9,8 @@ export default async function SignupPage({ searchParams }: Props) {
   const role = requestedRole === "employer" ? "employer" : "freelancer";
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
   const success = Array.isArray(params.success) ? params.success[0] : params.success;
+  const resend = Array.isArray(params.resend) ? params.resend[0] : params.resend;
+  const showResend = success === "check-email" || success === "resent" || error === "confirmation" || error === "rate-limit" || resend === "1";
 
   return <div className="page-shell">
     <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><span style={{ color: "var(--muted)", fontSize: 12 }}>Already a member?</span><Link className="button secondary" href={role === "employer" ? "/employer/login" : "/login"}>Log in</Link></div></header>
@@ -17,12 +19,21 @@ export default async function SignupPage({ searchParams }: Props) {
       {error === "setup" && <div className="setup-alert">Account services are being connected. Please try again later.</div>}
       {error === "invalid" && <div className="form-alert">Check your details. Use a valid email, choose an account type, and use a password with at least 10 characters.</div>}
       {error === "exists" && <div className="form-alert">An account already uses this email address. Log in or use a different email.</div>}
-      {error === "rate-limit" && <div className="form-alert">Too many signup or confirmation attempts were made recently. Please wait a few minutes and try again.</div>}
+      {error === "rate-limit" && <div className="form-alert">Too many signup or confirmation attempts were made recently. Please wait before requesting another email, then try again.</div>}
       {error === "weak-password" && <div className="form-alert">Choose a stronger password, then try again.</div>}
       {error === "email-invalid" && <div className="form-alert">Please check the email address and try again.</div>}
       {error === "unavailable" && <div className="form-alert">New account signup is temporarily unavailable. Please try again later.</div>}
       {error === "try-again" && <div className="form-alert">We couldn’t finish creating your account. The email may not be the problem. Please try again in a few minutes.</div>}
+      {error === "confirmation" && <div className="form-alert">That confirmation link expired or could not be verified. Request a fresh link below.</div>}
       {success === "check-email" && <div className="setup-alert">Check your email for a confirmation link. After confirming, you can sign in here.</div>}
+      {success === "resent" && <div className="setup-alert">If an account with this address needs confirmation, a new link is on its way. Check your inbox and spam folder.</div>}
+      {showResend && <section className="dashboard-card" style={{ margin: "0 0 16px", padding: 16 }}>
+        <form action={resendSignupConfirmation} className="auth-form">
+          <label htmlFor="confirmation_email">Resend confirmation email</label>
+          <input id="confirmation_email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" />
+          <button className="button secondary" type="submit">Send a new link</button>
+        </form>
+      </section>}
       <form action={signUp} className="auth-form">
         <label htmlFor="full_name">Full name</label><input id="full_name" name="full_name" autoComplete="name" required maxLength={80} placeholder="Your name" />
         <label htmlFor="email">Email address</label><input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" />
