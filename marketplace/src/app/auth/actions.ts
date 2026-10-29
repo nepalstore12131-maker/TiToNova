@@ -129,7 +129,7 @@ export async function resendSignupConfirmation(formData: FormData) {
 export async function verifySignupCode(formData: FormData) {
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const token = String(formData.get("token") ?? "").replace(/\s/g, "");
-  if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\d{6}$/.test(token)) {
+  if (!email || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\d{8}$/.test(token)) {
     redirect("/signup?error=invalid-code");
   }
 
