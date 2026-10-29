@@ -1,3 +1,4 @@
+import { CareerProfile } from "@/components/career-profile";
 import { redirect } from "next/navigation";
 import { saveProfile } from "@/app/jobs/actions";
 import { PortalShell, type AccountRole } from "@/components/portal-shell";
@@ -37,5 +38,6 @@ export default async function ProfilePage({ searchParams }: Props) {
       {role === "freelancer" && <><label htmlFor="linkedin_url">LinkedIn profile</label><input id="linkedin_url" name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} maxLength={300} placeholder="https://linkedin.com/in/your-name" /></>}
       <button className="button" type="submit">Save profile →</button>
     </form></section>
+    {role === "freelancer" && <CareerProfile id={user.id} />}
   </PortalShell>;
 }
