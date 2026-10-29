@@ -36,3 +36,36 @@ export async function adminSetApplicationStatus(formData: FormData) {
   if (error || !data) redirect("/admin/applications?error=save");
   redirect("/admin/applications?success=updated");
 }
+
+export async function adminSetEmployerReview(formData: FormData) {
+  const { sessionClient } = await requireAdminContext();
+  const id = String(formData.get("employer_id") ?? "");
+  const reviewed = String(formData.get("reviewed") ?? "");
+  if (!uuidPattern.test(id) || !["true", "false"].includes(reviewed)) redirect("/admin/employers?error=invalid");
+
+  const { data, error } = await sessionClient
+    .from("profiles")
+    .update({ employer_verified: reviewed === "true" })
+    .eq("id", id)
+    .eq("role", "employer")
+    .select("id")
+    .maybeSingle();
+  if (error || !data) redirect("/admin/employers?error=save");
+  redirect(`/admin/employers?success=${reviewed === "true" ? "reviewed" : "unreviewed"}`);
+}
+
+export async function adminSetReportStatus(formData: FormData) {
+  const { user, sessionClient } = await requireAdminContext();
+  const id = String(formData.get("report_id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  if (!uuidPattern.test(id) || !["open", "resolved", "dismissed"].includes(status)) redirect("/admin/reports?error=invalid");
+
+  const { data, error } = await sessionClient
+    .from("job_reports")
+    .update({ status, reviewed_by: status === "open" ? null : user.id, reviewed_at: status === "open" ? null : new Date().toISOString() })
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+  if (error || !data) redirect("/admin/reports?error=save");
+  redirect("/admin/reports?success=updated");
+}
