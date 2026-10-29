@@ -49,11 +49,21 @@ export async function signIn(formData: FormData) {
   const supabase = await createClient();
   if (!supabase) redirect(`${loginPath}?error=setup`);
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) redirect(`${loginPath}?error=credentials`);
-  const { data: { user } } = await supabase.auth.getUser();
-  const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };
-  if (!user || profile?.role !== expectedRole) {
+  const user = signInData.user;
+  if (!user) {
+    await supabase.auth.signOut();
+    redirect(`${loginPath}?error=credentials`);
+  }
+
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profileError || !profile) {
+    await supabase.auth.signOut();
+    redirect(`${loginPath}?error=profile`);
+  }
+
+  if (profile.role !== expectedRole) {
     await supabase.auth.signOut();
     redirect(`${loginPath}?error=role`);
   }
