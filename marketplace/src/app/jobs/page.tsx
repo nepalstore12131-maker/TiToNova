@@ -22,7 +22,7 @@ export default async function JobsPage({ searchParams }: Props) {
   let loadFailed = false;
 
   if (supabase) {
-    let query = supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer:profiles!jobs_employer_id_fkey(full_name,company_name)").eq("status", "published").order("created_at", { ascending: false }).limit(60);
+    let query = supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("status", "published").order("created_at", { ascending: false }).limit(60);
     if (q) query = query.ilike("title", `%${q.replace(/[%_]/g, "\\$&")}%`);
     if (category) query = query.eq("category", category);
     if (location) query = query.ilike("location", `%${location.replace(/[%_]/g, "\\$&")}%`);
@@ -51,7 +51,7 @@ export default async function JobsPage({ searchParams }: Props) {
         const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
         const company = employer?.company_name || employer?.full_name || "Titonova employer";
         return <article className="job-card" key={job.id}>
-          <div className="job-meta"><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span></div></div><span className="badge">Published</span></div>
+          <div className="job-meta"><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">Published</span></div>
           <h2 style={{ margin: "0 0 8px", fontSize: 15 }}><Link href={`/jobs/${job.id}`}>{job.title}</Link></h2>
           <p className="desc">{job.description.slice(0, 150)}{job.description.length > 150 ? "…" : ""}</p>
           <div className="tag-row"><span className="tag">{job.category}</span><span className="tag">{job.work_type.replaceAll("_", " ")}</span></div>

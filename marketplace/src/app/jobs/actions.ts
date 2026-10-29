@@ -68,6 +68,33 @@ export async function applyToJob(formData: FormData) {
   redirect("/dashboard?success=application-submitted");
 }
 
+export async function reportJob(formData: FormData) {
+  const { supabase, user, role } = await getSignedInMember();
+  const jobId = String(formData.get("job_id") ?? "");
+  const reason = String(formData.get("reason") ?? "");
+  const details = String(formData.get("details") ?? "").trim();
+  const allowedReasons = new Set(["misleading", "spam", "suspicious", "inappropriate", "other"]);
+  if (!/^[0-9a-f-]{36}$/i.test(jobId) || !allowedReasons.has(reason) || details.length > 1500) {
+    redirect(`/jobs/${encodeURIComponent(jobId)}?report=invalid`);
+  }
+  if (role === "admin") redirect(`/jobs/${jobId}?report=unavailable`);
+
+  const { data: job } = await supabase.from("jobs").select("employer_id,status").eq("id", jobId).maybeSingle();
+  if (!job || job.status !== "published" || job.employer_id === user.id) {
+    redirect(`/jobs/${jobId}?report=unavailable`);
+  }
+
+  const { error } = await supabase.from("job_reports").insert({
+    job_id: jobId,
+    reporter_id: user.id,
+    reason,
+    details,
+  });
+  if (error?.code === "23505") redirect(`/jobs/${jobId}?report=duplicate`);
+  if (error) redirect(`/jobs/${jobId}?report=error`);
+  redirect(`/jobs/${jobId}?report=sent`);
+}
+
 export async function reviewJob(formData: FormData) {
   const { supabase, user, role } = await getSignedInMember();
   if (role !== "admin") redirect("/admin/jobs?error=admin-only");

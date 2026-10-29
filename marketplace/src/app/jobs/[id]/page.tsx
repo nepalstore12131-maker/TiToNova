@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { applyToJob } from "@/app/jobs/actions";
+import { applyToJob, reportJob } from "@/app/jobs/actions";
 import { createClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -12,10 +12,11 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const queryParams = await searchParams;
   const errorCode = Array.isArray(queryParams.error) ? queryParams.error[0] : queryParams.error;
+  const reportCode = Array.isArray(queryParams.report) ? queryParams.report[0] : queryParams.report;
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Job details will be available after the shared database is connected.</div><Link href="/jobs">Back to jobs</Link></main>;
 
-  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name)").eq("id", id).eq("status", "published").maybeSingle();
+  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,category,location,work_type,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
   if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
   const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +32,8 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
       <div className="job-detail-grid">
         <article className="dashboard-card" style={{ marginTop: 0 }}>
           <div className="eyebrow">{job.category}</div><h1 style={{ marginTop: 10 }}>{job.title}</h1>
-          <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span></div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
+          <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
+          {employer?.employer_verified && <p className="trust-copy">Titonova has reviewed this employer’s company details.</p>}
           <div className="job-detail-pay">{pay} {job.pay_min !== null || job.pay_max !== null ? <span>/ month</span> : null}</div>
           <h2 style={{ fontSize: 17, margin: "28px 0 10px" }}>About the role</h2><p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
         </article>
@@ -45,6 +47,13 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
           {user && profile?.role === "freelancer" && <form action={applyToJob} className="auth-form"><input type="hidden" name="job_id" value={job.id} /><label htmlFor="cover_note">Short introduction</label><textarea className="cover-note" id="cover_note" name="cover_note" minLength={20} maxLength={5000} required placeholder="Tell the employer about your relevant skills and experience…" /><button className="button full" type="submit">Submit application →</button></form>}
           {user && profile?.role === "employer" && <div className="setup-alert">Employer accounts can’t apply to job listings.</div>}
           {user && profile?.role === "admin" && <div className="setup-alert">Administrator accounts can review this listing but don’t apply to jobs.</div>}
+          {reportCode === "sent" && <div className="setup-alert" role="status">Thanks. Your report was sent to the Titonova review team.</div>}
+          {reportCode === "duplicate" && <div className="form-alert" role="status">You have already reported this listing.</div>}
+          {reportCode === "error" && <div className="form-alert" role="alert">We couldn’t send your report. Please try again.</div>}
+          {reportCode === "invalid" && <div className="form-alert" role="alert">Choose a reason and keep your note under 1,500 characters.</div>}
+          {reportCode === "unavailable" && <div className="form-alert" role="status">This listing can’t be reported from this account.</div>}
+          {!user && <p className="report-signin">Think this listing needs a review? <Link href={`/login?next=${encodeURIComponent(`/jobs/${job.id}`)}`}>Sign in to report it</Link>.</p>}
+          {user && profile?.role !== "admin" && job.employer_id !== user.id && <details className="report-job-details"><summary>Report this listing</summary><p>Tell us what looks wrong. Reports go to the Titonova review team.</p><form action={reportJob} className="auth-form"><input type="hidden" name="job_id" value={job.id} /><label htmlFor="report-reason">Reason</label><select id="report-reason" name="reason" required defaultValue=""><option value="" disabled>Select a reason</option><option value="misleading">Misleading information</option><option value="spam">Spam or duplicate</option><option value="suspicious">Suspicious activity</option><option value="inappropriate">Inappropriate content</option><option value="other">Other</option></select><label htmlFor="report-details">Additional details (optional)</label><textarea className="cover-note" id="report-details" name="details" maxLength={1500} placeholder="Share a short explanation" /><button className="button secondary full" type="submit">Send report</button></form></details>}
         </aside>
       </div>
     </main>
