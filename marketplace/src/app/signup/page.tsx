@@ -16,7 +16,12 @@ export default async function SignupPage({ searchParams }: Props) {
       <div className="eyebrow">Create your account</div><h1>Join Titonova</h1><p className="auth-copy">Set up your account to prepare for Nepal’s new work marketplace.</p>
       {error === "setup" && <div className="setup-alert">Account services are being connected. Please try again later.</div>}
       {error === "invalid" && <div className="form-alert">Check your details. Use a valid email, choose an account type, and use a password with at least 10 characters.</div>}
-      {error === "signup" && <div className="form-alert">We couldn’t create that account. The email may already be registered; try logging in.</div>}
+      {error === "exists" && <div className="form-alert">An account already uses this email address. Log in or use a different email.</div>}
+      {error === "rate-limit" && <div className="form-alert">Too many signup or confirmation attempts were made recently. Please wait a few minutes and try again.</div>}
+      {error === "weak-password" && <div className="form-alert">Choose a stronger password, then try again.</div>}
+      {error === "email-invalid" && <div className="form-alert">Please check the email address and try again.</div>}
+      {error === "unavailable" && <div className="form-alert">New account signup is temporarily unavailable. Please try again later.</div>}
+      {error === "try-again" && <div className="form-alert">We couldn’t finish creating your account. The email may not be the problem. Please try again in a few minutes.</div>}
       {success === "check-email" && <div className="setup-alert">Check your email for a confirmation link. After confirming, you can sign in here.</div>}
       <form action={signUp} className="auth-form">
         <label htmlFor="full_name">Full name</label><input id="full_name" name="full_name" autoComplete="name" required maxLength={80} placeholder="Your name" />

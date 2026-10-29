@@ -32,7 +32,24 @@ export async function signUp(formData: FormData) {
     },
   });
 
-  if (error) redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}error=signup`);
+  if (error) {
+    // Keep the public error message accurate without exposing provider details.
+    // Supabase can reject signup for several reasons; do not label all of them
+    // as duplicate email addresses.
+    console.error("Titonova signup failed", { code: error.code, status: error.status });
+    const errorType = error.code === "email_exists" || error.code === "user_already_exists"
+      ? "exists"
+      : error.code === "over_email_send_rate_limit" || error.code === "over_request_rate_limit"
+        ? "rate-limit"
+        : error.code === "weak_password"
+          ? "weak-password"
+          : error.code === "email_address_invalid"
+            ? "email-invalid"
+            : error.code === "signup_disabled" || error.code === "email_provider_disabled"
+              ? "unavailable"
+              : "try-again";
+    redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}error=${errorType}`);
+  }
   if (data.session) redirect("/dashboard");
   redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}success=check-email`);
 }
