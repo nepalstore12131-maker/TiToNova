@@ -29,15 +29,15 @@ export default async function SignupPage({ searchParams }: Props) {
       {error === "try-again" && <div className="form-alert">We couldn’t finish creating your account. The email may not be the problem. Please try again in a few minutes.</div>}
       {error === "confirmation" && <div className="form-alert">That confirmation link expired or could not be verified. Request a fresh link below.</div>}
       {error === "verification-disabled" && <div className="form-alert">Email verification is not enabled for this project yet. Please contact the site administrator before creating an account.</div>}
-      {success === "check-email" && <div className="setup-alert">We sent a six-digit code to your email. Enter it below to verify your address and activate your account.</div>}
+      {success === "check-email" && <div className="setup-alert">We sent an eight-digit code to your email. Enter it below to verify your address and activate your account.</div>}
       {success === "resent" && <div className="setup-alert">If this address needs confirmation, a new code is on its way. Check your inbox and spam folder.</div>}
-      {error === "invalid-code" && <div className="form-alert">That code couldn’t be verified. Check the six digits and try again, or request a new code.</div>}
+      {error === "invalid-code" && <div className="form-alert">That code couldn’t be verified. Check the eight digits and try again, or request a new code.</div>}
       {waitingForCode && <section className="dashboard-card" style={{ margin: "0 0 16px", padding: 16 }}>
         <form action={verifySignupCode} className="auth-form">
           <label htmlFor="verification_email">Email address</label>
           <input id="verification_email" name="email" type="email" autoComplete="email" required defaultValue={pendingEmail} placeholder="you@example.com" />
-          <label htmlFor="verification_code">Six-digit email code</label>
-          <input id="verification_code" name="token" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" minLength={6} maxLength={6} required placeholder="000000" />
+          <label htmlFor="verification_code">Eight-digit email code</label>
+          <input id="verification_code" name="token" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{8}" minLength={8} maxLength={8} required placeholder="00000000" />
           <button className="button full" type="submit">Verify email <span aria-hidden="true">→</span></button>
         </form>
       </section>}
