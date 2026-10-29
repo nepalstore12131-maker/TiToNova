@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ApplicationConversation } from "@/components/application-conversation";
 import { notFound, redirect } from "next/navigation";
 import { updateApplicationStatus } from "@/app/jobs/actions";
 import { PortalShell, type AccountRole } from "@/components/portal-shell";
@@ -52,5 +53,6 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
       {role === "employer" && application.status === "submitted" && <div className="inline-form"><form action={updateApplicationStatus}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="shortlisted" /><button className="button small" type="submit">Shortlist</button></form><form action={updateApplicationStatus}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="rejected" /><button className="button small danger" type="submit">Decline</button></form></div>}
       {role === "freelancer" && application.status === "submitted" && <form action={updateApplicationStatus} style={{ marginTop: 18 }}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="withdrawn" /><button className="button secondary small" type="submit">Withdraw application</button></form>}
     </section>
+    <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} />
   </PortalShell>;
 }

@@ -30,7 +30,7 @@ export default async function Home() {
       {!databaseReady && <div className="preview-bar"><strong>Early preview:</strong> Connect the secure marketplace database to enable accounts, applications, and live listings.</div>}
       <header className="site-header">
         <Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link>
-        <nav className="nav-links" aria-label="Main navigation"><a href="#categories">Explore skills</a><Link href="/jobs">Browse jobs</Link><a href="#how">How it works</a></nav>
+        <nav className="nav-links" aria-label="Main navigation"><a href="#categories">Explore skills</a><Link href="/ne">नेपाली</Link><Link href="/jobs">Browse jobs</Link><a href="#how">How it works</a></nav>
         <div className="nav-actions"><Link className="text-button" href="/login">Job seeker login</Link><Link className="text-button employer-login-link" href="/employer/login">Employer sign in</Link><Link className="button" href="/signup">Join Titonova <span aria-hidden="true">→</span></Link></div>
       </header>
 
