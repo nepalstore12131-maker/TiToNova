@@ -19,8 +19,9 @@ Main pages are separate: `/jobs`, `/jobs/[id]`, `/login`, `/employer/login`, `/a
 1. Create a Supabase project.
 2. Copy `.env.example` to `.env.local` and fill in the project URL, publishable key, and `NEXT_PUBLIC_SITE_URL=http://localhost:3000`. Add the Supabase service-role key only if using administrator account management.
 3. Apply `supabase/migrations/0001_marketplace_foundation.sql`, then `supabase/migrations/0002_profiles_and_application_workflows.sql`, `0003_api_access_grants.sql`, and `0004_admin_profile_grants.sql`, in the Supabase SQL editor, in that order.
-4. In Supabase Auth settings, enable email/password sign-in and add `http://localhost:3000/auth/callback` plus the production callback URL to the redirect allow-list.
-5. Run `npm install`, then `npm run dev`.
+4. In Supabase Auth settings, enable email/password sign-in and email confirmations. Add `http://localhost:3000/auth/callback` plus the production callback URL to the redirect allow-list.
+5. In Supabase Authentication → Email Templates → Confirm signup, replace the confirmation-link template with the code template in `supabase/email-templates/confirm-signup.html`. The app verifies the six-digit code using Supabase Auth. For production, configure custom SMTP so confirmation email can reach all users and avoid the built-in provider's low sending limit.
+6. Run `npm install`, then `npm run dev`.
 
 Assign the first administrator using the Supabase SQL editor after that account has signed up:
 
