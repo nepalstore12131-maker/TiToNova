@@ -12,10 +12,15 @@ export default async function ApplicationsPage() {
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to view applications.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
   if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your account details. Refresh the page and try again.</div></main>;
   const role = profile.role as AccountRole;
   if (role === "admin") redirect("/admin");
+  const employerPremiumActive = role === "employer" && Boolean(profile.employer_premium_until && new Date(profile.employer_premium_until).getTime() > Date.now());
+  if (role === "employer" && !employerPremiumActive) return <PortalShell role="employer" activePath="/dashboard/applications">
+    <div className="eyebrow">Hiring workspace</div><h1>Applications received</h1>
+    <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>Premium required</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>Activate Employer Premium to review candidates and manage applications. Existing candidates and applications will be available after approval.</p><Link className="button" href="/dashboard/billing">View payment details →</Link></section>
+  </PortalShell>;
 
   let applications: any[] = [];
   let loadFailed = false;

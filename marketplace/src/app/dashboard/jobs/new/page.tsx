@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { createJob } from "@/app/jobs/actions";
 import { PortalShell } from "@/components/portal-shell";
 import { createClient } from "@/lib/supabase/server";
@@ -12,9 +13,15 @@ export default async function NewJobPage({ searchParams }: Props) {
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to post a job.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
   if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your employer account. Refresh the page and try again.</div></main>;
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
+  const premiumActive = Boolean(profile.employer_premium_until && new Date(profile.employer_premium_until).getTime() > Date.now());
+  if (!premiumActive) return <PortalShell role="employer" activePath="/dashboard/jobs/new">
+    <div className="eyebrow">Employer workspace</div><h1>Premium required to post</h1>
+    <p style={{ color: "var(--muted)", fontSize: 13 }}>Activate Employer Premium before creating or updating a job post.</p>
+    <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>Start with payment review</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>The administrator will enable your employer account after reviewing your payment transaction code and proof.</p><Link className="button" href="/dashboard/billing">View payment details →</Link></section>
+  </PortalShell>;
   const params = await searchParams;
   const error = Array.isArray(params.error) ? params.error[0] : params.error;
 

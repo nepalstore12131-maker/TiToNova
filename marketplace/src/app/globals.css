@@ -142,6 +142,21 @@ button { cursor: pointer; }
 .admin-pagination { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-top: 18px; color: var(--muted); font-size: 11px; }
 @media (max-width: 650px) { .admin-account-grid { grid-template-columns: 1fr; }.admin-delete-row { grid-template-columns: 1fr; }.admin-inline-form { align-items: stretch; }.admin-inline-form select { width: 100%; }.admin-section-heading { align-items: flex-start; } }
 
+.billing-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 14px; margin-top: 20px; }
+.premium-status-card { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.payment-detail { display: grid; gap: 4px; margin-top: 13px; padding-top: 12px; border-top: 1px solid #eef0eb; font-size: 12px; }
+.payment-detail strong { color: var(--ink); }.payment-detail span { color: var(--muted); overflow-wrap: anywhere; }.payment-detail a { width: fit-content; color: var(--green); font-weight: 750; }
+.payment-settings-heading { margin: 20px 0 2px; padding-top: 14px; border-top: 1px solid #eef0eb; font-size: 14px; }
+.field-help { color: var(--muted); font-size: 10px; line-height: 1.45; }
+.payment-review-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 14px; padding: 12px; border: 1px solid #eef0eb; border-radius: 10px; background: #fbfcf9; }
+.payment-review-grid > div { display: grid; align-content: start; gap: 5px; min-width: 0; }
+.payment-review-grid small { color: var(--muted); font-size: 9px; font-weight: 750; text-transform: uppercase; letter-spacing: .05em; }
+.payment-review-grid strong { overflow-wrap: anywhere; font-size: 11px; }
+.payment-review-form { margin-top: 14px; padding-top: 12px; border-top: 1px solid #eef0eb; }
+.status-pending { background: #fff6dd; color: #78631c; }.status-approved { background: #edf5ed; color: #267351; }.status-rejected { background: #fff1ed; color: #934431; }
+@media (max-width: 800px) { .billing-grid { grid-template-columns: 1fr; }.payment-review-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 470px) { .payment-review-grid { grid-template-columns: 1fr; }.premium-status-card { align-items: flex-start; flex-direction: column; } }
+
 .verified-badge { display: inline-flex; width: fit-content; align-items: center; gap: 4px; margin-top: 5px; padding: 3px 7px; border: 1px solid #c7e1d2; border-radius: 999px; background: #eff8f2; color: #176c50; font-size: 9px; font-weight: 750; line-height: 1.3; }
 .trust-copy { margin: -8px 0 20px; color: #587166; font-size: 11px; line-height: 1.55; }
 .report-signin { margin: 18px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }

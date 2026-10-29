@@ -16,10 +16,11 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to open application details.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
   if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your account details. Refresh the page and try again.</div></main>;
   const role = profile.role as AccountRole;
   if (role === "admin") redirect("/admin");
+  if (role === "employer" && (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now())) redirect("/dashboard/billing?required=1");
 
   const { data: application, error: applicationError } = await supabase.from("applications").select("id,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
   if (applicationError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this application. Refresh the page and try again.</div><Link href="/dashboard/applications">Back to applications →</Link></main>;

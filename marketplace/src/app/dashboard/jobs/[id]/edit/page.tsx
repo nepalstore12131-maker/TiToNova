@@ -16,8 +16,9 @@ export default async function EditJobPage({ params, searchParams }: Props) {
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to edit job posts.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/employer/login");
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  const { data: profile } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
+  if (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
   const { data: job } = await supabase.from("jobs").select("id,title,description,category,location,work_type,pay_min,pay_max,status").eq("id", id).eq("employer_id", user.id).maybeSingle();
   if (!job || ["closed", "rejected"].includes(job.status)) notFound();
   const paramsValue = await searchParams;
