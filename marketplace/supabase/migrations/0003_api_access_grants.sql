@@ -4,7 +4,7 @@
 grant usage on schema public to anon, authenticated;
 
 -- Public job cards may show an employer's name, but not a job seeker's profile.
-grant select (id, full_name, company_name) on public.profiles to anon;
+grant select (id, full_name, company_name, role) on public.profiles to anon;
 grant select on public.profiles to authenticated;
 grant update (full_name, company_name, headline, bio, location, skills, portfolio_url, linkedin_url)
   on public.profiles to authenticated;
