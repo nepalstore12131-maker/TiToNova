@@ -13,6 +13,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
   ],
   employer: [
     { href: "/dashboard", label: "Overview" },
+    { href: "/dashboard/hiring", label: "Hiring dashboard" },
     { href: "/dashboard/jobs", label: "My job posts" },
     { href: "/dashboard/jobs/new", label: "Post a job" },
     { href: "/dashboard/billing", label: "Premium access" },

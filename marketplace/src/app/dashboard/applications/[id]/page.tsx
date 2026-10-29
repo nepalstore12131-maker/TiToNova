@@ -1,3 +1,4 @@
+import { CandidateReview } from "@/components/candidate-review";
 import Link from "next/link";
 import { ApplicationConversation } from "@/components/application-conversation";
 import { notFound, redirect } from "next/navigation";
@@ -23,7 +24,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   if (role === "admin") redirect("/admin");
   if (role === "employer" && (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now())) redirect("/dashboard/billing?required=1");
 
-  const { data: application, error: applicationError } = await supabase.from("applications").select("id,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
+  const { data: application, error: applicationError } = await supabase.from("applications").select("id,applicant_id,hiring_stage,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
   if (applicationError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this application. Refresh the page and try again.</div><Link href="/dashboard/applications">Back to applications →</Link></main>;
   if (!application) notFound();
   const job = Array.isArray(application.job) ? application.job[0] : application.job;
@@ -49,10 +50,12 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
         <div className="detail-label">Applied to</div><p style={{ margin: 0 }}><Link href={`/jobs/${job?.id}`} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Job listing"}</Link></p>
         <div className="detail-label">Status</div><p style={{ margin: 0 }}><span className={`status-tag status-${application.status}`}>{application.status}</span></p>
       </>}
-      <div className="detail-label">Your introduction</div><p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{application.cover_note}</p>
-      {role === "employer" && application.status === "submitted" && <div className="inline-form"><form action={updateApplicationStatus}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="shortlisted" /><button className="button small" type="submit">Shortlist</button></form><form action={updateApplicationStatus}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="rejected" /><button className="button small danger" type="submit">Decline</button></form></div>}
+      <div className="detail-label">{role === "employer" ? "Candidate introduction" : "Your introduction"}</div><p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{application.cover_note}</p>
+
       {role === "freelancer" && application.status === "submitted" && <form action={updateApplicationStatus} style={{ marginTop: 18 }}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="withdrawn" /><button className="button secondary small" type="submit">Withdraw application</button></form>}
     </section>
+    <p className="setup-alert">Hiring stage: <strong>{application.status === "withdrawn" ? "withdrawn" : application.hiring_stage}</strong></p>
+    {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
     <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} />
   </PortalShell>;
 }
