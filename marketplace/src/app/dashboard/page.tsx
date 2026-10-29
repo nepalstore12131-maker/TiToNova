@@ -11,7 +11,7 @@ export default async function DashboardPage() {
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,company_name,role").eq("id", user.id).maybeSingle();
+  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,company_name,role,employer_premium_until").eq("id", user.id).maybeSingle();
   if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your account workspace. Refresh the page and try again.</div><Link href="/dashboard">Try again →</Link></main>;
   const role = profile.role as AccountRole;
   if (role === "admin") redirect("/admin");
@@ -26,8 +26,10 @@ export default async function DashboardPage() {
   const jobCount = jobs?.error ? null : jobs?.count ?? 0;
   const applicationCount = applications.error ? null : applications.count ?? 0;
 
+  const isPremium = Boolean(role === "employer" && profile.employer_premium_until && new Date(profile.employer_premium_until).getTime() > Date.now());
   const cards = role === "employer"
     ? [
+        { href: "/dashboard/billing", title: isPremium ? "Premium active" : "Activate Premium", description: isPremium ? `Eligible to post until ${new Date(profile.employer_premium_until!).toLocaleDateString("en-NP")}.` : "Choose a payment method, submit proof, and wait for admin approval before posting jobs." },
         { href: "/dashboard/jobs", title: "My job posts", description: jobCount === null ? "Listing totals are temporarily unavailable. Open your job posts to check their status." : `${jobCount} listing${jobCount === 1 ? "" : "s"} · Check review status and manage roles.` },
         { href: "/dashboard/applications", title: "Applications received", description: applicationCount === null ? "Application totals are temporarily unavailable. Open the list to review candidates." : `${applicationCount} application${applicationCount === 1 ? "" : "s"} · Review interested candidates.` },
         { href: "/dashboard/jobs/new", title: "Post a job", description: "Share a role with professionals across Nepal." },

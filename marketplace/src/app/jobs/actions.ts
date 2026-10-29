@@ -8,13 +8,14 @@ async function getSignedInMember() {
   if (!supabase) redirect("/login?error=setup");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  return { supabase, user, role: profile?.role as string | undefined };
+  const { data: profile } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
+  return { supabase, user, role: profile?.role as string | undefined, premiumUntil: profile?.employer_premium_until as string | null | undefined };
 }
 
 export async function createJob(formData: FormData) {
-  const { supabase, user, role } = await getSignedInMember();
+  const { supabase, user, role, premiumUntil } = await getSignedInMember();
   if (role !== "employer") redirect("/dashboard?error=employer-only");
+  if (!premiumUntil || new Date(premiumUntil).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -109,7 +110,7 @@ export async function reviewJob(formData: FormData) {
 }
 
 export async function updateApplicationStatus(formData: FormData) {
-  const { supabase, user, role } = await getSignedInMember();
+  const { supabase, user, role, premiumUntil } = await getSignedInMember();
   const applicationId = String(formData.get("application_id") ?? "");
   const status = String(formData.get("status") ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(applicationId)) redirect("/dashboard/applications?error=invalid");
@@ -118,6 +119,7 @@ export async function updateApplicationStatus(formData: FormData) {
     ? ["shortlisted", "rejected"]
     : role === "freelancer" ? ["withdrawn"] : [];
   if (!allowed.includes(status)) redirect("/dashboard/applications?error=role");
+  if (role === "employer" && (!premiumUntil || new Date(premiumUntil).getTime() <= Date.now())) redirect("/dashboard/billing?required=1");
 
   let query = supabase.from("applications").update({ status }).eq("id", applicationId);
   if (role === "freelancer") query = query.eq("applicant_id", user.id).eq("status", "submitted");
@@ -165,8 +167,9 @@ export async function saveProfile(formData: FormData) {
 }
 
 export async function updateJob(formData: FormData) {
-  const { supabase, user, role } = await getSignedInMember();
+  const { supabase, user, role, premiumUntil } = await getSignedInMember();
   if (role !== "employer") redirect("/dashboard?error=employer-only");
+  if (!premiumUntil || new Date(premiumUntil).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
   const jobId = String(formData.get("job_id") ?? "");
   if (!/^[0-9a-f-]{36}$/i.test(jobId)) redirect("/dashboard/jobs?error=invalid");
 
