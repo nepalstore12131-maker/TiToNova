@@ -17,6 +17,8 @@ export async function createJob(formData: FormData) {
   if (role !== "employer") redirect("/dashboard?error=employer-only");
   if (!premiumUntil || new Date(premiumUntil).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
 
+  const submissionKey=String(formData.get("submission_key")||"");
+  if(!/^[0-9a-f-]{36}$/i.test(submissionKey))redirect("/dashboard/jobs/new?error=save");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
   const category = String(formData.get("category") ?? "").trim();
@@ -37,6 +39,7 @@ export async function createJob(formData: FormData) {
 
   const { data: created, error } = await supabase.from("jobs").insert({
     employer_id: user.id,
+    submission_key: submissionKey,
     title,
     description,
     category,
@@ -51,6 +54,10 @@ export async function createJob(formData: FormData) {
     status: "pending_review",
   }).select("status").single();
 
+  if(error?.code==="23505"){
+    const {data:previous}=await supabase.from("jobs").select("id").eq("employer_id",user.id).eq("submission_key",submissionKey).maybeSingle();
+    if(previous)redirect("/dashboard/jobs?success=already-posted");
+  }
   if (error) redirect("/dashboard/jobs/new?error=save");
   redirect(`/dashboard/jobs?success=${created?.status === "published" ? "published" : "submitted"}`);
 }

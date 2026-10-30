@@ -1,0 +1,45 @@
+-- Transactional fixture checks; always roll back.
+do $$
+declare e uuid:=gen_random_uuid();w uuid:=gen_random_uuid();x uuid:=gen_random_uuid();j uuid:=gen_random_uuid();j2 uuid:=gen_random_uuid();a uuid:=gen_random_uuid();a2 uuid:=gen_random_uuid();assignment uuid;assignment2 uuid;r uuid;k uuid:=gen_random_uuid();n integer;start_at timestamptz:=date_trunc('minute',now());original_due timestamptz:=date_trunc('minute',now())+interval '1 day';
+begin
+ perform set_config('request.jwt.claims','{"role":"service_role"}',true);
+ insert into auth.users(id,email,raw_user_meta_data) values(e,e||'@schedule.invalid','{"account_type":"employer"}'),(w,w||'@schedule.invalid','{}'),(x,x||'@schedule.invalid','{}');
+ update public.profiles set employer_premium_until=now()+interval '1 day' where id=e;
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);set local role authenticated;
+ insert into public.jobs(id,employer_id,title,description,category,status,submission_key) values(j,e,'Schedule test job','Temporary test job for transactional validation.','Development','published',k);
+ begin insert into public.jobs(employer_id,title,description,category,status,submission_key) values(e,'Schedule test job','Temporary test job for transactional validation.','Development','published',k);raise exception 'Duplicate submission accepted';exception when unique_violation then null;end;
+ select count(*) into n from public.jobs where employer_id=e and submission_key=k;if n<>1 then raise exception 'Duplicate count';end if;
+ begin update public.jobs set submission_key=gen_random_uuid() where id=j;raise exception 'Idempotency key mutable';exception when raise_exception then if sqlerrm<>'Submission key cannot be changed' then raise;end if;end;
+ insert into public.jobs(id,employer_id,title,description,category,status,submission_key) values(j2,e,'Ongoing schedule test','Temporary test job for transactional validation.','Development','published',gen_random_uuid());reset role;
+ insert into public.applications(id,job_id,applicant_id,cover_note) values(a,j,w,'Test schedule application note'),(a2,j2,w,'Test schedule application note');
+ set local role authenticated;assignment:=public.assign_job_worker(a);assignment2:=public.assign_job_worker(a2);
+ perform public.set_work_schedule(assignment,start_at,original_due,'Please arrive on time');
+ perform public.set_work_schedule(assignment2,start_at,null,'Ongoing work without deadline');
+ perform set_config('request.jwt.claims',json_build_object('sub',x,'role','authenticated')::text,true);
+ select count(*) into n from public.work_timeline where assignment_id=assignment;if n<>0 then raise exception 'Outsider sees private timeline';end if;
+ begin perform public.set_work_schedule(assignment,start_at,original_due);raise exception 'Outsider changed schedule';exception when raise_exception then if sqlerrm<>'Schedule unavailable' then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);
+ begin perform public.update_job_work(assignment,'start');raise exception 'Started without acceptance';exception when raise_exception then if sqlerrm<>'Accept the schedule before starting' then raise;end if;end;
+ perform public.accept_work_schedule(assignment2);perform public.update_job_work(assignment2,'start');
+ if not exists(select 1 from public.job_assignments where id=assignment2 and due_at is null and state='in_progress') then raise exception 'Optional deadline blocked start';end if;
+ perform public.request_work_time(assignment,start_at+interval '1 hour',original_due+interval '1 hour','I will arrive one hour later');
+ select id into r from public.work_time_requests where assignment_id=assignment and status='pending';
+ if not exists(select 1 from public.job_assignments where id=assignment and due_at=original_due) then raise exception 'Unapproved request changed schedule';end if;
+ begin perform public.review_work_time(r,true);raise exception 'Worker approved own request';exception when raise_exception then if sqlerrm<>'Time review unavailable' then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);perform public.review_work_time(r,true,'Agreed');
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);perform public.update_job_work(assignment,'start');perform public.update_job_work(assignment,'progress',50,'Half complete');
+ if not exists(select 1 from public.work_timeline where assignment_id=assignment and event='Progress updated (50%)') then raise exception 'Progress history missing';end if;
+ perform public.request_work_time(assignment,start_at+interval '1 hour',original_due+interval '3 hours','Need extra time to finish safely');
+ select id into r from public.work_time_requests where assignment_id=assignment and status='pending';
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);perform public.review_work_time(r,false,'Please keep agreed deadline');
+ if not exists(select 1 from public.job_assignments where id=assignment and due_at=original_due+interval '1 hour') then raise exception 'Rejection changed deadline';end if;
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);perform public.update_job_work(assignment,'submit',100,'Finished');
+ if not exists(select 1 from public.job_assignments where id=assignment and submitted_at is not null) then raise exception 'Submission time absent';end if;
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);perform public.update_job_work(assignment,'complete');
+ begin perform public.set_work_schedule(assignment,start_at,original_due);raise exception 'Completed schedule edited';exception when raise_exception then if sqlerrm<>'Schedule unavailable' then raise;end if;end;
+ perform public.archive_job_listing(j);
+ if not exists(select 1 from public.work_timeline where assignment_id=assignment and event='Work completed') then raise exception 'Completed history missing';end if;
+ reset role;
+end$$;
+rollback;
+select 'PASS: one job per submission; immutable key; optional deadline; private schedule; worker acceptance; no self-approved time change; approved and declined requests; actual submission timestamp; completed read-only history survives archive; test fixtures rolled back' as result;
