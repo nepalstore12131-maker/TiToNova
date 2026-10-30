@@ -19,6 +19,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/dashboard/work", label: "My work" },
     { href: "/dashboard/profile", label: "My profile" },
     { href: "/dashboard/settings", label: "Account settings" },
+    { href: "/dashboard/support", label: "Help & support" },
   ],
   employer: [
     { href: "/dashboard", label: "Overview" },
@@ -31,12 +32,14 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/dashboard/applications", label: "Applications received" },
     { href: "/dashboard/profile", label: "Hiring profile" },
     { href: "/dashboard/settings", label: "Account settings" },
+    { href: "/dashboard/support", label: "Help & support" },
   ],
   admin: [
     { href: "/admin", label: "Overview" },
     { href: "/admin/jobs", label: "Review jobs" },
     { href: "/admin/listings", label: "All job posts" },
     { href: "/admin/categories", label: "Job categories" },
+    { href: "/admin/support", label: "Support inbox" },
     { href: "/admin/employers", label: "Employer review" },
     { href: "/admin/reports", label: "Job reports" },
     { href: "/admin/messages", label: "Message moderation" },

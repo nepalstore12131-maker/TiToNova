@@ -1,0 +1,4 @@
+.floating-help{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:45;display:inline-flex;align-items:center;gap:8px;padding:12px 17px;border:1px solid #c7aa68;border-radius:999px;background:#292c29;color:#fff9e9;box-shadow:0 5px 20px #0002;text-decoration:none;font-size:13px;font-weight:650}.floating-help:hover{background:#41463e;transform:translateY(-1px)}.floating-help:focus-visible{outline:3px solid #b39249;outline-offset:4px}body{padding-bottom:72px}
+.install-banner{bottom:calc(78px + env(safe-area-inset-bottom))}
+
+.support-footer-links{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;padding:16px 100px 16px 20px;font-size:12px;color:var(--muted)}

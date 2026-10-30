@@ -1,0 +1,2 @@
+import Link from 'next/link';
+export function HelpButton(){return <Link href="/help" className="floating-help" aria-label="Help and contact support"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5H4l-3 2V11.5a10 10 0 0 1 20 0Z"/><path d="M8 9a3 3 0 0 1 6 0c0 2-3 2-3 4m0 3h.01"/></svg><span>Help</span></Link>;}
