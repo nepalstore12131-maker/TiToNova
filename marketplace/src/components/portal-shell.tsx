@@ -26,6 +26,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/admin/support", label: "Support inbox" },
     { href: "/admin/employers", label: "Employer review" },
     { href: "/admin/reports", label: "Job reports" },
+    { href: "/admin/disputes", label: "Work disputes & suspensions" },
     { href: "/admin/messages", label: "Message moderation" },
     { href: "/admin/payments", label: "Revenue & payments" },
     { href: "/admin/payments/settings", label: "Premium settings" },
@@ -45,6 +46,7 @@ const roleLabel: Record<AccountRole, string> = {
 export async function PortalShell({ role, activePath, children }: Props) {
   const db=await createClient();
   const user=db?(await db.auth.getUser()).data.user:null;
+  const {data:restriction}=db&&user?await db.from('account_suspensions').select('ends_at,reason').eq('account_id',user.id).is('revoked_at',null).gt('ends_at',new Date().toISOString()).order('ends_at',{ascending:false}).limit(1).maybeSingle():{data:null};
   return <div className={`page-shell premium-workspace workspace-${role}`}>
     <header className="site-header">
       <Link className="brand" href="/"><BrandMark /> Titonova<span className="brand-country">WORKSPACE</span></Link>
@@ -60,7 +62,7 @@ export async function PortalShell({ role, activePath, children }: Props) {
         </nav>}</>
         {role==="admin"&&<Link className="ws-sidebar-discover" href="/jobs"><UiIcon name="spark" size={17}/><span>Explore opportunities</span><UiIcon size={14}/></Link>}
       </aside>
-      <main className="dashboard portal-main">{children}</main>
+      <main className="dashboard portal-main">{restriction&&<section className="form-alert" role="status"><strong>Marketplace access temporarily suspended</strong><p>{restriction.reason}</p><p>Until {new Date(restriction.ends_at).toLocaleString('en-NP',{timeZone:'Asia/Kathmandu'})} NPT. You can still read your records, respond to your case and contact Support.</p><Link href="/dashboard/disputes">View restriction and appeal options →</Link></section>}{children}</main>
     </div>
   </div>;
 }
