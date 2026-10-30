@@ -1,0 +1,13 @@
+'use server';
+import sharp from 'sharp';
+import {redirect} from 'next/navigation';
+import {requireAdminContext} from '@/lib/supabase/admin';
+const localTime=(v:string)=>v?new Date(v+'+05:45').toISOString():null;
+export async function saveBanner(form:FormData){
+ const {sessionClient:db}=await requireAdminContext();const id=String(form.get('id')||''),advertiser=String(form.get('advertiser')||'').trim(),title=String(form.get('title')||'').trim(),alt=String(form.get('alt')||'').trim(),url=String(form.get('url')||'').trim(),placement=String(form.get('placement')||''),sort=Number(form.get('sort'));let start:string|null,end:string|null;
+ try{const u=new URL(url);if(u.protocol!=='https:'||u.username||u.password)throw Error();start=localTime(String(form.get('start')||''))||new Date().toISOString();end=localTime(String(form.get('end')||''));}catch{redirect('/admin/advertising?error=invalid');}
+ if(advertiser.length<2||advertiser.length>100||title.length<2||title.length>140||alt.length<2||alt.length>200||!['home','jobs'].includes(placement)||!Number.isInteger(sort)||sort<0||sort>9999||(end&&Date.parse(end)<=Date.parse(start!)))redirect('/admin/advertising?error=invalid');
+ let imagePath='';if(id){const {data}=await db.from('sponsor_banners').select('image_path').eq('id',id).maybeSingle();if(!data)redirect('/admin/advertising?error=save');imagePath=data.image_path;}
+ const file=form.get('image');if(file instanceof File&&file.size){if(file.size>5242880||!['image/jpeg','image/png','image/webp'].includes(file.type))redirect('/admin/advertising?error=image');let buffer:Buffer;try{const input=Buffer.from(await file.arrayBuffer());const meta=await sharp(input,{limitInputPixels:25000000}).metadata();if(!['jpeg','png','webp'].includes(meta.format||''))throw Error();buffer=await sharp(input,{limitInputPixels:25000000}).rotate().resize({width:2000,withoutEnlargement:true}).webp({quality:90}).toBuffer();}catch{redirect('/admin/advertising?error=image');}imagePath=`${crypto.randomUUID()}.webp`;const {error}=await db.storage.from('sponsor-banners').upload(imagePath,buffer,{contentType:'image/webp',upsert:false});if(error)redirect('/admin/advertising?error=image');}
+ if(!imagePath)redirect('/admin/advertising?error=image');const row={advertiser,title,alt_text:alt,target_url:url,image_path:imagePath,placement,sort_order:sort,active:form.get('active')==='on',starts_at:start,ends_at:end};const result=id?await db.from('sponsor_banners').update(row).eq('id',id):await db.from('sponsor_banners').insert(row);if(result.error)redirect('/admin/advertising?error=save');redirect('/admin/advertising?success=saved');
+}

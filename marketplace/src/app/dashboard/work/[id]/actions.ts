@@ -21,3 +21,7 @@ export async function changeSchedule(form:FormData){
  }else redirect(dest+'?error=invalid');
  if(result.error)redirect(dest+'?error=save');revalidatePath('/dashboard/work');revalidatePath(dest);redirect(dest+'?success=saved');
 }
+export async function leaveWorkReview(form:FormData){
+ const id=String(form.get('assignment_id')||''),rating=Number(form.get('rating')),feedback=String(form.get('feedback')||'').trim();if(!valid(id))redirect('/dashboard/work');const dest=`/dashboard/work/${id}`;
+ if(form.get('public_consent')!=='on'||!Number.isInteger(rating)||rating<1||rating>5||feedback.length<5||feedback.length>2000)redirect(dest+'?error=review');const db=await createClient();if(!db)redirect('/login');const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');const {error}=await db.rpc('submit_work_review',{p_assignment:id,p_rating:rating,p_feedback:feedback});if(error)redirect(dest+'?error=review');revalidatePath(dest);redirect(dest+'?success=review');
+}
