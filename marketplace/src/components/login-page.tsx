@@ -1,5 +1,8 @@
 import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { safeAuthDestination } from "@/lib/auth-navigation";
 import { signIn } from "@/app/auth/actions";
 
 type Role = "freelancer" | "employer" | "admin";
@@ -36,6 +39,11 @@ export async function LoginPage({ role, searchParams }: Props) {
   const requestedNext = Array.isArray(params.next) ? params.next[0] : params.next;
   const next = requestedNext?.startsWith("/") && !requestedNext.startsWith("//") && !requestedNext.startsWith("/login") ? requestedNext : "";
   const page = settings[role];
+  const db = await createClient();
+  if (db) {
+    const { data: { user } } = await db.auth.getUser();
+    if (user) redirect(safeAuthDestination(requestedNext));
+  }
 
   return <div className="page-shell">
     <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><div className="nav-actions"><Link className="text-button" href="/jobs">Browse jobs</Link>{role !== "admin" && <Link className="button secondary" href={`/signup${role === "employer" ? "?role=employer" : ""}`}>Create account</Link>}</div></header>

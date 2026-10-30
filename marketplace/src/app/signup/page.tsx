@@ -1,11 +1,18 @@
 import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { resendSignupConfirmation, signUp, verifySignupCode } from "@/app/auth/actions";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
 export default async function SignupPage({ searchParams }: Props) {
+  const db = await createClient();
+  if (db) {
+    const { data: { user } } = await db.auth.getUser();
+    if (user) redirect("/dashboard");
+  }
   const params = await searchParams;
   const requestedRole = Array.isArray(params.role) ? params.role[0] : params.role;
   const role = requestedRole === "employer" ? "employer" : "freelancer";
