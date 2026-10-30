@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { CareerProfile } from "@/components/career-profile";
 import { redirect } from "next/navigation";
 import { saveProfile } from "@/app/jobs/actions";
@@ -27,6 +29,7 @@ export default async function ProfilePage({ searchParams }: Props) {
     <p style={{ color: "var(--muted)", fontSize: 13 }}>These details help people understand who they’re working with. Your email stays private.</p>
     {one(params.success) === "saved" && <div className="setup-alert">Your profile was updated.</div>}
     {one(params.error) && <div className="form-alert">{one(params.error) === "invalid" ? "Check field lengths and enter full website links beginning with http:// or https://." : "We couldn’t save your profile. Please try again."}</div>}
+    <section className="dashboard-card" style={{display:"flex",alignItems:"center",gap:18}}><ProfileAvatar id={user.id} name={profile.full_name} size={68}/><div><strong>Profile photo and sign-in details</strong><p><Link href="/dashboard/settings">Manage photo, email and password →</Link></p></div></section>
     <section className="dashboard-card"><form action={saveProfile} className="auth-form">
       <label htmlFor="full_name">{role === "employer" ? "Contact person" : "Full name"}</label><input id="full_name" name="full_name" defaultValue={profile?.full_name ?? ""} maxLength={80} required />
       {role === "employer" && <><label htmlFor="company_name">Company or team name</label><input id="company_name" name="company_name" defaultValue={profile?.company_name ?? ""} maxLength={120} /></>}
