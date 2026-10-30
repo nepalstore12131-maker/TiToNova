@@ -1,3 +1,4 @@
+import {WorkerCountField} from '@/components/worker-count-field';
 import {ApplicationWindowFields} from "@/components/application-window";
 import {SampleHelp} from "@/components/sample-links";
 import {getJobCategories} from "@/lib/job-categories";
@@ -23,9 +24,9 @@ export default async function EditJobPage({ params, searchParams }: Props) {
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
   if (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
   const categories = await getJobCategories(supabase);
-  const { data: job } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,category,location,work_type,pay_period,work_mode,experience_level,pay_min,pay_max,status").eq("id", id).eq("employer_id", user.id).maybeSingle();
+  const { data: job } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,worker_count,category,location,work_type,pay_period,work_mode,experience_level,pay_min,pay_max,status").eq("id", id).eq("employer_id", user.id).maybeSingle();
   if (!job || job.status === "closed") notFound();
-  const {data:assignment,error:workError}=await supabase.from("job_assignments").select("id").eq("job_id",id).neq("state","cancelled").maybeSingle();
+  const {data:assignment,error:workError}=await supabase.from("job_assignments").select("id").eq("job_id",id).neq("state","cancelled").limit(1).maybeSingle();
   if(workError||assignment)redirect("/dashboard/work");
   const paramsValue = await searchParams;
   const error = Array.isArray(paramsValue.error) ? paramsValue.error[0] : paramsValue.error;
@@ -39,7 +40,7 @@ export default async function EditJobPage({ params, searchParams }: Props) {
       <label htmlFor="title">Job title</label><input id="title" name="title" defaultValue={job.title} minLength={4} maxLength={120} required />
       <label htmlFor="category">Category</label><select id="category" name="category" defaultValue={job.category} required>{!categories.includes(job.category) && <option>{job.category}</option>}{categories.map((category) => <option key={category}>{category}</option>)}</select>
       <label htmlFor="location">Location</label><input id="location" name="location" defaultValue={job.location} maxLength={120} />
-      <label htmlFor="work_type">Work type</label><select id="work_type" name="work_type" defaultValue={job.work_type}><option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="freelance">Freelance</option></select>
+      <WorkerCountField value={job.worker_count}/><label htmlFor="work_type">Work type</label><select id="work_type" name="work_type" defaultValue={job.work_type}><option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="freelance">Freelance</option></select>
       <label htmlFor="work_mode">Work arrangement</label><select id="work_mode" name="work_mode" defaultValue={job.work_mode}><option value="onsite">On site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select><label htmlFor="experience_level">Experience level</label><select id="experience_level" name="experience_level" defaultValue={job.experience_level}><option value="any">Any experience</option><option value="entry">Entry level</option><option value="mid">Mid level</option><option value="senior">Senior level</option></select>
 <label htmlFor="pay_period">Pay period</label><select id="pay_period" name="pay_period" defaultValue={job.pay_period}><option value="month">Per month</option><option value="hour">Per hour</option><option value="project">Per project</option><option value="unspecified">To discuss</option></select><div className="pay-fields"><div><label htmlFor="pay_min">Minimum pay (NPR)</label><input id="pay_min" name="pay_min" type="number" min="0" step="1" defaultValue={job.pay_min ?? ""} /></div><div><label htmlFor="pay_max">Maximum pay (NPR)</label><input id="pay_max" name="pay_max" type="number" min="0" step="1" defaultValue={job.pay_max ?? ""} /></div></div>
       <label htmlFor="description">Role description</label><textarea className="cover-note" id="description" name="description" minLength={30} maxLength={12000} defaultValue={job.description} required />

@@ -24,16 +24,17 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Job details will be available after the shared database is connected.</div><Link href="/jobs">Back to jobs</Link></main>;
 
-  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
+  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,worker_count,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
   if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
+  const {data:filled,error:capacityError}=await supabase.rpc("job_filled_seats",{p_job:id});
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };
   const {data:library}=user&&profile?.role==='freelancer'?await supabase.from('candidate_sample_library').select('samples').eq('id',user.id).maybeSingle():{data:null};
   const sampleOptions=(library?.samples||'').split('\n').map((x:string)=>x.trim()).filter((x:string)=>x&&parseSamples(x));
   const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
   const company = employer?.company_name || employer?.full_name || "Titonova employer";
-  const accepting=applicationAvailability(job)==='open';
+  const accepting=!capacityError&&typeof filled==='number'&&filled<job.worker_count&&applicationAvailability(job)==='open';
   const pay = formatNpr(job.pay_min,job.pay_max,false,job.currency);
 
   return <div className="page-shell">
@@ -45,7 +46,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
           <div className="eyebrow">{job.category}</div><h1 style={{ marginTop: 10 }}>{job.title}</h1>
           <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><ProfileAvatar id={job.employer_id} name={company} size={48}/><div><Link className="company-name" href={`/companies/${job.employer_id}`}>{company}</Link><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
           {employer?.employer_verified && <p className="trust-copy">Titonova has reviewed this employer’s company details.</p>}
-          <ApplicationWindowInfo job={job}/>
+          <p>{capacityError?"Position availability is temporarily unavailable.":`${Math.max(0,job.worker_count-(filled||0))} of ${job.worker_count} positions available`} · advertised pay is per person.</p><ApplicationWindowInfo job={job}/>
           <div className="job-detail-pay">{pay} {job.pay_min !== null || job.pay_max !== null ? <span>{job.pay_period === "month" ? "/ month" : job.pay_period === "hour" ? "/ hour" : job.pay_period === "project" ? "/ project" : ""}</span> : null}</div>
           <div className="tag-row"><span className="tag">{job.work_mode}</span><span className="tag">{job.experience_level === "any" ? "Any experience" : `${job.experience_level} level`}</span></div><h2 style={{ fontSize: 17, margin: "28px 0 10px" }}>About the role</h2><p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
           {job.reference_links?.length>0&&<section><h2>Examples from the hirer</h2><p>Reference material to explain the task. Providing your own samples is optional.</p><SampleLinks links={job.reference_links}/></section>}

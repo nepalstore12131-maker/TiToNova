@@ -1,0 +1,46 @@
+-- Run after both migrations with COMMIT statements removed; everything rolls back.
+do $$
+declare e uuid:=gen_random_uuid();w uuid:=gen_random_uuid();x uuid:=gen_random_uuid();y uuid:=gen_random_uuid();ad uuid:=gen_random_uuid();j uuid:=gen_random_uuid();a uuid:=gen_random_uuid();b uuid:=gen_random_uuid();c uuid:=gen_random_uuid();wa uuid;wb uuid;ag uuid;svc uuid;req uuid;n integer;
+begin
+ perform set_config('request.jwt.claims','{"role":"service_role"}',true);
+ insert into auth.users(id,email,raw_user_meta_data) values(e,e||'@multi.invalid','{"account_type":"employer"}'),(w,w||'@multi.invalid','{}'),(x,x||'@multi.invalid','{}'),(y,y||'@multi.invalid','{}'),(ad,ad||'@multi.invalid','{}');
+ update public.profiles set employer_premium_until=now()+interval '1 day' where id=e;
+ update public.profiles set role='admin' where id=ad;
+ insert into public.jobs(id,employer_id,title,description,category,status,worker_count) values(j,e,'Multi worker fixture','A temporary testing job with two available positions.','Development','published',2);
+ insert into public.applications(id,job_id,applicant_id,cover_note) values(a,j,w,'First worker application for testing'),(b,j,x,'Second worker application for testing'),(c,j,y,'Third worker application for testing');
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);set local role authenticated;
+ wa:=public.assign_job_worker(a);
+ if (select status from public.jobs where id=j)<>'published' then raise exception 'Closed before capacity';end if;
+ begin perform public.assign_job_worker(a);raise exception 'Duplicate assigned';exception when unique_violation then null;end;
+ wb:=public.assign_job_worker(b);
+ if (select status from public.jobs where id=j)<>'closed' then raise exception 'Full job did not close';end if;
+ begin perform public.assign_job_worker(c);raise exception 'Overfilled';exception when raise_exception then if sqlerrm<>'Job unavailable or full' then raise;end if;end;
+ ag:=public.propose_work_agreement(wa,null,'Complete the first worker testing task.',500,'project','cash','After the work is complete','No fixed deadline');
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);
+ select count(*) into n from public.job_assignments where job_id=j;if n<>1 then raise exception 'Coworker assignment leaked';end if;
+ perform public.respond_work_agreement(ag,true);perform public.update_job_work(wa,'start');
+ perform set_config('request.jwt.claims',json_build_object('sub',x,'role','authenticated')::text,true);
+ begin perform public.update_job_work(wb,'start');raise exception 'Started without own agreement';exception when raise_exception then if sqlerrm<>'Accept the current work agreement before starting' then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);
+ svc:=public.save_worker_service(null,'Test worker','Test cleaning service','I provide careful cleaning and tidying for your home.','Home & cleaning','Kathmandu',500,'project','');
+ reset role;perform set_config('request.jwt.claims','{}',true);set local role anon;
+ select count(*) into n from public.worker_services where id=svc;if n<>0 then raise exception 'Pending service public';end if;
+ reset role;perform set_config('request.jwt.claims',json_build_object('sub',ad,'role','authenticated')::text,true);set local role authenticated;
+ perform public.review_worker_service(svc,'published','Checked for the test');
+ reset role;perform set_config('request.jwt.claims','{}',true);set local role anon;
+ select count(*) into n from public.worker_services where id=svc;if n<>1 then raise exception 'Approved service not public';end if;
+ reset role;perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);set local role authenticated;
+ req:=public.request_worker_service(svc,'I need help with cleaning next Saturday in Kathmandu.',1000);
+ begin perform public.request_worker_service(svc,'Duplicate inquiry about the same service.',1000);raise exception 'Duplicate request';exception when unique_violation then null;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',y,'role','authenticated')::text,true);
+ select count(*) into n from public.service_requests where id=req;if n<>0 then raise exception 'Outsider sees request';end if;
+ begin perform public.respond_service_request(req,'reply','I should not see this');raise exception 'Outsider replied';exception when raise_exception then if sqlerrm<>'Request unavailable' then raise;end if;end;
+ begin perform public.review_worker_service(svc,'published','Fake review');raise exception 'Worker reviewed';exception when raise_exception then if sqlerrm<>'Admin required' then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);
+ perform public.respond_service_request(req,'reply','Please share the approximate hours needed.');
+ perform public.respond_service_request(req,'close');
+ begin perform public.respond_service_request(req,'reply','Reply after close');raise exception 'Closed reply allowed';exception when raise_exception then if sqlerrm<>'Action unavailable' then raise;end if;end;
+ reset role;
+end$$;
+rollback;
+select 'PASS: capacity, duplicate protection, full job closes, independent agreement/start, coworker privacy, public approved services only, private requests, duplicate request protection, admin-only review, closed conversations; all changes rolled back' as result;
