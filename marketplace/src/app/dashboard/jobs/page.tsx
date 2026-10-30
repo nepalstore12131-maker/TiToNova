@@ -30,7 +30,7 @@ export default async function EmployerJobsPage({ searchParams }: Props) {
 
   return <PortalShell role="employer" activePath="/dashboard/jobs">
     <div className="eyebrow">Hiring workspace</div><div className="portal-toolbar"><div><h1>My job posts</h1><p style={{ color: "var(--muted)", fontSize: 13 }}>Manage listings and see when each role is ready for applicants.</p></div><Link className="button" href="/dashboard/jobs/new">Post a job →</Link></div>
-    {success === "published" && <div className="setup-alert">Your job is now live.</div>}{success === "submitted" && <div className="setup-alert">Your job was submitted for admin review.</div>}
+    {success === "already-posted" && <div className="setup-alert">This job was already posted. No duplicate was created.</div>}{success === "published" && <div className="setup-alert">Your job is now live.</div>}{success === "submitted" && <div className="setup-alert">Your job was submitted for admin review.</div>}
     {success === "updated" && <div className="setup-alert">Your changes were saved. Check the status below to see whether your post is live or awaiting review.</div>}
     {success === "closed" && <div className="setup-alert">The job was closed and is no longer listed publicly.</div>}
     {success === "archived" && <div className="setup-alert">Removed from public listings. Applications and history are kept.</div>}{success === "restored" && <div className="setup-alert">Restored and sent for review before republication.</div>}
