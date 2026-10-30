@@ -1,31 +1,15 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { PortalShell } from "@/components/portal-shell";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-
-export default async function AdminPage() {
-  const supabase = await createClient();
-  if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to open the administrator workspace.</div></main>;
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/admin/login");
-  const { data: profile } = await supabase.from("profiles").select("full_name,role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin") redirect("/dashboard?error=admin-only");
-  const [{ count: pendingJobs }, { count: publishedJobs }, { count: members }, { count: unreviewedEmployers, error: employerReviewError }, { count: openReports, error: reportsError }, { count: pendingPayments, error: paymentsError }] = await Promise.all([
-    supabase.from("jobs").select("id", { count: "exact", head: true }).eq("status", "pending_review"),
-    supabase.from("jobs").select("id", { count: "exact", head: true }).eq("status", "published"),
-    supabase.from("profiles").select("id", { count: "exact", head: true }),
-    supabase.from("profiles").select("id", { count: "exact", head: true }).eq("role", "employer").eq("employer_verified", false),
-    supabase.from("job_reports").select("id", { count: "exact", head: true }).eq("status", "open"),
-    supabase.from("employer_payment_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
-  ]);
-  const trustToolsReady = !employerReviewError && !reportsError;
-  const paymentsReady = !paymentsError;
-
-  return <PortalShell role="admin" activePath="/admin">
-    <div className="eyebrow">Platform administration</div><h1>Welcome{profile?.full_name ? `, ${profile.full_name}` : ""}</h1>
-    <p style={{ color: "var(--muted)", fontSize: 13 }}>Review job listings before they are visible to members.</p>
-    <div className="portal-card-grid"><Link className="portal-action-card" href="/admin/jobs"><strong>{pendingJobs ?? 0} listings awaiting review →</strong><span>Approve or reject employer submissions.</span></Link><Link className="portal-action-card" href="/admin/listings"><strong>{publishedJobs ?? 0} published jobs →</strong><span>View and manage every job post and its status.</span></Link><Link className="portal-action-card" href="/admin/employers"><strong>{trustToolsReady ? `${unreviewedEmployers ?? 0} employers need review →` : "Set up trust tools →"}</strong><span>{trustToolsReady ? "Review company details and add a public trust signal." : "Apply the trust and moderation database update to enable employer reviews."}</span></Link><Link className="portal-action-card" href="/admin/reports"><strong>{trustToolsReady ? `${openReports ?? 0} open job reports →` : "Set up trust tools →"}</strong><span>{trustToolsReady ? "Read member reports and decide whether to resolve or dismiss them." : "Apply the trust and moderation database update to enable job reports."}</span></Link><Link className="portal-action-card" href="/admin/payments"><strong>{paymentsReady ? `${pendingPayments ?? 0} payments to review →` : "Set up Premium payments →"}</strong><span>{paymentsReady ? "Review payment references and private proof, then manage employer access." : "Apply the employer Premium payment update to enable manual billing."}</span></Link><Link className="portal-action-card" href="/admin/payments/settings"><strong>Premium plan and payment accounts →</strong><span>Set the displayed price, access period, and payment instructions.</span></Link><Link className="portal-action-card" href="/admin/users"><strong>{members ?? 0} accounts →</strong><span>Change account details and access, reset passwords, create or remove accounts.</span></Link><Link className="portal-action-card" href="/admin/applications"><strong>Applications →</strong><span>Review application details and update their status.</span></Link></div>
-  </PortalShell>;
+import Link from 'next/link';
+import {redirect} from 'next/navigation';
+import {PortalShell} from '@/components/portal-shell';
+import {Metric,QuickAction,SectionTitle,UiIcon} from '@/components/workspace-ui';
+import {createClient} from '@/lib/supabase/server';
+export const dynamic='force-dynamic';
+export default async function Admin(){
+ const db=await createClient();if(!db)return <main className="dashboard"><div className="form-alert">The admin workspace is temporarily unavailable.</div></main>;
+ const {data:{user}}=await db.auth.getUser();if(!user)redirect('/admin/login');const {data:profile}=await db.from('profiles').select('full_name,role').eq('id',user.id).maybeSingle();if(profile?.role!=='admin')redirect('/dashboard?error=admin-only');
+ const [jobs,payments,employers,reports,messages,members,published]=await Promise.all([db.from('jobs').select('id',{count:'exact',head:true}).eq('status','pending_review'),db.from('employer_payment_requests').select('id',{count:'exact',head:true}).eq('status','pending'),db.from('profiles').select('id',{count:'exact',head:true}).eq('role','employer').eq('employer_verified',false),db.from('job_reports').select('id',{count:'exact',head:true}).eq('status','open'),db.from('message_reports').select('id',{count:'exact',head:true}).eq('status','open'),db.from('profiles').select('id',{count:'exact',head:true}),db.from('jobs').select('id',{count:'exact',head:true}).eq('status','published')]);
+ const number=(r:{error:unknown;count:number|null})=>r.error?'—':r.count||0;
+ const queues=[{title:'Payment reviews',copy:'Check payment references and private proof before activating Premium.',href:'/admin/payments',result:payments,icon:'wallet'},{title:'Job approvals',copy:'Review the opportunity before it reaches the marketplace.',href:'/admin/jobs',result:jobs,icon:'briefcase'},{title:'Employer verification',copy:'Review company details and maintain meaningful trust signals.',href:'/admin/employers',result:employers,icon:'shield'},{title:'Job reports',copy:'Investigate listings reported by members.',href:'/admin/reports',result:reports,icon:'shield'},{title:'Message moderation',copy:'Review reported conversations and take appropriate action.',href:'/admin/messages',result:messages,icon:'message'}];
+ const results=[jobs,payments,employers,reports,messages];const available=results.every(r=>!r.error);const total=results.reduce((n,r)=>n+(r.count||0),0);
+ return <PortalShell role="admin" activePath="/admin"><section className="ws-welcome admin-welcome"><div><div className="eyebrow">Platform operations</div><h1>A better marketplace<br/>starts with care.</h1><p>Welcome{profile.full_name?`, ${profile.full_name}`:''}. Keep opportunities useful, members supported, and decisions moving.</p><Link className="button" href="/admin/payments">Review payment queue <UiIcon size={17}/></Link></div><div className="ws-admin-summary"><span>YOUR REVIEW QUEUES</span><strong>{available?total:'—'}</strong><small>{available?'items awaiting attention':'Some totals are unavailable'}</small></div></section><div className="ws-metrics"><Metric label="Members" value={number(members)} detail="Manage accounts and access" href="/admin/users" icon="people"/><Metric label="Published opportunities" value={number(published)} detail="Keep the marketplace useful" href="/admin/listings" icon="briefcase"/><Metric label="Pending payments" value={number(payments)} detail="Review proof before approval" href="/admin/payments" icon="wallet"/></div><div className="ws-overview-grid"><section className="ws-panel"><SectionTitle title="Needs your attention" copy="Live queues, ordered by type of review"/><div className="ws-review-queues">{queues.map(q=><Link className="ws-review-queue" href={q.href} key={q.href}><span className="ws-action-icon"><UiIcon name={q.icon}/></span><div><strong>{q.title}</strong><p>{q.copy}</p></div><span className={q.result.count?'ws-queue-count has-items':'ws-queue-count'}>{number(q.result)}</span><UiIcon size={17}/></Link>)}</div></section><aside className="ws-side-stack"><section className="ws-membership"><div className="eyebrow">Thoughtful administration</div><h2>Every review builds trust.</h2><p>Check the evidence, explain your decision, and keep sensitive details inside the admin workspace.</p><Link href="/admin/reports">Open trust tools ↗</Link></section><section className="ws-panel ws-quick"><SectionTitle title="Platform controls"/><QuickAction title="Premium settings" copy="Manage price, duration and payment details." href="/admin/payments/settings" icon="wallet"/><QuickAction title="Member accounts" copy="Manage account details and eligibility." href="/admin/users" icon="people"/><QuickAction title="All applications" copy="Review application records and status." href="/admin/applications" icon="briefcase"/></section></aside></div></PortalShell>;
 }

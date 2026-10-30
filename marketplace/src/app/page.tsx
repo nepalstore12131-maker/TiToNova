@@ -1,89 +1,17 @@
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-
-const categories = [
-  ["✳", "Design & creative", "Brand, visual and product design"],
-  ["⌘", "Development", "Web, mobile and software"],
-  ["◉", "Marketing", "Content, growth and community"],
-  ["▤", "Writing & content", "Editorial, copy and translation"],
-  ["▧", "Business support", "Operations, finance and admin"],
-];
-
-function formatPay(min: number | null, max: number | null, currency: string) {
-  if (min === null && max === null) return "Pay discussed";
-  const format = (value: number) => new Intl.NumberFormat("en-NP").format(value);
-  return `${currency} ${min === null ? "—" : format(min)}–${max === null ? "—" : format(max)}`;
-}
-
-export default async function Home() {
-  const supabase = await createClient();
-  const result = supabase
-    ? await supabase.from("jobs").select("id,title,category,location,work_type,currency,pay_min,pay_max,employer:profiles!jobs_employer_id_fkey(company_name,full_name)").eq("status", "published").order("created_at", { ascending: false }).limit(3)
-    : null;
-  const jobs = result?.data ?? [];
-  const databaseReady = Boolean(supabase && !result?.error);
-
-  return (
-    <div className="page-shell">
-      {!databaseReady && <div className="preview-bar"><strong>Early preview:</strong> Connect the secure marketplace database to enable accounts, applications, and live listings.</div>}
-      <header className="site-header">
-        <Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link>
-        <nav className="nav-links" aria-label="Main navigation"><a href="#categories">Explore skills</a><Link href="/ne">नेपाली</Link><Link href="/jobs">Browse jobs</Link><a href="#how">How it works</a></nav>
-        <div className="nav-actions"><Link className="text-button" href="/login">Job seeker login</Link><Link className="text-button employer-login-link" href="/employer/login">Employer sign in</Link><Link className="button" href="/signup">Join Titonova <span aria-hidden="true">→</span></Link></div>
-      </header>
-
-      <main>
-        <section className="hero">
-          <div>
-            <div className="eyebrow">Nepal’s marketplace for independent work</div>
-            <h1>Your skills deserve <em>a bigger stage.</em></h1>
-            <p className="hero-copy">Find meaningful work, meet great people, and grow your career — all from right here in Nepal.</p>
-            <div className="hero-actions"><Link className="button" href="/jobs">Explore opportunities <span aria-hidden="true">→</span></Link><Link className="button secondary" href="/signup?role=employer">I’m hiring</Link></div>
-            <div className="hero-note"><span className="role-badge">Built for Nepal</span><span>Local talent. Clear opportunities. Better work.</span></div>
-          </div>
-
-          <div className="preview-card" aria-label="Latest published jobs">
-            <div className="preview-head"><strong>Latest opportunities</strong><span className="status-pill">{jobs.length} open</span></div>
-            <Link className="preview-search" href="/jobs">⌕ &nbsp;Search job title, skill or company</Link>
-            {jobs.length ? jobs.map((job) => {
-              const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
-              const company = employer?.company_name || employer?.full_name || "Nepal employer";
-              return <Link className="sample-job" href={`/jobs/${job.id}`} key={job.id}>
-                <div className="job-meta"><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span></div></div><span className="job-pay">{formatPay(job.pay_min, job.pay_max, job.currency)}</span></div>
-                <h3>{job.title}</h3><div className="tag-row"><span className="tag">{job.category}</span><span className="tag">{job.work_type.replaceAll("_", " ")}</span></div>
-              </Link>;
-            }) : <div className="empty-preview"><strong>New opportunities are on the way.</strong><p>Browse all listings or create an account to get started.</p><Link href="/jobs">Browse jobs →</Link></div>}
-            <div className="preview-callout">Local talent, global potential<span>Good work starts here.</span></div>
-          </div>
-        </section>
-
-        <section className="stats" aria-label="Marketplace focus">
-          <div className="stats-inner"><span className="stats-label">Designed around how Nepal works</span><div className="stat"><span className="stat-icon">⌂</span><div><b>Nepal first</b><small>Local talent and employers</small></div></div><div className="stat"><span className="stat-icon">↔</span><div><b>Flexible work</b><small>Remote, contract and full time</small></div></div><div className="stat"><span className="stat-icon">✳</span><div><b>Skill led</b><small>Opportunities across disciplines</small></div></div></div>
-        </section>
-
-        <section className="content" id="categories">
-          <div className="section-heading"><div><div className="eyebrow">Find your path</div><h2>Work that fits your skills</h2><p>Explore opportunities across Nepal’s most in-demand fields.</p></div><Link className="section-link" href="/dashboard/profile">Build your profile →</Link></div>
-          <div className="category-row">{categories.map(([icon, name, description]) => <Link className="category" href={`/jobs?category=${encodeURIComponent(name)}`} key={name}><span className="category-icon" aria-hidden="true">{icon}</span><span>{name}<small>{description}</small></span></Link>)}</div>
-
-          <div className="section-heading" id="jobs" style={{ marginTop: 46 }}><div><div className="eyebrow">Fresh opportunities</div><h2>Good work starts here</h2><p>Explore published roles from employers on Titonova.</p></div><Link className="section-link" href="/jobs">Browse all jobs →</Link></div>
-          {jobs.length ? <div className="job-grid">{jobs.map((job) => {
-            const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
-            const company = employer?.company_name || employer?.full_name || "Nepal employer";
-            return <Link className="job-card" href={`/jobs/${job.id}`} key={job.id}>
-              <div className="job-meta"><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><span className="company-name">{company}</span><span className="company-place">{job.location}</span></div></div><span className="badge">Open</span></div>
-              <h3>{job.title}</h3><p className="desc">{job.category} · {job.work_type.replaceAll("_", " ")}</p>
-              <div className="job-foot"><span>View details</span><strong>{formatPay(job.pay_min, job.pay_max, job.currency)}</strong></div>
-            </Link>;
-          })}</div> : <div className="empty-listing"><p>{databaseReady ? "There aren’t any published jobs yet. Check back soon." : "Job listings will appear here after the database is connected."}</p><Link className="button secondary" href="/jobs">Explore jobs</Link></div>}
-
-          <div className="section-heading" id="how" style={{ marginTop: 52 }}><div><div className="eyebrow">Simple by design</div><h2>From profile to your next step</h2><p>A clear path to making a great connection.</p></div></div>
-          <div className="steps"><div className="step"><div className="step-num">01</div><b>Build your profile</b><p>Share what you do, what you’re looking for, and the skills you bring.</p></div><div className="step"><div className="step-num">02</div><b>Find the right fit</b><p>Search opportunities by skill, location, and the way you want to work.</p></div><div className="step"><div className="step-num">03</div><b>Apply and follow along</b><p>Send an introduction and keep track of each application in your workspace.</p></div></div>
-          <div className="banner"><div><h2>Hiring in Nepal? Find your people.</h2><p>Create an employer profile and get ready to meet local talent.</p></div><Link className="button" href="/signup?role=employer">Set up your employer profile <span aria-hidden="true">→</span></Link></div>
-        </section>
-      </main>
-      <footer className="site-footer"><div>© 2026 Titonova Nepal</div><div className="footer-links"><a href="#how">How it works</a><Link href="/employer/login">Employer login</Link><Link href="/login">Member sign in</Link></div></footer>
-    </div>
-  );
+import Link from 'next/link';
+import {createClient} from '@/lib/supabase/server';
+import {formatNpr} from '@/lib/discovery';
+import {UiIcon} from '@/components/workspace-ui';
+export const dynamic='force-dynamic';
+const categories=[['Design & creative','Ideas made visible.','spark'],['Development','Build what comes next.','grid'],['Marketing','Make your work matter.','arrow'],['Writing & content','Find the right words.','message'],['Business support','Keep good teams moving.','briefcase']];
+export default async function Home(){
+ const db=await createClient();const result=db?await db.from('jobs').select('id,title,location,work_type,pay_min,pay_max,pay_period,currency,employer:profiles!jobs_employer_id_fkey(company_name,full_name)').eq('status','published').order('created_at',{ascending:false}).limit(3):null;
+ const jobs=result?.data||[];
+ return <div className="page-shell premium-home"><header className="site-header public-header"><Link className="brand" href="/"><span className="brand-mark">↗</span>Titonova<span className="brand-country">NEPAL</span></Link><nav className="nav-links" aria-label="Main navigation"><Link href="/jobs">Find work</Link><a href="#employers">For employers</a><a href="#how">How it works</a><Link href="/ne">नेपाली</Link></nav><div className="nav-actions"><Link className="text-button public-login" href="/login">Log in</Link><Link className="button" href="/signup">Get started <UiIcon size={16}/></Link><details className="public-mobile-menu"><summary aria-label="Open navigation"><UiIcon name="grid"/></summary><nav aria-label="Mobile navigation"><Link href="/jobs">Find work</Link><Link href="/signup?role=employer">Hire talent</Link><Link href="/employer/login">Employer sign in</Link><Link href="/ne">नेपाली</Link><Link href="/login">Job seeker login</Link></nav></details></div></header><main>
+ <section className="home-hero-v2"><div className="home-hero-copy"><span className="home-kicker"><span/>Rooted in Nepal. Open to possibility.</span><h1>Great work.<br/>Good people.<br/><em>Right here.</em></h1><p>A place for Nepal’s talent and teams to find each other. Discover meaningful opportunities, share your work, and build something worth being part of.</p><div className="home-hero-actions"><Link className="button" href="/jobs">Find your next opportunity <UiIcon size={18}/></Link><Link className="button secondary" href="/signup?role=employer">I’m looking to hire</Link></div><div className="home-trust-line"><span><UiIcon name="shield" size={16}/> Reviewed job listings</span><span><UiIcon name="message" size={16}/> Application conversations</span></div></div><div className="home-live-board"><div className="home-board-heading"><span><span className="live-dot"/>The opportunity board</span><Link href="/jobs">Explore all ↗</Link></div><div className="home-board-title">Your next chapter<br/>could start here.</div>{result?.error||!db?<p className="home-board-empty">Opportunities are temporarily unavailable. Please try again shortly.</p>:!jobs.length?<div className="home-board-empty"><UiIcon name="briefcase" size={34}/><h3>Make room for what’s next.</h3><p>New teams are joining. Create your profile and be ready for the right opportunity.</p><Link href="/signup">Build your profile →</Link></div>:jobs.map(job=>{const company=Array.isArray(job.employer)?job.employer[0]:job.employer;const name=company?.company_name||company?.full_name||'Titonova employer';return <Link className="home-live-job" href={`/jobs/${job.id}`} key={job.id}><div className="home-live-company"><span className="company-mark">{name[0]}</span><span>{name}<small>{job.location} · {job.work_type.replaceAll('_',' ')}</small></span><UiIcon size={18}/></div><h3>{job.title}</h3><strong>{formatNpr(job.pay_min,job.pay_max,false,job.currency)}<small>{job.pay_period==='unspecified'?'':` / ${job.pay_period}`}</small></strong></Link>;})}<div className="home-board-footer"><span>LOCAL TALENT. REAL POTENTIAL.</span><span>↗</span></div></div></section>
+ <section className="home-value-strip"><div><UiIcon name="briefcase"/><span>Work that fits your life<small>On site, remote, hybrid and freelance</small></span></div><div><UiIcon name="profile"/><span>More than a résumé<small>Let your experience and work speak</small></span></div><div><UiIcon name="people"/><span>A clearer hiring journey<small>From first application to next steps</small></span></div></section>
+ <section className="home-section"><div className="home-section-heading"><div><div className="eyebrow">Many skills. More possibilities.</div><h2>Find where you belong.</h2></div><Link href="/jobs">Explore every opportunity ↗</Link></div><div className="home-category-grid">{categories.map(([title,copy,icon])=><Link href={`/jobs?category=${encodeURIComponent(title)}`} className="home-category-card" key={title}><UiIcon name={icon} size={26}/><h3>{title}</h3><p>{copy}</p><span>Explore roles ↗</span></Link>)}</div></section>
+ <section className="home-how-section" id="how"><div className="home-section-heading"><div><div className="eyebrow">A simpler way forward</div><h2>From “what’s next?”<br/>to your next step.</h2></div><p>Build a profile that feels like you.<br/>Find an opportunity that feels right.</p></div><div className="home-step-grid">{[['01','Tell your story','Add your skills, work history, portfolio and CV. Give hiring teams a reason to start a conversation.'],['02','Find your fit','Explore roles by location, experience, work arrangement and pay. Apply with a thoughtful introduction.'],['03','Keep moving forward','Talk with employers inside your application and follow your hiring updates in one workspace.']].map(([n,title,copy])=><article key={n}><span>{n}</span><h3>{title}</h3><p>{copy}</p></article>)}</div></section>
+ <section className="home-employer-section" id="employers"><div><div className="eyebrow">For teams with ambition</div><h2>Your people are out there.<br/><em>Let’s help you meet them.</em></h2><p>Employer Premium brings your hiring into one place: publish reviewed opportunities, explore candidate profiles, organize your pipeline, and keep conversations moving.</p><div className="home-hero-actions"><Link href="/signup?role=employer" className="button">Start building your team <UiIcon size={17}/></Link><Link href="/employer/login" className="employer-inline-login">Employer sign in ↗</Link></div><small>Plan price, duration and payment instructions are shown in your workspace. Premium activates after administrator approval.</small></div><div className="home-benefit-list">{[['briefcase','A home for every opportunity','Post roles with clear responsibilities, experience and pay.'],['people','See the person behind the profile','Review CVs, work samples, availability and experience.'],['grid','A pipeline that makes sense','Keep candidates organized from New to Hired.'],['message','Conversations with context','Message applicants and keep private hiring notes.']].map(([icon,title,copy])=><div key={title}><UiIcon name={icon} size={22}/><div><strong>{title}</strong><p>{copy}</p></div></div>)}</div></section>
+ <section className="home-final-cta"><span className="eyebrow">Built for what comes next</span><h2>Your next move matters.<br/>Make it with Titonova.</h2><Link className="button" href="/signup">Create your account <UiIcon size={18}/></Link></section></main><footer className="home-footer"><Link className="brand" href="/"><span className="brand-mark">↗</span>Titonova</Link><p>Work and talent, connected in Nepal.</p><nav aria-label="Footer navigation"><Link href="/jobs">Find work</Link><Link href="/signup?role=employer">Hire talent</Link><Link href="/ne">नेपाली</Link><Link href="/admin/login">Admin sign in</Link></nav></footer></div>;
 }

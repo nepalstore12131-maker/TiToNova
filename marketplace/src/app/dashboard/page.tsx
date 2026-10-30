@@ -1,50 +1,25 @@
-import Link from "next/link";
-import { redirect } from "next/navigation";
-import { PortalShell, type AccountRole } from "@/components/portal-shell";
-import { createClient } from "@/lib/supabase/server";
-
-export const dynamic = "force-dynamic";
-
-export default async function DashboardPage() {
-  const supabase = await createClient();
-  if (!supabase) return <div className="page-shell"><header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link></header><main className="dashboard"><div className="setup-alert">Connect the Supabase project to use your personal workspace.</div></main></div>;
-
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
-  const { data: profile, error: profileError } = await supabase.from("profiles").select("full_name,company_name,role,employer_premium_until").eq("id", user.id).maybeSingle();
-  if (profileError || !profile) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load your account workspace. Refresh the page and try again.</div><Link href="/dashboard">Try again →</Link></main>;
-  const role = profile.role as AccountRole;
-  if (role === "admin") redirect("/admin");
-
-  const displayName = profile?.full_name || user.email || "member";
-  const [jobs, applications] = role === "employer"
-    ? await Promise.all([
-        supabase.from("jobs").select("id", { count: "exact", head: true }).eq("employer_id", user.id),
-        supabase.from("applications").select("id", { count: "exact", head: true }),
-      ])
-    : [null, await supabase.from("applications").select("id", { count: "exact", head: true }).eq("applicant_id", user.id)];
-  const jobCount = jobs?.error ? null : jobs?.count ?? 0;
-  const applicationCount = applications.error ? null : applications.count ?? 0;
-
-  const isPremium = Boolean(role === "employer" && profile.employer_premium_until && new Date(profile.employer_premium_until).getTime() > Date.now());
-  const cards = role === "employer"
-    ? [
-        { href: "/dashboard/billing", title: isPremium ? "Premium active" : "Activate Premium", description: isPremium ? `Eligible to post until ${new Date(profile.employer_premium_until!).toLocaleDateString("en-NP")}.` : "Choose a payment method, submit proof, and wait for admin approval before posting jobs." },
-        { href: "/dashboard/jobs", title: "My job posts", description: jobCount === null ? "Listing totals are temporarily unavailable. Open your job posts to check their status." : `${jobCount} listing${jobCount === 1 ? "" : "s"} · Check review status and manage roles.` },
-        { href: "/dashboard/applications", title: "Applications received", description: applicationCount === null ? "Application totals are temporarily unavailable. Open the list to review candidates." : `${applicationCount} application${applicationCount === 1 ? "" : "s"} · Review interested candidates.` },
-        { href: "/dashboard/jobs/new", title: "Post a job", description: "Share a role with professionals across Nepal." },
-        { href: "/dashboard/profile", title: "Company profile", description: "Update the details candidates see about your team." },
-      ]
-    : [
-        { href: "/jobs", title: "Browse jobs", description: "Search published roles by title, category, location and work type." },
-        { href: "/dashboard/applications", title: "My applications", description: applicationCount === null ? "Application totals are temporarily unavailable. Open the list to check their status." : `${applicationCount} application${applicationCount === 1 ? "" : "s"} · Follow each application’s status.` },
-        { href: "/dashboard/profile", title: "My profile", description: "Keep your professional introduction and skills up to date." },
-      ];
-
-  return <PortalShell role={role} activePath="/dashboard">
-    <div className="eyebrow">Your workspace</div>
-    <h1>Welcome, {displayName}</h1>
-    <p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? profile?.company_name || "Manage hiring from one place." : "Your next opportunity starts with one small step."}</p>
-    <div className="portal-card-grid">{cards.map((card) => <Link key={card.href} className="portal-action-card" href={card.href}><strong>{card.title} <span aria-hidden="true">→</span></strong><span>{card.description}</span></Link>)}</div>
-  </PortalShell>;
+import Link from 'next/link';
+import {redirect} from 'next/navigation';
+import {PortalShell,type AccountRole} from '@/components/portal-shell';
+import {Metric,QuickAction,SectionTitle,UiIcon} from '@/components/workspace-ui';
+import {createClient} from '@/lib/supabase/server';
+export const dynamic='force-dynamic';
+export default async function Dashboard(){
+ const db=await createClient();if(!db)return <main className="dashboard"><div className="form-alert">Your workspace is temporarily unavailable. Please try again shortly.</div></main>;
+ const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
+ const {data:profile,error}=await db.from('profiles').select('full_name,company_name,role,employer_premium_until,headline,bio,skills,portfolio_url').eq('id',user.id).maybeSingle();
+ if(error||!profile)return <main className="dashboard"><div className="form-alert">We couldn’t load your workspace. Please refresh.</div></main>;
+ if(profile.role==='admin')redirect('/admin');const employer=profile.role==='employer';const premium=employer&&!!profile.employer_premium_until&&new Date(profile.employer_premium_until).getTime()>Date.now();
+ const [apps,jobs,unread,career]=await Promise.all([
+  employer?db.from('applications').select('id,status,hiring_stage,created_at,job:jobs(title),applicant:profiles(full_name)',{count:'exact'}).order('created_at',{ascending:false}).limit(5):db.from('applications').select('id,status,hiring_stage,created_at,job:jobs(title,location)',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(5),
+  employer?db.from('jobs').select('id,title,status,created_at',{count:'exact'}).eq('employer_id',user.id).order('created_at',{ascending:false}).limit(4):db.from('jobs').select('id',{count:'exact',head:true}).eq('status','published'),
+  db.from('notifications').select('id',{count:'exact',head:true}).eq('recipient_id',user.id).is('read_at',null),
+  employer?Promise.resolve({data:null,error:null}):db.from('candidate_profiles').select('resume_path,work_history,availability').eq('id',user.id).maybeSingle()
+ ]);
+ const complete=[!!profile.headline,!!profile.bio,!!profile.skills?.length,!!profile.portfolio_url,!!career.data?.resume_path,!!career.data?.work_history];const percent=Math.round(complete.filter(Boolean).length/complete.length*100);
+ const firstName=profile.full_name?.trim().split(/\s+/)[0]||'there';
+ return <PortalShell role={profile.role as AccountRole} activePath="/dashboard"><section className="ws-welcome"><div><div className="eyebrow">{employer?'Your hiring headquarters':'Your next chapter starts here'}</div><h1>{employer?'Build a team. Make an impact.':`Good to see you, ${firstName}.`}</h1><p>{employer?`${profile.company_name||'Your team'} · Every great hire starts with a conversation.`:'Bring your skills. Find your people. Take the next step.'}</p><Link className="button" href={employer?'/dashboard/jobs/new':'/jobs'}>{employer?'Post an opportunity':'Explore opportunities'} <UiIcon size={17}/></Link></div><div className="ws-welcome-art" aria-hidden="true"><span>YOUR NEXT MOVE</span><strong>↗</strong><small>{employer?'Great teams start here.':'Good work is ahead.'}</small></div></section>
+ <div className="ws-metrics"><Metric label={employer?'Your job posts':'Applications'} value={employer?(jobs.error?'—':jobs.count||0):(apps.error?'—':apps.count||0)} detail={employer?'Track every opportunity':'Follow your journey'} href={employer?'/dashboard/jobs':'/dashboard/applications'} icon="briefcase"/><Metric label={employer?'Applications received':'Open opportunities'} value={employer?(apps.error||!premium?'—':apps.count||0):(jobs.error?'—':jobs.count||0)} detail={employer?(premium?'Meet your next team member':'Activate Premium to review'):'Find a role that fits'} href={employer?'/dashboard/hiring':'/jobs'} icon="people"/><Metric label="Unread updates" value={unread.error?'—':unread.count||0} detail="Stay close to what matters" href="/dashboard/notifications" icon="message"/></div>
+ <div className="ws-overview-grid"><section className="ws-panel"><SectionTitle title={employer?'Your hiring activity':'Your application journey'} copy="Your most recent applications" href="/dashboard/applications"/>{apps.error?<p className="ws-empty-copy">Application activity is temporarily unavailable.</p>:employer&&!premium?<div className="ws-empty"><UiIcon name="spark" size={30}/><h3>Meet the people behind the applications.</h3><p>Activate Employer Premium to review candidates and start a conversation.</p><Link className="button secondary" href="/dashboard/billing">Explore Premium →</Link></div>:!apps.data?.length?<div className="ws-empty"><UiIcon name="briefcase" size={30}/><h3>{employer?'Your next hire is on the horizon.':'Your story is ready for its next chapter.'}</h3><p>{employer?'Publish your first opportunity to start receiving applications.':'Find a role you care about, introduce yourself, and follow your progress here.'}</p><Link href={employer?'/dashboard/jobs/new':'/jobs'} className="button secondary">{employer?'Create a job post':'Find your first opportunity'} ↗</Link></div>:<div className="ws-activity">{apps.data.map((a:any)=>{const job=Array.isArray(a.job)?a.job[0]:a.job;const candidate=Array.isArray(a.applicant)?a.applicant[0]:a.applicant;const stage=a.status==='withdrawn'?'withdrawn':a.hiring_stage||a.status;return <Link className="ws-activity-row" href={`/dashboard/applications/${a.id}`} key={a.id}><span className="ws-activity-icon"><UiIcon name="briefcase"/></span><div><strong>{employer?candidate?.full_name||'Candidate':job?.title||'Job application'}</strong><small>{employer?job?.title:new Date(a.created_at).toLocaleDateString('en-NP',{timeZone:'Asia/Kathmandu'})}</small><div className="ws-stage-track" aria-label={`Hiring stage: ${stage}`}>{['new','shortlisted','interview','hired'].map((s,i)=><span key={s} className={['new','shortlisted','interview','hired'].indexOf(stage)>=i?'reached':''}/>)}</div></div><span className="status-tag">{stage}</span></Link>;})}</div>}</section>
+ <aside className="ws-side-stack">{employer?<section className={`ws-membership ${premium?'is-active':''}`}><div className="eyebrow"><UiIcon name="spark" size={15}/> Employer Premium</div><h2>{premium?'Your hiring tools are ready.':'Give your hiring room to grow.'}</h2><p>{premium?`Active until ${new Date(profile.employer_premium_until!).toLocaleDateString('en-NP',{timeZone:'Asia/Kathmandu'})}. Review candidates, manage your pipeline and message applicants.`:'Post opportunities, review CVs and manage your hiring pipeline after payment approval.'}</p><Link href="/dashboard/billing">{premium?'Manage your plan':'View plan and payment details'} ↗</Link></section>:<section className="ws-profile-progress"><div className="eyebrow">Make a strong first impression</div><div className="ws-progress-number"><h2>Your profile</h2><strong>{career.error?'—':`${percent}%`}</strong></div><progress max={100} value={percent} aria-label="Profile completion"/><p>{percent===100?'Your core profile details are complete. Keep your experience and availability current.':'Add your skills, introduction, portfolio, work history and CV to help hiring teams understand your work.'}</p><Link href="/dashboard/profile">{percent===100?'Review your profile':'Complete your profile'} ↗</Link></section>}<section className="ws-panel ws-quick"><SectionTitle title="Make your next move"/><QuickAction title={employer?'Hiring dashboard':'Find your fit'} copy={employer?'Compare candidates and organize stages.':'Filter by city, work style and skills.'} href={employer?'/dashboard/hiring':'/jobs?sort=recommended'} icon="people"/><QuickAction title={employer?'Company profile':'Career profile'} copy={employer?'Show candidates who you are.':'Show the work you’re proud of.'} href="/dashboard/profile" icon="profile"/><QuickAction title="Your notifications" copy="Keep up with important updates." href="/dashboard/notifications" icon="message"/></section></aside></div></PortalShell>;
 }
