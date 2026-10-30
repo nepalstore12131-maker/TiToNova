@@ -42,10 +42,9 @@ do $$begin
  if not exists(select 1 from public.support_messages where ticket_id=current_setting('test.support_ticket')::uuid and from_admin) then raise exception 'Admin reply not visible'; end if;
  if not exists(select 1 from public.notifications where href='/dashboard/support/'||current_setting('test.support_ticket')) then raise exception 'Member notification missing'; end if;
 end$$;
-select public.reply_support_ticket(current_setting('test.support_ticket')::uuid,'Reopen request test');
 do $$begin
- if not exists(select 1 from public.support_tickets where id=current_setting('test.support_ticket')::uuid and status='open') then raise exception 'Request did not reopen'; end if;
+ begin perform public.reply_support_ticket(current_setting('test.support_ticket')::uuid,'Closed reply test'); raise exception 'Closed reply accepted'; exception when raise_exception then if sqlerrm<>'support_closed' then raise; end if; end;
 end$$;
 reset role;
 rollback;
-select 'PASS: private owner/admin access, outsider blocked, admin replies/status, notifications and reopen; test data rolled back' as result;
+select 'PASS: private owner/admin access, outsider blocked, admin replies/status, notifications and closed replies; test data rolled back' as result;
