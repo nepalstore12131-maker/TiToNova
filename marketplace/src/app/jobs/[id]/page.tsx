@@ -1,3 +1,4 @@
+import { ProfileAvatar } from "@/components/profile-avatar";
 import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { formatNpr } from "@/lib/discovery";
@@ -34,7 +35,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
       <div className="job-detail-grid">
         <article className="dashboard-card" style={{ marginTop: 0 }}>
           <div className="eyebrow">{job.category}</div><h1 style={{ marginTop: 10 }}>{job.title}</h1>
-          <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><span className="company-mark">{company.slice(0, 1).toUpperCase()}</span><div><Link className="company-name" href={`/companies/${job.employer_id}`}>{company}</Link><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
+          <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><ProfileAvatar id={job.employer_id} name={company} size={48}/><div><Link className="company-name" href={`/companies/${job.employer_id}`}>{company}</Link><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
           {employer?.employer_verified && <p className="trust-copy">Titonova has reviewed this employer’s company details.</p>}
           <div className="job-detail-pay">{pay} {job.pay_min !== null || job.pay_max !== null ? <span>{job.pay_period === "month" ? "/ month" : job.pay_period === "hour" ? "/ hour" : job.pay_period === "project" ? "/ project" : ""}</span> : null}</div>
           <div className="tag-row"><span className="tag">{job.work_mode}</span><span className="tag">{job.experience_level === "any" ? "Any experience" : `${job.experience_level} level`}</span></div><h2 style={{ fontSize: 17, margin: "28px 0 10px" }}>About the role</h2><p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
