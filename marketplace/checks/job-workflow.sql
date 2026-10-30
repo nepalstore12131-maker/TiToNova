@@ -11,7 +11,7 @@ begin
  perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);set local role authenticated;
  assignment:=public.assign_job_worker(a);
  begin perform public.assign_job_worker(b);raise exception 'Second worker allowed';exception when unique_violation then null;end;
- begin perform public.archive_job_listing(j);raise exception 'Active assignment archived';exception when raise_exception then if sqlerrm<>'Finish or cancel the assignment before removing this job' then raise;end if;end;
+ begin perform public.archive_job_listing(j);raise exception 'Active assignment archived';exception when raise_exception then if sqlerrm not in ('Finish or cancel the assignment before removing this job','Cancel the unstarted assignment before closing this job') then raise;end if;end;
  perform set_config('request.jwt.claims',json_build_object('sub',x,'role','authenticated')::text,true);
  select count(*) into n from public.job_assignments where job_id=j;if n<>0 then raise exception 'Outsider sees work';end if;
  begin perform public.update_job_work(assignment,'start');raise exception 'Wrong worker starts';exception when raise_exception then if sqlerrm<>'This action is not available' then raise;end if;end;

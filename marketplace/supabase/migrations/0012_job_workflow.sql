@@ -29,6 +29,7 @@ begin
  if new.archived_at is not null and new.status<>'closed' then raise exception 'Archived jobs must remain closed'; end if;
  if exists(select 1 from public.job_assignments where job_id=old.id and state in ('assigned','in_progress','submitted','completed')) then
   if (to_jsonb(new)-array['status','updated_at','archived_at']) is distinct from (to_jsonb(old)-array['status','updated_at','archived_at']) then raise exception 'Assigned job terms cannot be edited'; end if;
+  if exists(select 1 from public.job_assignments where job_id=old.id and state='assigned') and new.status<>'published' then raise exception 'Cancel the unstarted assignment before closing this job'; end if;
   if exists(select 1 from public.job_assignments where job_id=old.id and state in ('in_progress','submitted','completed')) and new.status<>'closed' then raise exception 'Started work cannot be republished'; end if;
   if new.archived_at is distinct from old.archived_at and exists(select 1 from public.job_assignments where job_id=old.id and state in ('assigned','in_progress','submitted')) then raise exception 'Finish or cancel the assignment before removing this job'; end if;
  end if;
