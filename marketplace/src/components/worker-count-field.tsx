@@ -1,0 +1,1 @@
+export function WorkerCountField({value=1}:{value?:number}){return <><label htmlFor="worker_count">People needed</label><input id="worker_count" name="worker_count" type="number" min="1" max="50" step="1" required defaultValue={value}/><small>Pay shown is per person. Each worker has a separate agreement and progress record. Positions are reserved when assigned.</small></>;}
