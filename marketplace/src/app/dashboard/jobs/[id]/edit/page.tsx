@@ -1,3 +1,4 @@
+import {getJobCategories} from "@/lib/job-categories";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { updateJob } from "@/app/jobs/actions";
@@ -7,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
-const categories = ["Design & creative", "Development", "Marketing", "Writing & content", "Business support", "Other"];
+
 
 export default async function EditJobPage({ params, searchParams }: Props) {
   const { id } = await params;
@@ -19,6 +20,7 @@ export default async function EditJobPage({ params, searchParams }: Props) {
   const { data: profile } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
   if (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
+  const categories = await getJobCategories(supabase);
   const { data: job } = await supabase.from("jobs").select("id,title,description,category,location,work_type,pay_period,work_mode,experience_level,pay_min,pay_max,status").eq("id", id).eq("employer_id", user.id).maybeSingle();
   if (!job || job.status === "closed") notFound();
   const {data:assignment,error:workError}=await supabase.from("job_assignments").select("id").eq("job_id",id).neq("state","cancelled").maybeSingle();

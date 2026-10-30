@@ -20,8 +20,8 @@ const settings: Record<Role, { heading: string; description: string; label: stri
   },
   employer: {
     heading: "Employer sign in",
-    description: "Log in to manage roles and review applications from local talent.",
-    label: "Employer / hiring team",
+    description: "Hire for your home, personal tasks or business. Manage your posts and review applicants.",
+    label: "Hiring — individual or business",
     home: "/employer/login",
   },
   admin: {
@@ -65,7 +65,7 @@ export async function LoginPage({ role, searchParams }: Props) {
       </form>
       <p className="auth-footer"><Link href="/forgot-password">Forgot your password?</Link></p>
       {error === "confirmation" && <p className="auth-footer">Need another link? <Link href="/signup?error=confirmation">Resend email confirmation</Link></p>}
-      {role === "freelancer" && <p className="auth-footer">Hiring a team? <Link href="/employer/login">Employer sign in</Link></p>}
+      {role === "freelancer" && <p className="auth-footer">Need to hire someone? <Link href="/employer/login">Employer sign in</Link></p>}
       {role === "employer" && <p className="auth-footer">Looking for work? <Link href="/login">Job seeker sign in</Link></p>}
       {role !== "admin" && <p className="auth-footer">New to Titonova? <Link href={`/signup${role === "employer" ? "?role=employer" : ""}`}>Create an account</Link></p>}
     </section></main>

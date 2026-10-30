@@ -26,7 +26,7 @@ export default async function SignupPage({ searchParams }: Props) {
   return <div className="page-shell">
     <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><div className="nav-actions"><span style={{ color: "var(--muted)", fontSize: 12 }}>Already a member?</span><Link className="button secondary" href={role === "employer" ? "/employer/login" : "/login"}>Log in</Link></div></header>
     <main className="auth-wrap"><section className="auth-card">
-      <div className="eyebrow">Create your account</div><h1>Join Titonova</h1><p className="auth-copy">Set up your account to prepare for Nepal’s new work marketplace.</p>
+      <div className="eyebrow">Create your account</div><h1>Join Titonova</h1><p className="auth-copy">Find work or hire someone for your home, personal task or business. A company is not required.</p>
       {error === "setup" && <div className="setup-alert">Account services are being connected. Please try again later.</div>}
       {error === "invalid" && <div className="form-alert">Check your details. Use a valid email, choose an account type, and use a password with at least 10 characters.</div>}
       {error === "exists" && <div className="form-alert">An account already uses this email address. Log in or use a different email.</div>}
@@ -59,8 +59,8 @@ export default async function SignupPage({ searchParams }: Props) {
       {!waitingForCode && <form action={signUp} className="auth-form">
         <label htmlFor="full_name">Full name</label><input id="full_name" name="full_name" autoComplete="name" required maxLength={80} placeholder="Your name" />
         <label htmlFor="email">Email address</label><input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" />
-        <label htmlFor="account_type">I’m joining as</label><select id="account_type" name="account_type" defaultValue={role}><option value="freelancer">Freelancer / job seeker</option><option value="employer">Employer / hiring team</option></select>
-        <label htmlFor="company_name">Company or team name <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span></label><input id="company_name" name="company_name" autoComplete="organization" maxLength={120} placeholder="For employer accounts" />
+        <label htmlFor="account_type">I’m joining as</label><select id="account_type" name="account_type" defaultValue={role}><option value="freelancer">Freelancer / job seeker</option><option value="employer">Hiring — individual or business</option></select>
+        <label htmlFor="company_name">Company or team name <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span></label><input id="company_name" name="company_name" autoComplete="organization" maxLength={120} placeholder="Leave blank if you are hiring as an individual" />
         <label htmlFor="password">Password</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={10} required placeholder="At least 10 characters" />
         <button className="button full" type="submit">Create account <span aria-hidden="true">→</span></button>
       </form>}
