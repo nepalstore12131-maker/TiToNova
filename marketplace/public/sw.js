@@ -1,6 +1,6 @@
 // Cache only the public offline explanation. Never cache account pages, API
 // responses, payment information, proofs, or conversations on this device.
-const CACHE = "titonova-offline-v1";
+const CACHE = "titonova-offline-v2";
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.add("/offline.html")).then(() => self.skipWaiting()));
 });
