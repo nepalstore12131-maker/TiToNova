@@ -1,3 +1,4 @@
+import {assignWorker} from "@/app/dashboard/work/actions";
 import { InterviewPanel } from "@/components/interview-panel";
 import { CandidateReview } from "@/components/candidate-review";
 import Link from "next/link";
@@ -25,10 +26,11 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   if (role === "admin") redirect("/admin");
   if (role === "employer" && (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now())) redirect("/dashboard/billing?required=1");
 
-  const { data: application, error: applicationError } = await supabase.from("applications").select("id,applicant_id,hiring_stage,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
+  const { data: application, error: applicationError } = await supabase.from("applications").select("id,applicant_id,hiring_stage,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id,status),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
   if (applicationError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this application. Refresh the page and try again.</div><Link href="/dashboard/applications">Back to applications →</Link></main>;
   if (!application) notFound();
   const job = Array.isArray(application.job) ? application.job[0] : application.job;
+  const {data:assignment,error:assignmentError}=await supabase.from("job_assignments").select("id").eq("job_id",job?.id||"00000000-0000-0000-0000-000000000000").neq("state","cancelled").maybeSingle();
   const applicant = Array.isArray(application.applicant) ? application.applicant[0] : application.applicant;
   const paramsValue = await searchParams;
   const success = one(paramsValue.success);
@@ -41,14 +43,14 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
     {error && <div className="form-alert">We couldn’t update this application. It may have already changed.</div>}
     <section className="dashboard-card">
       {role === "employer" ? <>
-        <div className="detail-label">Applied for</div><p style={{ margin: 0 }}><Link href={`/dashboard/jobs/${job?.id}/edit`} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Your job"}</Link></p>
+        <div className="detail-label">Applied for</div><p style={{ margin: 0 }}><Link href={job?.status==="closed"||assignment?"/dashboard/work":`/dashboard/jobs/${job?.id}/edit`} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Your job"}</Link></p>
         {applicant?.headline && <><div className="detail-label">Headline</div><p style={{ margin: 0 }}>{applicant.headline}</p></>}
         {applicant?.location && <><div className="detail-label">Location</div><p style={{ margin: 0 }}>{applicant.location}</p></>}
         {applicant?.skills?.length > 0 && <><div className="detail-label">Skills</div><p style={{ margin: 0 }}>{applicant.skills.join(" · ")}</p></>}
         {applicant?.bio && <><div className="detail-label">About the candidate</div><p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{applicant.bio}</p></>}
         {applicant?.portfolio_url && <p><a href={applicant.portfolio_url} target="_blank" rel="noreferrer" style={{ color: "var(--green)" }}>Portfolio ↗</a>{applicant.linkedin_url && <> · <a href={applicant.linkedin_url} target="_blank" rel="noreferrer" style={{ color: "var(--green)" }}>LinkedIn ↗</a></>}</p>}
       </> : <>
-        <div className="detail-label">Applied to</div><p style={{ margin: 0 }}><Link href={`/jobs/${job?.id}`} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Job listing"}</Link></p>
+        <div className="detail-label">Applied to</div><p style={{ margin: 0 }}><Link href={job?.status==="closed"?"/dashboard/work":job?`/jobs/${job.id}`:"/dashboard/applications"} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Job listing"}</Link></p>
         <div className="detail-label">Status</div><p style={{ margin: 0 }}><span className={`status-tag status-${application.status}`}>{application.status}</span></p>
       </>}
       <div className="detail-label">{role === "employer" ? "Candidate introduction" : "Your introduction"}</div><p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{application.cover_note}</p>
@@ -57,6 +59,8 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
     </section>
     <p className="setup-alert">Hiring stage: <strong>{application.status === "withdrawn" ? "withdrawn" : application.hiring_stage}</strong></p>
     {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
+    {role === "employer" && !assignmentError && !assignment && job?.status === "published" && !["withdrawn","rejected"].includes(application.status) && <section className="dashboard-card"><h2>Assign this job</h2><p>Assign one worker for this job. They can start from My work; starting hides the job from public listings. Only one active assignment is allowed.</p><form action={assignWorker}><input type="hidden" name="application_id" value={id}/><button className="button">Assign this worker →</button></form><p><Link href="/dashboard/work">View existing assignments →</Link></p></section>}
+    {assignment && <p className="setup-alert">This job has an assigned worker. <Link href="/dashboard/work">Open work progress →</Link></p>}
     <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
     <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} />
   </PortalShell>;
