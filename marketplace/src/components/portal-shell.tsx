@@ -31,6 +31,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/dashboard/jobs/new", label: "Post a job" },
     { href: "/dashboard/billing", label: "Payments & billing" },
     { href: "/dashboard/promotions", label: "Promote a job" },
+    { href: "/dashboard/advertising", label: "Advertise your business" },
     { href: "/dashboard/applications", label: "Applications received" },
     { href: "/dashboard/profile", label: "Hiring profile" },
     { href: "/dashboard/reviews", label: "Ratings & feedback" },
