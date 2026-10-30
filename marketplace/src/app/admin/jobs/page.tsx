@@ -22,10 +22,10 @@ export default async function AdminJobsPage({ searchParams }: Props) {
   ]);
 
   return <PortalShell role="admin" activePath="/admin/jobs">
-    <div className="eyebrow">Moderation</div><h1>Job review queue</h1><p style={{ color: "var(--muted)", fontSize: 13 }}>Approve a listing to publish it in the public job search.</p>
+    <div className="eyebrow">Moderation</div><h1>Job review queue</h1><p style={{ color: "var(--muted)", fontSize: 13 }}>Review paused listings before restoring them. Approval dismisses their current open reports; rejection resolves them.</p>
     {one(params.success) === "reviewed" && <div className="setup-alert">The review decision was saved.</div>}
     {one(params.error) && <div className="form-alert">We couldn’t save that decision. The job may already have been reviewed.</div>}
-    {!jobs?.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>The queue is clear</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>New employer submissions will appear here.</p></section> : <div className="dashboard-list">
+    {!jobs?.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>The queue is clear</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>Reported listings and posts requiring approval will appear here.</p></section> : <div className="dashboard-list">
       {jobs.map((job) => {
         const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
         const pay = job.pay_min === null && job.pay_max === null ? "Pay discussed" : `${job.currency} ${job.pay_min ?? "—"}–${job.pay_max ?? "—"}`;

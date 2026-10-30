@@ -29,7 +29,7 @@ export default async function NewJobPage({ searchParams }: Props) {
 
   return <PortalShell role="employer" activePath="/dashboard/jobs/new">
     <main className="auth-wrap"><section className="auth-card" style={{ width: "min(620px, 100%)" }}>
-      <div className="eyebrow">Employer workspace</div><h1>Post a job</h1><p className="auth-copy">Hiring as an individual or a business? Describe your home task, one-day job or long-term role. A company is not required. Posts are reviewed before going public.</p>
+      <div className="eyebrow">Employer workspace</div><h1>Post a job</h1><p className="auth-copy">Hiring as an individual or a business? Describe your home task, one-day job or long-term role. A company is not required. Posts follow the current publishing rules. Reported listings may be paused for admin review.</p>
       {error === "invalid" && <div className="form-alert">Check the role details and pay range, then try again.</div>}
       {error === "save" && <div className="form-alert">We couldn’t save your listing. Please try again.</div>}
       <form action={createJob} className="auth-form">
@@ -40,7 +40,7 @@ export default async function NewJobPage({ searchParams }: Props) {
         <label htmlFor="work_mode">Work arrangement</label><select id="work_mode" name="work_mode" defaultValue="onsite"><option value="onsite">On site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select><label htmlFor="experience_level">Experience level</label><select id="experience_level" name="experience_level" defaultValue="any"><option value="any">Any experience</option><option value="entry">Entry level</option><option value="mid">Mid level</option><option value="senior">Senior level</option></select>
 <label htmlFor="pay_period">Pay period</label><select id="pay_period" name="pay_period" defaultValue="month"><option value="month">Per month</option><option value="hour">Per hour</option><option value="project">Per project</option><option value="unspecified">To discuss</option></select><div className="pay-fields"><div><label htmlFor="pay_min">Minimum pay (NPR)</label><input id="pay_min" name="pay_min" type="number" min="0" step="1" placeholder="Optional" /></div><div><label htmlFor="pay_max">Maximum pay (NPR)</label><input id="pay_max" name="pay_max" type="number" min="0" step="1" placeholder="Optional" /></div></div>
         <label htmlFor="description">Work description</label><textarea className="cover-note" id="description" name="description" minLength={30} maxLength={12000} required placeholder="Describe the tasks, approximate location, dates, hours, pay and skills needed. For a one-day task, choose Contract and Per project. Do not include your private home address." />
-        <button className="button full" type="submit">Submit for review →</button>
+        <button className="button full" type="submit">Post job →</button>
       </form>
     </section></main>
   </PortalShell>;

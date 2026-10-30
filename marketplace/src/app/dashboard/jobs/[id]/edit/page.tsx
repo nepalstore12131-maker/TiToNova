@@ -31,7 +31,7 @@ export default async function EditJobPage({ params, searchParams }: Props) {
   return <PortalShell role="employer" activePath="/dashboard/jobs">
     <p style={{ margin: "0 0 18px", fontSize: 12 }}><Link href="/dashboard/jobs" style={{ color: "var(--green)" }}>← My job posts</Link></p>
     <div className="eyebrow">Edit listing</div><h1>{job.title}</h1>
-    {job.status === "published" && <div className="setup-alert" style={{ marginTop: 16 }}>Saving changes will temporarily remove this listing from search while an administrator reviews the update.</div>}
+    {job.status === "published" && <div className="setup-alert" style={{ marginTop: 16 }}>Changes follow the current publishing rules. Listings under moderation need admin approval before returning to search.</div>}
     {error && <div className="form-alert">Check the details and try again.</div>}
     <section className="dashboard-card"><form action={updateJob} className="auth-form"><input type="hidden" name="job_id" value={job.id} />
       <label htmlFor="title">Job title</label><input id="title" name="title" defaultValue={job.title} minLength={4} maxLength={120} required />
