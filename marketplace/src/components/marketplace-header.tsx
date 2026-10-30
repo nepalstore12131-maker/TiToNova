@@ -1,0 +1,6 @@
+import Link from 'next/link';
+import { BrandMark } from './brand-mark';
+import { UiIcon } from './workspace-ui';
+export function MarketplaceHeader({jobs=false,ne=false}:{jobs?:boolean;ne?:boolean}){
+ return <header className="site-header public-header market-header"><Link className="brand" href={ne?'/ne':'/'}><BrandMark/>Titonova<span className="brand-country">NEPAL</span></Link><nav className="nav-links" aria-label="Main navigation"><Link href="/jobs" aria-current={jobs?'page':undefined}>{ne?'अवसर खोज्नुहोस्':'Find work'}</Link><Link href="/#employers">{ne?'रोजगारदाताका लागि':'For employers'}</Link><Link href="/dashboard">{ne?'कार्यस्थल':'Your workspace'}</Link></nav><div className="nav-actions"><Link className="text-button public-login" href="/login">{ne?'लग इन':'Log in'}</Link><Link className="button" href={jobs?'/dashboard/jobs/new':'/signup'}>{jobs?(ne?'रोजगारी पोस्ट':'Post a job'):'Get started'}<UiIcon size={16}/></Link><details className="public-mobile-menu"><summary aria-label="Open navigation"><UiIcon name="grid"/></summary><nav aria-label="Mobile navigation"><Link href="/jobs">Find work</Link><Link href="/signup?role=employer">Hire talent</Link><Link href="/dashboard">Your workspace</Link><Link href="/login">Log in</Link><Link href="/ne">नेपाली</Link></nav></details></div></header>;
+}
