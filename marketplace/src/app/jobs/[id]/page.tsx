@@ -1,3 +1,8 @@
+import {ApplicationWindowInfo} from "@/components/application-window";
+import {applicationAvailability} from "@/lib/application-window";
+import {SampleLinks} from "@/components/sample-links";
+import {parseSamples} from "@/lib/work-samples";
+import {AccountSubmit} from "@/components/account-form-controls";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
@@ -19,13 +24,16 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Job details will be available after the shared database is connected.</div><Link href="/jobs">Back to jobs</Link></main>;
 
-  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
+  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
   if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };
+  const {data:library}=user&&profile?.role==='freelancer'?await supabase.from('candidate_sample_library').select('samples').eq('id',user.id).maybeSingle():{data:null};
+  const sampleOptions=(library?.samples||'').split('\n').map((x:string)=>x.trim()).filter((x:string)=>x&&parseSamples(x));
   const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
   const company = employer?.company_name || employer?.full_name || "Titonova employer";
+  const accepting=applicationAvailability(job)==='open';
   const pay = formatNpr(job.pay_min,job.pay_max,false,job.currency);
 
   return <div className="page-shell">
@@ -37,17 +45,21 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
           <div className="eyebrow">{job.category}</div><h1 style={{ marginTop: 10 }}>{job.title}</h1>
           <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><ProfileAvatar id={job.employer_id} name={company} size={48}/><div><Link className="company-name" href={`/companies/${job.employer_id}`}>{company}</Link><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
           {employer?.employer_verified && <p className="trust-copy">Titonova has reviewed this employer’s company details.</p>}
+          <ApplicationWindowInfo job={job}/>
           <div className="job-detail-pay">{pay} {job.pay_min !== null || job.pay_max !== null ? <span>{job.pay_period === "month" ? "/ month" : job.pay_period === "hour" ? "/ hour" : job.pay_period === "project" ? "/ project" : ""}</span> : null}</div>
           <div className="tag-row"><span className="tag">{job.work_mode}</span><span className="tag">{job.experience_level === "any" ? "Any experience" : `${job.experience_level} level`}</span></div><h2 style={{ fontSize: 17, margin: "28px 0 10px" }}>About the role</h2><p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
+          {job.reference_links?.length>0&&<section><h2>Examples from the hirer</h2><p>Reference material to explain the task. Providing your own samples is optional.</p><SampleLinks links={job.reference_links}/></section>}
         </article>
         <aside className="dashboard-card" style={{ marginTop: 0, alignSelf: "start" }}>
           <h2 style={{ margin: "0 0 8px", fontSize: 17 }}>Interested in this role?</h2><p style={{ color: "var(--muted)", fontSize: 12, lineHeight: 1.6 }}>Introduce yourself and explain why you’re a good fit. One application per member.</p>
+          {(!accepting||errorCode==="window")&&<div className="setup-alert">Applications are not open for this job right now. Check the opening and closing times.</div>}
           {errorCode === "duplicate" && <div className="form-alert">You’ve already applied to this role.</div>}
           {errorCode === "invalid" && <div className="form-alert">Add an introduction between 20 and 5,000 characters.</div>}
+          {errorCode === "samples" && <div className="form-alert">Use up to 5 valid Google Drive or YouTube sample links.</div>}
           {errorCode === "apply" && <div className="form-alert">Your application couldn’t be sent. Please try again.</div>}
           {errorCode === "freelancer-only" && <div className="form-alert">Applications are for freelancer accounts. Sign in with a job seeker profile to apply.</div>}
-          {!user && <Link className="button full" href={`/login?next=${encodeURIComponent(`/jobs/${job.id}`)}`}>Log in to apply →</Link>}
-          {user && profile?.role === "freelancer" && <form action={applyToJob} className="auth-form"><input type="hidden" name="job_id" value={job.id} /><label htmlFor="cover_note">Short introduction</label><textarea className="cover-note" id="cover_note" name="cover_note" minLength={20} maxLength={5000} required placeholder="Tell the employer about your relevant skills and experience…" /><button className="button full" type="submit">Submit application →</button></form>}
+          {!user && accepting && <Link className="button full" href={`/login?next=${encodeURIComponent(`/jobs/${job.id}`)}`}>Log in to apply →</Link>}
+          {user && profile?.role === "freelancer" && accepting && <form action={applyToJob} className="auth-form"><input type="hidden" name="job_id" value={job.id} /><label htmlFor="cover_note">Short introduction</label><textarea className="cover-note" id="cover_note" name="cover_note" minLength={20} maxLength={5000} required placeholder="Tell the employer about your relevant skills and experience…" /><fieldset style={{border:'1px solid var(--line)',borderRadius:12,padding:14}}><legend>Share work samples (optional)</legend><p>Select only the links you want to share with this employer. Nothing is selected automatically.</p>{sampleOptions.map((url:string,i:number)=><label key={url} style={{display:'flex',gap:8,alignItems:'flex-start',margin:'12px 0'}}><input type="checkbox" name="sample_link" value={url}/><span style={{overflowWrap:'anywhere'}}>Sample {i+1} · {url}</span></label>)}{!sampleOptions.length&&<p>No saved demo links yet. You can apply without samples.</p>}<Link href="/dashboard/profile#work-samples" target="_blank" rel="noopener noreferrer">Manage saved sample links ↗</Link><small style={{display:'block'}}>Changes to your library do not change samples already shared. You can add or remove links later from the application.</small></fieldset><AccountSubmit pendingLabel="Applying…">Submit application →</AccountSubmit></form>}
           {user && profile?.role === "employer" && <div className="setup-alert">Employer accounts can’t apply to job listings.</div>}
           {user && profile?.role === "admin" && <div className="setup-alert">Administrator accounts can review this listing but don’t apply to jobs.</div>}
           {reportCode === "sent" && <div className="setup-alert" role="status">Thanks. Your report was sent to the Titonova review team.</div>}

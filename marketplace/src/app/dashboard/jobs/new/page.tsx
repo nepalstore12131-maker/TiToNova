@@ -1,3 +1,5 @@
+import {ApplicationWindowFields} from "@/components/application-window";
+import {SampleHelp} from "@/components/sample-links";
 import {randomUUID} from "node:crypto";
 import {AccountSubmit} from "@/components/account-form-controls";
 import {getJobCategories} from "@/lib/job-categories";
@@ -42,6 +44,7 @@ export default async function NewJobPage({ searchParams }: Props) {
         <label htmlFor="work_mode">Work arrangement</label><select id="work_mode" name="work_mode" defaultValue="onsite"><option value="onsite">On site</option><option value="hybrid">Hybrid</option><option value="remote">Remote</option></select><label htmlFor="experience_level">Experience level</label><select id="experience_level" name="experience_level" defaultValue="any"><option value="any">Any experience</option><option value="entry">Entry level</option><option value="mid">Mid level</option><option value="senior">Senior level</option></select>
 <label htmlFor="pay_period">Pay period</label><select id="pay_period" name="pay_period" defaultValue="month"><option value="month">Per month</option><option value="hour">Per hour</option><option value="project">Per project</option><option value="unspecified">To discuss</option></select><div className="pay-fields"><div><label htmlFor="pay_min">Minimum pay (NPR)</label><input id="pay_min" name="pay_min" type="number" min="0" step="1" placeholder="Optional" /></div><div><label htmlFor="pay_max">Maximum pay (NPR)</label><input id="pay_max" name="pay_max" type="number" min="0" step="1" placeholder="Optional" /></div></div>
         <label htmlFor="description">Work description</label><textarea className="cover-note" id="description" name="description" minLength={30} maxLength={12000} required placeholder="Describe the tasks, approximate location, dates, hours, pay and skills needed. For a one-day task, choose Contract and Per project. Do not include your private home address." />
+        <ApplicationWindowFields/><label htmlFor="reference_links">Example of the work you want (optional)</label><textarea id="reference_links" name="reference_links" rows={3} maxLength={3000} placeholder="Google Drive or YouTube video links"/><SampleHelp/><small>These examples will be public when your job is published. Do not include confidential files or private addresses. Candidates do not have to provide a demo to apply.</small>
         <AccountSubmit pendingLabel="Posting…">Post job →</AccountSubmit>
       </form>
     </section></main>

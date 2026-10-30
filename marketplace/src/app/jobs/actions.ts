@@ -1,5 +1,7 @@
 "use server";
 
+import {parseNepalDate} from "@/lib/application-window";
+import {parseSamples} from "@/lib/work-samples";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,6 +23,10 @@ export async function createJob(formData: FormData) {
   if(!/^[0-9a-f-]{36}$/i.test(submissionKey))redirect("/dashboard/jobs/new?error=save");
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
+  const referenceLinks=parseSamples(String(formData.get("reference_links")||""));
+  let opens:string|null=null,closes:string|null=null;
+  try{opens=parseNepalDate(String(formData.get("applications_open_at")||""));closes=parseNepalDate(String(formData.get("applications_close_at")||""));if(opens&&closes&&Date.parse(closes)<=Date.parse(opens))throw Error();}catch{redirect('/dashboard/jobs?error=application-window');}
+  const urgent=formData.get("urgent")==="on";
   const category = String(formData.get("category") ?? "").trim();
   const location = String(formData.get("location") ?? "Remote").trim();
   const workType = String(formData.get("work_type") ?? "contract");
@@ -33,7 +39,7 @@ export async function createJob(formData: FormData) {
   const payMin = payMinValue ? Number(payMinValue) : null;
   const payMax = payMaxValue ? Number(payMaxValue) : null;
 
-  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || location.length > 120 || !allowedTypes.has(workType) || !["unspecified","month","hour","project"].includes(payPeriod) || !["onsite","hybrid","remote"].includes(workMode) || !["any","entry","mid","senior"].includes(experienceLevel) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
+  if (!referenceLinks || title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || location.length > 120 || !allowedTypes.has(workType) || !["unspecified","month","hour","project"].includes(payPeriod) || !["onsite","hybrid","remote"].includes(workMode) || !["any","entry","mid","senior"].includes(experienceLevel) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
     redirect("/dashboard/jobs/new?error=invalid");
   }
 
@@ -42,6 +48,7 @@ export async function createJob(formData: FormData) {
     submission_key: submissionKey,
     title,
     description,
+    reference_links:referenceLinks,applications_open_at:opens,applications_close_at:closes,urgent,
     category,
     location: location || "Remote",
     work_type: workType,
@@ -69,13 +76,12 @@ export async function applyToJob(formData: FormData) {
   if (role !== "freelancer") redirect(`/jobs/${encodeURIComponent(jobId)}?error=freelancer-only`);
   if (!/^[0-9a-f-]{36}$/i.test(jobId) || coverNote.length < 20 || coverNote.length > 5000) redirect(`/jobs/${encodeURIComponent(jobId)}?error=invalid`);
 
-  const { error } = await supabase.from("applications").insert({
-    job_id: jobId,
-    applicant_id: user.id,
-    cover_note: coverNote,
-  });
+  const samples=parseSamples(formData.getAll("sample_link").map(String).join("\n"));
+  if(!samples)redirect(`/jobs/${jobId}?error=samples`);
+  const { error } = await supabase.rpc("submit_application_samples", {p_job:jobId,p_cover:coverNote,p_links:samples});
 
   if (error) {
+    if(error.message.includes("Applications are not open"))redirect(`/jobs/${jobId}?error=window`);
     if (error.code === "23505") redirect(`/jobs/${jobId}?error=duplicate`);
     redirect(`/jobs/${jobId}?error=apply`);
   }
@@ -191,6 +197,10 @@ export async function updateJob(formData: FormData) {
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
+  const referenceLinks=parseSamples(String(formData.get("reference_links")||""));
+  let opens:string|null=null,closes:string|null=null;
+  try{opens=parseNepalDate(String(formData.get("applications_open_at")||""));closes=parseNepalDate(String(formData.get("applications_close_at")||""));if(opens&&closes&&Date.parse(closes)<=Date.parse(opens))throw Error();}catch{redirect('/dashboard/jobs?error=application-window');}
+  const urgent=formData.get("urgent")==="on";
   const category = String(formData.get("category") ?? "").trim();
   const location = String(formData.get("location") ?? "Remote").trim() || "Remote";
   const workType = String(formData.get("work_type") ?? "contract");
@@ -202,12 +212,12 @@ export async function updateJob(formData: FormData) {
   const allowedTypes = new Set(["full_time", "part_time", "contract", "freelance"]);
   const payMin = payMinValue ? Number(payMinValue) : null;
   const payMax = payMaxValue ? Number(payMaxValue) : null;
-  if (title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || category.length > 80 || location.length > 120 || !allowedTypes.has(workType) || !["unspecified","month","hour","project"].includes(payPeriod) || !["onsite","hybrid","remote"].includes(workMode) || !["any","entry","mid","senior"].includes(experienceLevel) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
+  if (!referenceLinks || title.length < 4 || title.length > 120 || description.length < 30 || description.length > 12000 || category.length < 2 || category.length > 80 || location.length > 120 || !allowedTypes.has(workType) || !["unspecified","month","hour","project"].includes(payPeriod) || !["onsite","hybrid","remote"].includes(workMode) || !["any","entry","mid","senior"].includes(experienceLevel) || (payMin !== null && (!Number.isInteger(payMin) || payMin < 0)) || (payMax !== null && (!Number.isInteger(payMax) || payMax < 0)) || (payMin !== null && payMax !== null && payMax < payMin)) {
     redirect(`/dashboard/jobs/${jobId}/edit?error=invalid`);
   }
 
   const status = existing.status === "rejected" ? "pending_review" : existing.status;
-  const { error } = await supabase.from("jobs").update({ title, description, category, location, work_type: workType, pay_period: payPeriod, work_mode: workMode, experience_level: experienceLevel, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
+  const { error } = await supabase.from("jobs").update({ title, description, reference_links:referenceLinks, applications_open_at:opens,applications_close_at:closes,urgent, category, location, work_type: workType, pay_period: payPeriod, work_mode: workMode, experience_level: experienceLevel, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
   if (error) redirect(`/dashboard/jobs/${jobId}/edit?error=save`);
   redirect("/dashboard/jobs?success=updated");
 }

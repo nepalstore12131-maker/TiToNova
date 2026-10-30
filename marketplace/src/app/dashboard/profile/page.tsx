@@ -1,3 +1,4 @@
+import {WorkSampleLibrary} from "@/components/work-sample-library";
 import Link from "next/link";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { CareerProfile } from "@/components/career-profile";
@@ -41,6 +42,6 @@ export default async function ProfilePage({ searchParams }: Props) {
       {role === "freelancer" && <><label htmlFor="linkedin_url">LinkedIn profile</label><input id="linkedin_url" name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} maxLength={300} placeholder="https://linkedin.com/in/your-name" /></>}
       <button className="button" type="submit">Save profile →</button>
     </form></section>
-    {role === "freelancer" && <CareerProfile id={user.id} />}
+    {role === "freelancer" && <><WorkSampleLibrary id={user.id} feedback={one(params.samples)}/><CareerProfile id={user.id} /></>}
   </PortalShell>;
 }
