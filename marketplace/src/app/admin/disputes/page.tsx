@@ -1,0 +1,9 @@
+import Link from 'next/link';
+import {PortalShell} from '@/components/portal-shell';
+import {requireAdminContext} from '@/lib/supabase/admin';
+import {caseReasons} from '@/components/work-dispute-form';
+export default async function AdminCases({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}){
+ const {sessionClient:db}=await requireAdminContext();const p=await searchParams;const status=['open','reviewing','resolved','dismissed'].includes(p.status||'')?p.status!:'open';const page=Math.max(1,Math.min(10000,Number.parseInt(p.page||'1')||1));
+ const {data:cases,error,count}=await db.from('work_disputes').select('*',{count:'exact'}).eq('status',status).order('updated_at',{ascending:false}).range((page-1)*30,page*30-1);
+ return <PortalShell role="admin" activePath="/admin/disputes"><div className="eyebrow">Trust & fair decisions</div><h1>Work disputes & suspensions</h1><p>Compare the work agreement, timeline and both sides’ evidence. Multiple reports alone are not grounds for suspension. Record a reason, choose a temporary duration, and retain an appeal route.</p><nav className="admin-view-tabs">{['open','reviewing','resolved','dismissed'].map(s=><Link key={s} className={s===status?'active':''} href={`/admin/disputes?status=${s}`}>{s}</Link>)}</nav>{error?<p className="form-alert">Cases could not be loaded.</p>:!cases?.length?<section className="dashboard-card"><h2>No {status} cases</h2></section>:cases.map(d=><section className="dashboard-card" key={d.id}><h2><Link href={`/dashboard/disputes/${d.id}`}>{caseReasons[d.reason]||d.reason}</Link></h2><p>{d.details.slice(0,220)}</p><p>{new Date(d.created_at).toLocaleString('en-NP')}</p></section>)}<nav className="admin-pagination">{page>1&&<Link href={`/admin/disputes?status=${status}&page=${page-1}`}>Previous</Link>}<span>Page {page}</span>{page*30<(count||0)&&<Link href={`/admin/disputes?status=${status}&page=${page+1}`}>Next</Link>}</nav></PortalShell>;
+}
