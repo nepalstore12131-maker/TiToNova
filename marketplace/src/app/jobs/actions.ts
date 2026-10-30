@@ -35,7 +35,7 @@ export async function createJob(formData: FormData) {
     redirect("/dashboard/jobs/new?error=invalid");
   }
 
-  const { error } = await supabase.from("jobs").insert({
+  const { data: created, error } = await supabase.from("jobs").insert({
     employer_id: user.id,
     title,
     description,
@@ -49,10 +49,10 @@ export async function createJob(formData: FormData) {
     pay_min: payMin,
     pay_max: payMax,
     status: "pending_review",
-  });
+  }).select("status").single();
 
   if (error) redirect("/dashboard/jobs/new?error=save");
-  redirect("/dashboard?success=job-submitted");
+  redirect(`/dashboard/jobs?success=${created?.status === "published" ? "published" : "submitted"}`);
 }
 
 export async function applyToJob(formData: FormData) {
@@ -99,7 +99,7 @@ export async function reportJob(formData: FormData) {
   });
   if (error?.code === "23505") redirect(`/jobs/${jobId}?report=duplicate`);
   if (error) redirect(`/jobs/${jobId}?report=error`);
-  redirect(`/jobs/${jobId}?report=sent`);
+  redirect("/jobs?report=sent");
 }
 
 export async function reviewJob(formData: FormData) {
@@ -199,7 +199,7 @@ export async function updateJob(formData: FormData) {
     redirect(`/dashboard/jobs/${jobId}/edit?error=invalid`);
   }
 
-  const status = ["published","rejected"].includes(existing.status) ? "pending_review" : existing.status;
+  const status = existing.status === "rejected" ? "pending_review" : existing.status;
   const { error } = await supabase.from("jobs").update({ title, description, category, location, work_type: workType, pay_period: payPeriod, work_mode: workMode, experience_level: experienceLevel, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
   if (error) redirect(`/dashboard/jobs/${jobId}/edit?error=save`);
   redirect("/dashboard/jobs?success=updated");
