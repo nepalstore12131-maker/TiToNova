@@ -1,3 +1,5 @@
+import {loadPaymentSummary} from "@/lib/payment-summary";
+import {PaymentOverview} from "@/components/payment-overview";
 import Link from "next/link";
 import { reviewEmployerPayment, setEmployerPremiumAccess } from "@/app/admin/payment-actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -13,6 +15,7 @@ const methodName: Record<string, string> = { esewa: "eSewa", khalti: "Khalti", b
 
 export default async function AdminPaymentsPage({ searchParams }: Props) {
   const { sessionClient } = await requireAdminContext();
+  const summary = await loadPaymentSummary(sessionClient);
   const params = await searchParams;
   const requestedStatus = one(params.status);
   const status = ["pending", "approved", "rejected", "all"].includes(requestedStatus) ? requestedStatus : "pending";
@@ -34,7 +37,8 @@ export default async function AdminPaymentsPage({ searchParams }: Props) {
   const errorKey = one(params.error);
 
   return <PortalShell role="admin" activePath="/admin/payments">
-    <div className="eyebrow">Billing administration</div><div className="portal-toolbar"><div><h1>Payments and access</h1><p style={{ color: "var(--muted)", fontSize: 13 }}>Review transaction references and private proof files. Approving a payment activates the employer’s plan for the duration recorded on that request.</p></div><Link className="button secondary" href="/admin/payments/settings">Plan and account settings →</Link></div>
+    <div className="eyebrow">Billing administration</div><div className="portal-toolbar"><div><h1>Revenue &amp; payments</h1><p style={{ color: "var(--muted)", fontSize: 13 }}>Review transaction references and private proof files. Approving a payment activates the employer’s plan for the duration recorded on that request.</p></div><Link className="button secondary" href="/admin/payments/settings">Plan and account settings →</Link></div>
+    <PaymentOverview summary={summary} admin/>
     {success && <div className="setup-alert" style={{ marginTop: 16 }}>{({ approved: "Payment approved and Premium access activated.", rejected: "Payment rejected.", "access-extended": "Premium access extended.", "access-revoked": "Premium access disabled." } as Record<string, string>)[success] || "Payment settings updated."}</div>}
     {errorKey && <div className="form-alert" style={{ marginTop: 16 }}>{errorKey === "invalid" ? "Choose a valid request and action." : errorKey === "account" ? "Employer access could not be changed." : "The payment could not be updated. It may already have been reviewed."}</div>}
     <nav className="admin-view-tabs" aria-label="Payment status">{(["pending", "approved", "rejected", "all"] as const).map((value) => <Link key={value} className={status === value ? "active" : ""} href={`/admin/payments?status=${value}`}>{value[0].toUpperCase() + value.slice(1)}</Link>)}</nav>
