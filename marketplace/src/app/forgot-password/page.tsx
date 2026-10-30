@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { requestPasswordReset } from "@/app/auth/actions";
 
@@ -9,7 +10,7 @@ export default async function ForgotPasswordPage({ searchParams }: Props) {
   const sent = Array.isArray(params.sent) ? params.sent[0] : params.sent;
 
   return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><Link className="button secondary" href="/login">Log in</Link></div></header>
+    <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><div className="nav-actions"><Link className="button secondary" href="/login">Log in</Link></div></header>
     <main className="auth-wrap"><section className="auth-card">
       <div className="eyebrow">Account recovery</div><h1>Reset your password</h1>
       <p className="auth-copy">Enter the email address on your account. We’ll send a secure reset link if it can receive email.</p>

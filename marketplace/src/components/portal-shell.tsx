@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import { UiIcon } from "@/components/workspace-ui";
 import { NotificationBell } from "@/components/notification-bell";
 import type { ReactNode } from "react";
@@ -48,7 +49,7 @@ const roleLabel: Record<AccountRole, string> = {
 export function PortalShell({ role, activePath, children }: Props) {
   return <div className={`page-shell premium-workspace workspace-${role}`}>
     <header className="site-header">
-      <Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova<span className="brand-country">WORKSPACE</span></Link>
+      <Link className="brand" href="/"><BrandMark /> Titonova<span className="brand-country">WORKSPACE</span></Link>
       <nav className="nav-links" aria-label="Main navigation"><Link href="/jobs">Browse jobs</Link><Link href={role === "admin" ? "/admin" : "/dashboard"}>Workspace</Link></nav>
       <div className="nav-actions"><NotificationBell /><span className="role-badge">{roleLabel[role]}</span><form action={signOut}><button className="text-button" type="submit">Log out</button></form></div>
     </header>

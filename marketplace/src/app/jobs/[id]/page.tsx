@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { formatNpr } from "@/lib/discovery";
 import { notFound } from "next/navigation";
@@ -27,7 +28,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const pay = formatNpr(job.pay_min,job.pay_max,false,job.currency);
 
   return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><nav className="nav-links"><Link href="/jobs">Browse jobs</Link><Link href="/dashboard">Dashboard</Link></nav><div className="nav-actions"><Link className="text-button" href="/login">Log in</Link><Link className="button" href="/signup">Join Titonova</Link></div></header>
+    <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><nav className="nav-links"><Link href="/jobs">Browse jobs</Link><Link href="/dashboard">Dashboard</Link></nav><div className="nav-actions"><Link className="text-button" href="/login">Log in</Link><Link className="button" href="/signup">Join Titonova</Link></div></header>
     <main className="dashboard" style={{ maxWidth: 1100 }}>
       <p style={{ margin: "0 0 18px", fontSize: 12 }}><Link href="/jobs" style={{ color: "var(--green)" }}>← All jobs</Link></p>
       <div className="job-detail-grid">
