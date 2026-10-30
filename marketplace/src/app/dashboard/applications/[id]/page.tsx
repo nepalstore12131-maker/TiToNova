@@ -1,3 +1,4 @@
+import { InterviewPanel } from "@/components/interview-panel";
 import { CandidateReview } from "@/components/candidate-review";
 import Link from "next/link";
 import { ApplicationConversation } from "@/components/application-conversation";
@@ -56,6 +57,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
     </section>
     <p className="setup-alert">Hiring stage: <strong>{application.status === "withdrawn" ? "withdrawn" : application.hiring_stage}</strong></p>
     {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
+    <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
     <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} />
   </PortalShell>;
 }
