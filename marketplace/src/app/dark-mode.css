@@ -1,0 +1,52 @@
+/* Global opt-in theme. Existing light styling is intentionally unchanged. */
+.theme-toggle{position:fixed;left:max(18px,env(safe-area-inset-left));bottom:calc(18px + env(safe-area-inset-bottom));z-index:45;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 15px;border:1px solid #d5c8aa;border-radius:999px;background:#fffdf7;color:#373a32;box-shadow:0 5px 24px #0001;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.theme-toggle:hover{border-color:#a48952}.theme-toggle:focus-visible{outline:3px solid #b39249;outline-offset:4px}
+html[data-theme=dark]{color-scheme:dark;--ink:#f1eee5;--muted:#b3b1a8;--green:#dfc48b;--green-dark:#eed5a2;--cream:#131615;--white:#1d211f;--surface:#1d211f;--line:#363d36;--champagne:#3b3528;--charcoal:#d7bc84;--nav-selected:#353126;--nav-selected-ink:#f0d59e;--nav-hover:#292c26;--amber-bg:#302919;--amber-line:#655230;--amber-ink:#f0ce85}
+html[data-theme=dark] body{background:var(--cream);color:var(--ink)}
+html[data-theme=dark] :where(.market-home,.market-jobs){--market-gold:#dfc48b;--market-dark:#171c18;--market-soft:#252a23;--market-border:var(--line);background:var(--cream);color:var(--ink)}
+html[data-theme=dark] :is(.site-header,.premium-workspace .site-header,.public-mobile-menu,.public-mobile-menu nav,.portal-sidebar,.premium-workspace .portal-sidebar,.ws-panel,.ws-metric,.dashboard-card,.auth-card,.job-card,.conversation,.portal-table,.portal-action-card,.empty-listing,.preview-card,.category,.discovery-filters,.admin-view-tabs,.install-banner,.home-category-card,.home-live-board,.hiring-candidate,.notification-item){background:var(--surface);border-color:var(--line);color:var(--ink);box-shadow:0 12px 36px #00000014}
+html[data-theme=dark] :is(.site-languages,.support-footer-links,.market-footer,.home-footer){background:var(--cream);color:var(--muted);border-color:var(--line)}
+html[data-theme=dark] :is(.brand,.nav-links,.premium-workspace .nav-links,.market-header .nav-links a[aria-current=page],.ws-welcome h1,.admin-welcome h1,.job-card h2,.auth-card h1){color:var(--ink)}
+html[data-theme=dark] :is(.eyebrow,.market-overline,.market-section-heading .market-overline,.market-section-heading h2 em,.market-jobs-hero h1 em,.home-hero-copy h1 em,.ws-sidebar-discover,.message-meta strong){color:var(--green)}
+html[data-theme=dark] :is(.auth-copy,.company-place,.brand-country,.trust-copy,.detail-label,.portal-table th,.admin-content-copy,.message-meta,.ws-metric-top,.ws-metric>small,.ws-welcome p,.ws-profile-progress p,.market-section-heading>p,.market-company-link,.market-company-link>span,.market-job-pay small,.market-footer p,.journey-steps p,.market-jobs-hero p,.market-filter-title p,.market-result-card .desc,.stage-job-top small,.stage-job-bottom>span,.market-category p,.market-category>div){color:var(--muted)}
+html[data-theme=dark] :is(.button,.button:hover){background:#dfc48b;color:#20231c;border-color:#dfc48b;box-shadow:none}
+html[data-theme=dark] .button:hover{background:#efdaa9;border-color:#efdaa9}
+html[data-theme=dark] :is(.button.secondary,.button.secondary:hover){background:#252b25;border-color:#4a5143;color:#ead6ad}
+html[data-theme=dark] .button.secondary:hover{background:#34392f}
+html[data-theme=dark] :is(.button.danger,.button.danger:hover){background:#392522;border-color:#7b4840;color:#ffc0ae}
+html[data-theme=dark] :is(input:not([type=checkbox]):not([type=radio]),select,textarea){background:#171c19!important;color:var(--ink)!important;border-color:#4b5549!important;accent-color:#dfc48b}
+html[data-theme=dark] :is(input,textarea)::placeholder{color:#9dA498;opacity:1}
+html[data-theme=dark] :is(input[type=checkbox],input[type=radio],progress){accent-color:#dfc48b}
+html[data-theme=dark] :is(.auth-form label,.discovery-filters label,.admin-account-grid label,.admin-inline-form label,.admin-delete-row label,.report-job-details summary){color:#c7c9bd}
+html[data-theme=dark] :is(input,select,textarea):focus{outline:2px solid #dfc48b;outline-offset:2px;box-shadow:none}
+html[data-theme=dark] :focus-visible{outline-color:#dfc48b}
+html[data-theme=dark] :is(.ws-welcome,.admin-welcome,.ws-profile-progress,.company-hero,.home-live-job,.hiring-column,.payment-review-grid,.discovery-empty,.market-empty){background:#232a23;border-color:#414b3c;color:var(--ink)}
+html[data-theme=dark] :is(.ws-welcome-art,.ws-sidebar-avatar,.ws-action-icon,.ws-activity-icon,.profile-avatar,.company-mark,.market-company-icon,.discovery-seal){background:#343125;border-color:#574e39;color:#e3c98f}
+html[data-theme=dark] :is(.portal-nav-link,.premium-workspace .portal-nav-link){color:var(--muted)}
+html[data-theme=dark] :is(.portal-nav-link.active,.premium-workspace .portal-nav-link.active,.portal-nav-link:hover,.premium-workspace .portal-nav-link:hover,.admin-view-tabs a.active,.admin-view-tabs a:hover){background:var(--nav-selected);color:var(--nav-selected-ink)}
+html[data-theme=dark] :is(.role-badge,.premium-workspace .role-badge,.tag,.badge,.status-tag,.status-pill,.sample-pill,.market-job-tags>span,.market-quick-filters>a,.market-filter-toggle){background:#2c3027;border-color:#454c3d;color:#ded7bd}
+html[data-theme=dark] :is(.status-approved,.status-published,.status-completed,.verified-badge){background:#20382c;border-color:#3c6651;color:#a1dfb9}
+html[data-theme=dark] :is(.status-rejected,.status-cancelled,.form-alert){background:#382522;border-color:#744b40;color:#ffc3b3}
+html[data-theme=dark] :is(.status-pending,.status-pending_review,.setup-alert,.preview-bar){background:#332e20;border-color:#6d5c37;color:#f0d391}
+html[data-theme=dark] :is(.notification-bell,.premium-workspace .notification-bell,.ws-queue-count,.ws-queue-count.has-items){background:#302f25;color:#e6cea1}
+html[data-theme=dark] :is(.notification-item.unread,.message-bubble.mine,.message-quote){background:#303126;border-color:#655e43;color:var(--ink)}
+html[data-theme=dark] .message-bubble{background:#252c26;border-color:#414a3d;color:var(--ink)}
+html[data-theme=dark] :is(.ws-action:hover,.market-job-row:hover){background:#202720}
+html[data-theme=dark] :is(.ws-action,.ws-activity-row,.ws-review-queue,.report-job-details,.ws-empty,.stage-job-bottom,.market-job-list,.market-job-row,.market-results-layout,.market-result-card .job-foot){border-color:var(--line)}
+html[data-theme=dark] .market-hero{background:radial-gradient(ellipse at 80% 20%,#303324 0%,#171c18 65%)}
+html[data-theme=dark] :is(.stage-job,.stage-job:nth-child(2)){background:#252c24;color:var(--ink);border:1px solid #47503d;box-shadow:0 18px 40px #0003}
+html[data-theme=dark] .stage-job:nth-child(2){background:#353124;border-color:#675a3a}
+html[data-theme=dark] :is(.market-search,.market-ribbon,.market-employers,.market-category,.market-category.category-02,.market-category.category-03,.market-category.category-04,.market-category.category-05){background:#252b24;color:var(--ink);border-color:var(--line)}
+html[data-theme=dark] .market-category.category-03{background:#322e22}
+html[data-theme=dark] :is(.market-category>svg,.market-ribbon svg,.journey-steps article>div,.market-job-open){color:var(--green)}
+html[data-theme=dark] :is(.market-employer-links>a,.hiring-feature-stack>div){background:#252c24;border-color:#424b3b;color:var(--ink)}
+html[data-theme=dark] :is(.market-hiring,.home-employer-section,.ws-membership,.banner){background:#222a21;color:var(--ink);border:1px solid #414a39}
+html[data-theme=dark] :is(.market-hiring p,.hiring-feature-stack p,.market-employers p){color:var(--muted)}
+html[data-theme=dark] .ws-skeleton{background:linear-gradient(100deg,#252b25 25%,#343b30 50%,#252b25 75%);background-size:200% 100%}
+html[data-theme=dark] :is(.floating-help,.theme-toggle){background:#242b23;color:#ead5a7;border-color:#716044;box-shadow:0 6px 22px #0005}
+html[data-theme=dark] .brand-artwork{background:#fffdf7} /* Preserve the original logo and all uploaded media. */
+@media print{.theme-toggle{display:none}}
+html[data-theme=dark] :is(.market-result-card .discovery-job-link,.market-result-card .job-foot strong,.market-card-category,.market-search>span){color:var(--green)}
+html[data-theme=dark] :is(.market-results .discovery-results-heading>span,.market-result-card .job-foot>span,.market-result-card .company-place,.auth-footer,.ws-sidebar-profile small,.portal-sidebar-label,.dashboard-row small){color:var(--muted)}
+html[data-theme=dark] :is(.market-result-card .tag,.status-submitted,.status-shortlisted){background:#29352b;color:#c6dfc6;border-color:#465643}
+html[data-theme=dark] :is(.job-detail-card,.apply-card,.job-detail,.application-card){border-color:var(--line)}
