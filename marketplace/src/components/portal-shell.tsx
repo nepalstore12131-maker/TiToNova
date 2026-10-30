@@ -1,3 +1,4 @@
+import { UiIcon } from "@/components/workspace-ui";
 import { NotificationBell } from "@/components/notification-bell";
 import type { ReactNode } from "react";
 import Link from "next/link";
@@ -42,19 +43,20 @@ const roleLabel: Record<AccountRole, string> = {
 };
 
 export function PortalShell({ role, activePath, children }: Props) {
-  return <div className="page-shell">
+  return <div className={`page-shell premium-workspace workspace-${role}`}>
     <header className="site-header">
-      <Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link>
+      <Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova<span className="brand-country">WORKSPACE</span></Link>
       <nav className="nav-links" aria-label="Main navigation"><Link href="/jobs">Browse jobs</Link><Link href={role === "admin" ? "/admin" : "/dashboard"}>Workspace</Link></nav>
       <div className="nav-actions"><NotificationBell /><span className="role-badge">{roleLabel[role]}</span><form action={signOut}><button className="text-button" type="submit">Log out</button></form></div>
     </header>
     <div className="portal-layout">
       <aside className="portal-sidebar" aria-label="Workspace pages">
-        <div className="portal-sidebar-label">{roleLabel[role]} workspace</div>
+        <div className="ws-sidebar-profile"><span className="ws-sidebar-avatar"><UiIcon name={role === "admin" ? "shield" : role === "employer" ? "briefcase" : "profile"}/></span><div><strong>{roleLabel[role]}</strong><small>Your Titonova workspace</small></div></div><div className="portal-sidebar-label">WORKSPACE</div>
         <nav className="portal-nav">
-          <Link className={activePath === "/dashboard/notifications" ? "portal-nav-link active" : "portal-nav-link"} href="/dashboard/notifications">Notifications</Link>
-          {navigation[role].map((item) => <Link key={item.href} className={activePath === item.href ? "portal-nav-link active" : "portal-nav-link"} href={item.href} aria-current={activePath === item.href ? "page" : undefined}>{item.label}</Link>)}
+          <Link className={activePath === "/dashboard/notifications" ? "portal-nav-link active" : "portal-nav-link"} href="/dashboard/notifications" aria-current={activePath === "/dashboard/notifications" ? "page" : undefined}><UiIcon name="message" size={18}/><span>Notifications</span></Link>
+          {navigation[role].map((item) => <Link key={item.href} className={activePath === item.href ? "portal-nav-link active" : "portal-nav-link"} href={item.href} aria-current={activePath === item.href ? "page" : undefined}><UiIcon name={item.href.includes("profile") || item.href.includes("users") ? "profile" : item.href.includes("payment") || item.href.includes("billing") ? "wallet" : item.href.includes("report") || item.href.includes("moderation") ? "shield" : item.href.includes("messages") ? "message" : item.href.includes("hiring") || item.href.includes("applications") || item.href.includes("employers") ? "people" : item.href.includes("new") ? "plus" : item.href.includes("jobs") || item.href.includes("listings") ? "briefcase" : "grid"} size={18}/><span>{item.label}</span></Link>)}
         </nav>
+        <Link className="ws-sidebar-discover" href="/jobs"><UiIcon name="spark" size={17}/><span>Explore opportunities</span><UiIcon size={14}/></Link>
       </aside>
       <main className="dashboard portal-main">{children}</main>
     </div>
