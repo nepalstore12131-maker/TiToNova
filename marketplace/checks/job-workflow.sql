@@ -1,0 +1,38 @@
+rollback;
+begin;
+do $$
+declare e uuid:=gen_random_uuid(); w uuid:=gen_random_uuid(); x uuid:=gen_random_uuid(); j uuid:=gen_random_uuid(); a uuid:=gen_random_uuid(); b uuid:=gen_random_uuid(); assignment uuid; n integer;
+begin
+ perform set_config('request.jwt.claims','{"role":"service_role"}',true);
+ insert into auth.users(id,email,raw_user_meta_data) values(e,e||'@workflow.invalid','{"account_type":"employer"}'),(w,w||'@workflow.invalid','{}'),(x,x||'@workflow.invalid','{}');
+ update public.profiles set employer_premium_until=now()+interval '1 day' where id=e;
+ insert into public.jobs(id,employer_id,title,description,category,status) values(j,e,'Workflow test job','Temporary job for transactional workflow testing.','Development','published');
+ insert into public.applications(id,job_id,applicant_id,cover_note) values(a,j,w,'Test application for worker one'),(b,j,x,'Test application for worker two');
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);set local role authenticated;
+ assignment:=public.assign_job_worker(a);
+ begin perform public.assign_job_worker(b);raise exception 'Second worker allowed';exception when unique_violation then null;end;
+ begin perform public.archive_job_listing(j);raise exception 'Active assignment archived';exception when raise_exception then if sqlerrm not in ('Finish or cancel the assignment before removing this job','Cancel the unstarted assignment before closing this job') then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',x,'role','authenticated')::text,true);
+ select count(*) into n from public.job_assignments where job_id=j;if n<>0 then raise exception 'Outsider sees work';end if;
+ begin perform public.update_job_work(assignment,'start');raise exception 'Wrong worker starts';exception when raise_exception then if sqlerrm<>'This action is not available' then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);
+ perform public.update_job_work(assignment,'start');perform public.update_job_work(assignment,'progress',50,'Half done');
+ select count(*) into n from public.jobs where id=j and status='closed';if n<>1 then raise exception 'Worker loses private job or job not closed';end if;
+ begin perform public.update_job_work(assignment,'complete');raise exception 'Worker approves own completion';exception when raise_exception then if sqlerrm<>'This action is not available' then raise;end if;end;
+ perform public.update_job_work(assignment,'submit',100,'Ready for review');
+ reset role;perform set_config('request.jwt.claims','{"role":"anon"}',true);set local role anon;
+ select count(*) into n from public.jobs where id=j;if n<>0 then raise exception 'Started job public';end if;
+ reset role;perform set_config('request.jwt.claims',json_build_object('sub',x,'role','authenticated')::text,true);set local role authenticated;
+ select count(*) into n from public.jobs where id=j;if n<>0 then raise exception 'Started job visible to other worker';end if;
+ begin insert into public.applications(job_id,applicant_id,cover_note) values(j,x,'Should not accept new applications');raise exception 'Closed job accepts applications';exception when raise_exception then if sqlerrm<>'This job no longer accepts applications' then raise;end if;end;
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);
+ begin update public.jobs set title='Changed terms' where id=j;raise exception 'Assigned terms mutable';exception when raise_exception then if sqlerrm<>'Assigned job terms cannot be edited' then raise;end if;end;
+ begin update public.jobs set status='pending_review' where id=j;raise exception 'Started job reopened';exception when raise_exception then if sqlerrm<>'Started work cannot be republished' then raise;end if;end;
+ perform public.update_job_work(assignment,'revise',90,'Please revise');
+ perform set_config('request.jwt.claims',json_build_object('sub',w,'role','authenticated')::text,true);perform public.update_job_work(assignment,'submit',100,'Revised');
+ perform set_config('request.jwt.claims',json_build_object('sub',e,'role','authenticated')::text,true);perform public.update_job_work(assignment,'complete');perform public.archive_job_listing(j);
+ select count(*) into n from public.job_assignments where id=assignment and state='completed';if n<>1 then raise exception 'Work history lost';end if;
+ reset role;
+end;$$;
+rollback;
+select 'PASS: single assignment, private progress, worker-only start, automatic closure, blocked new applicants, immutable terms, revisions, employer completion and preserved archive history' as result;

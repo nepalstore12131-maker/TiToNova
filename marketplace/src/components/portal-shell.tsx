@@ -16,6 +16,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/dashboard/applications", label: "My applications" },
     { href: "/dashboard/earnings", label: "Earnings" },
     { href: "/dashboard/interviews", label: "Interviews" },
+    { href: "/dashboard/work", label: "My work" },
     { href: "/dashboard/profile", label: "My profile" },
     { href: "/dashboard/settings", label: "Account settings" },
   ],
@@ -23,6 +24,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/dashboard", label: "Overview" },
     { href: "/dashboard/hiring", label: "Hiring dashboard" },
     { href: "/dashboard/interviews", label: "Interviews" },
+    { href: "/dashboard/work", label: "My work" },
     { href: "/dashboard/jobs", label: "My job posts" },
     { href: "/dashboard/jobs/new", label: "Post a job" },
     { href: "/dashboard/billing", label: "Payments & billing" },
@@ -41,6 +43,7 @@ const navigation: Record<AccountRole, { href: string; label: string }[]> = {
     { href: "/admin/payments/settings", label: "Premium settings" },
     { href: "/admin/applications", label: "Applications" },
     { href: "/dashboard/interviews", label: "Interviews" },
+    { href: "/dashboard/work", label: "My work" },
     { href: "/admin/users", label: "Accounts" },
   ],
 };

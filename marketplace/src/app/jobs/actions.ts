@@ -180,7 +180,7 @@ export async function updateJob(formData: FormData) {
   if (!/^[0-9a-f-]{36}$/i.test(jobId)) redirect("/dashboard/jobs?error=invalid");
 
   const { data: existing } = await supabase.from("jobs").select("status").eq("id", jobId).eq("employer_id", user.id).maybeSingle();
-  if (!existing || existing.status === "closed" || existing.status === "rejected") redirect("/dashboard/jobs?error=unavailable");
+  if (!existing || existing.status === "closed") redirect("/dashboard/jobs?error=unavailable");
 
   const title = String(formData.get("title") ?? "").trim();
   const description = String(formData.get("description") ?? "").trim();
@@ -199,7 +199,7 @@ export async function updateJob(formData: FormData) {
     redirect(`/dashboard/jobs/${jobId}/edit?error=invalid`);
   }
 
-  const status = existing.status === "published" ? "pending_review" : existing.status;
+  const status = ["published","rejected"].includes(existing.status) ? "pending_review" : existing.status;
   const { error } = await supabase.from("jobs").update({ title, description, category, location, work_type: workType, pay_period: payPeriod, work_mode: workMode, experience_level: experienceLevel, pay_min: payMin, pay_max: payMax, status }).eq("id", jobId).eq("employer_id", user.id);
   if (error) redirect(`/dashboard/jobs/${jobId}/edit?error=save`);
   redirect("/dashboard/jobs?success=updated");

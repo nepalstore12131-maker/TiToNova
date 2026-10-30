@@ -20,7 +20,9 @@ export default async function EditJobPage({ params, searchParams }: Props) {
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
   if (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now()) redirect("/dashboard/billing?required=1");
   const { data: job } = await supabase.from("jobs").select("id,title,description,category,location,work_type,pay_period,work_mode,experience_level,pay_min,pay_max,status").eq("id", id).eq("employer_id", user.id).maybeSingle();
-  if (!job || ["closed", "rejected"].includes(job.status)) notFound();
+  if (!job || job.status === "closed") notFound();
+  const {data:assignment,error:workError}=await supabase.from("job_assignments").select("id").eq("job_id",id).neq("state","cancelled").maybeSingle();
+  if(workError||assignment)redirect("/dashboard/work");
   const paramsValue = await searchParams;
   const error = Array.isArray(paramsValue.error) ? paramsValue.error[0] : paramsValue.error;
 
