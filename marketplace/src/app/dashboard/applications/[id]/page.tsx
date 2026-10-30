@@ -1,3 +1,4 @@
+import {ApplicationSamples} from "@/components/application-samples";
 import {assignWorker} from "@/app/dashboard/work/actions";
 import { InterviewPanel } from "@/components/interview-panel";
 import { CandidateReview } from "@/components/candidate-review";
@@ -61,6 +62,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
     {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
     {role === "employer" && !assignmentError && !assignment && job?.status === "published" && !["withdrawn","rejected"].includes(application.status) && <section className="dashboard-card"><h2>Assign this job</h2><p>Assign one worker for this job. They can start from My work; starting hides the job from public listings. Only one active assignment is allowed.</p><form action={assignWorker}><input type="hidden" name="application_id" value={id}/><button className="button">Assign this worker →</button></form><p><Link href="/dashboard/work">View existing assignments →</Link></p></section>}
     {assignment && <p className="setup-alert">This job has an assigned worker. <Link href="/dashboard/work">Open work progress →</Link></p>}
+    <ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/>
     <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
     <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} />
   </PortalShell>;

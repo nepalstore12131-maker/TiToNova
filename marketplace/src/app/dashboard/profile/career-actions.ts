@@ -5,11 +5,9 @@ export async function saveCareer(form:FormData){
  const db=await createClient();if(!db)redirect('/dashboard/profile?error=setup');
  const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');
  const {data:profile}=await db.from('profiles').select('role').eq('id',user.id).maybeSingle();if(profile?.role!=='freelancer')redirect('/dashboard');
- const history=String(form.get('work_history')||'').trim(), samples=String(form.get('portfolio_samples')||'').trim(),availability=String(form.get('availability')||'discuss'),period=String(form.get('pay_period')||'month');
+ const history=String(form.get('work_history')||'').trim(),availability=String(form.get('availability')||'discuss'),period=String(form.get('pay_period')||'month');
  const raw=String(form.get('expected_pay')||'').trim(),pay=raw?Number(raw):null;
- if(history.length>6000||samples.length>3000||!['now','two_weeks','one_month','discuss'].includes(availability)||!['month','hour','project'].includes(period)||(pay!==null&&(!Number.isInteger(pay)||pay<0||pay>1000000000)))redirect('/dashboard/profile?error=invalid');
- const links=samples.split('\n').map(s=>s.trim()).filter(Boolean);
- if(links.some(s=>{try{return !['http:','https:'].includes(new URL(s).protocol);}catch{return true;}}))redirect('/dashboard/profile?error=invalid');
+ if(history.length>6000||!['now','two_weeks','one_month','discuss'].includes(availability)||!['month','hour','project'].includes(period)||(pay!==null&&(!Number.isInteger(pay)||pay<0||pay>1000000000)))redirect('/dashboard/profile?error=invalid');
  const {data:old}=await db.from('candidate_profiles').select('resume_path').eq('id',user.id).maybeSingle();
  let path=form.get('remove_resume')==='1'?'':old?.resume_path||'';
  const file=form.get('resume');let uploaded='';
@@ -19,7 +17,7 @@ export async function saveCareer(form:FormData){
   path=`${user.id}/${crypto.randomUUID()}.pdf`;
   const {error}=await db.storage.from('candidate-resumes').upload(path,bytes,{contentType:'application/pdf',upsert:false});if(error)redirect('/dashboard/profile?error=upload');uploaded=path;
  }
- const {error}=await db.from('candidate_profiles').upsert({id:user.id,work_history:history,portfolio_samples:links.join('\n'),availability,expected_pay:pay,pay_period:period,resume_path:path,updated_at:new Date().toISOString()});
+ const {error}=await db.from('candidate_profiles').upsert({id:user.id,work_history:history,availability,expected_pay:pay,pay_period:period,resume_path:path,updated_at:new Date().toISOString()});
  if(error){if(uploaded)await db.storage.from('candidate-resumes').remove([uploaded]);redirect('/dashboard/profile?error=save');}
  if(old?.resume_path&&old.resume_path!==path)await db.storage.from('candidate-resumes').remove([old.resume_path]);
  redirect('/dashboard/profile?success=saved');

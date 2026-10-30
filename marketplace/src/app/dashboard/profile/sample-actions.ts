@@ -1,0 +1,6 @@
+'use server';
+import {redirect} from 'next/navigation';
+import {createClient} from '@/lib/supabase/server';
+import {parseSamples} from '@/lib/work-samples';
+export async function saveSampleLibrary(form:FormData){const db=await createClient();if(!db)redirect('/login');const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');const links=parseSamples(String(form.get('samples')||''));if(!links)redirect('/dashboard/profile?samples=invalid');const {error}=await db.from('candidate_sample_library').upsert({id:user.id,samples:links.join('\n'),updated_at:new Date().toISOString()});redirect(`/dashboard/profile?samples=${error?'error':'saved'}`);}
+export async function shareApplicationSamples(form:FormData){const db=await createClient();if(!db)redirect('/login');const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');const id=String(form.get('application_id')||'');if(!/^[0-9a-f-]{36}$/i.test(id))redirect('/dashboard/applications');const links=parseSamples(String(form.get('samples')||''));if(!links)redirect(`/dashboard/applications/${id}?samples=invalid`);const {error}=await db.from('application_work_samples').upsert({application_id:id,author_id:user.id,links,updated_at:new Date().toISOString()});redirect(`/dashboard/applications/${id}?samples=${error?'error':'saved'}`);}
