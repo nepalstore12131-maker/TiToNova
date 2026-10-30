@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import "./globals.css";
+import "./luxury.css";
 import { InstallApp } from "@/components/install-app";
 
 export const metadata: Metadata = {
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     "A Nepal-focused marketplace connecting independent professionals with employers.",
 };
 
-export const viewport: Viewport = { themeColor: "#16765f", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#2c302b", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({
   children,
