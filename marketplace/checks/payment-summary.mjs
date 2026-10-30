@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {summarizePayments,loadPaymentSummary} from '../src/lib/payment-summary.ts';
+assert.deepEqual(summarizePayments([{amount_npr:'0.1',status:'approved'},{amount_npr:'0.2',status:'approved'},{amount_npr:200,status:'pending'},{amount_npr:50,status:'rejected'}]),{approved:0.3,pending:200,rejected:50,approvedCount:2,pendingCount:1,rejectedCount:1});
+assert.throws(()=>summarizePayments([{amount_npr:'invalid',status:'approved'}]));
+const records=Array.from({length:501},(_,i)=>({id:String(i).padStart(5,'0'),amount_npr:10,status:'approved',employer_id:'owner'}));
+records.push({id:'99999',amount_npr:999,status:'approved',employer_id:'other'});
+const db={from:()=>{let filter,after;const query={select(){return this},order(){return this},limit(){return this},eq(k,v){assert.equal(k,'employer_id');filter=v;return this},gt(k,v){assert.equal(k,'id');after=v;return this},then(resolve){return Promise.resolve({data:records.filter(r=>(!filter||r.employer_id===filter)&&(!after||r.id>after)).slice(0,500),error:null}).then(resolve)}};return query}};
+const own=await loadPaymentSummary(db,'owner');assert.equal(own.approved,5010);assert.equal(own.approvedCount,501);
+const all=await loadPaymentSummary(db);assert.equal(all.approved,6009);assert.equal(all.approvedCount,502);
+const failing={from:()=>({select(){return this},order(){return this},limit(){return Promise.resolve({data:null,error:{message:'failed'}})}})};
+assert.equal(await loadPaymentSummary(failing),null);
+console.log('PASS: decimal totals, status separation, owner filter, multi-page totals and query failure');
