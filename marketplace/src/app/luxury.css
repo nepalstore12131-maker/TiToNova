@@ -27,3 +27,7 @@ body{background:var(--cream);color:var(--ink)}
 .hiring-column{background:#f0ecdf;border-color:#e3d9c6}.hiring-candidate{background:#fffefa;border-color:#e2d9c9}.message-bubble{background:#f2eee3;border-color:#e5ddcd}.message-bubble.mine{background:#eae4d3;border-color:#d9ccb1}.message-meta{color:#777967}.message-meta strong{color:#806641}.message-quote{background:#f3eee1;border-color:#9a8050}.notification-item{background:#fffefa}.notification-item.unread{background:#f4eedf;border-color:#e0d0ae}.notification-dot{background:#e0d8c7}.unread .notification-dot{background:#9b8050}.admin-view-tabs{background:#fffefa}.admin-view-tabs a.active,.admin-view-tabs a:hover{background:#eee6d4;color:#735a32}.install-banner{background:#fffefa;border-color:#e2d9c7;box-shadow:0 8px 40px #3a36281a}
 .ws-skeleton{background:linear-gradient(100deg,#eee8dc 25%,#f8f5ed 50%,#eee8dc 75%);background-size:200% 100%}
 @media(max-width:800px){.home-live-board{box-shadow:7px 9px 0 #eee7d9}}
+
+/* Keep the supplied artwork crisp on high-density screens without changing its colors. */
+.brand-mark.brand-artwork{position:relative;display:inline-block;overflow:hidden;flex-shrink:0;background:#fffdf7;border-radius:10px;vertical-align:middle}
+.brand-artwork img{position:absolute;width:145%;height:145%;max-width:none;left:-22.5%;top:-22.5%;object-fit:contain}

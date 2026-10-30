@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { updatePassword } from "@/app/auth/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -13,7 +14,7 @@ export default async function ResetPasswordPage({ searchParams }: Props) {
   const { data: { user } } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
 
   return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><Link className="button secondary" href="/login">Log in</Link></div></header>
+    <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><div className="nav-actions"><Link className="button secondary" href="/login">Log in</Link></div></header>
     <main className="auth-wrap"><section className="auth-card">
       <div className="eyebrow">Account recovery</div><h1>Choose a new password</h1>
       {!supabase && <div className="setup-alert">Account services are temporarily unavailable. Please try again later.</div>}

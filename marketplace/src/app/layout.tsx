@@ -7,7 +7,7 @@ import { InstallApp } from "@/components/install-app";
 export const metadata: Metadata = {
   title: "Titonova — Work and talent, connected in Nepal",
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Titonova" },
-  icons: { apple: "/icons/apple-touch-icon.png" },
+  icons: { icon: [{ url: "/brand/titonova-icon.png", type: "image/png", sizes: "512x512" }], apple: "/brand/titonova-icon.png" },
   description:
     "A Nepal-focused marketplace connecting independent professionals with employers.",
 };

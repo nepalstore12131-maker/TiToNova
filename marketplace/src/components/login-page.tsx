@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { signIn } from "@/app/auth/actions";
 
@@ -37,7 +38,7 @@ export async function LoginPage({ role, searchParams }: Props) {
   const page = settings[role];
 
   return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><Link className="text-button" href="/jobs">Browse jobs</Link>{role !== "admin" && <Link className="button secondary" href={`/signup${role === "employer" ? "?role=employer" : ""}`}>Create account</Link>}</div></header>
+    <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><div className="nav-actions"><Link className="text-button" href="/jobs">Browse jobs</Link>{role !== "admin" && <Link className="button secondary" href={`/signup${role === "employer" ? "?role=employer" : ""}`}>Create account</Link>}</div></header>
     <main className="auth-wrap"><section className="auth-card">
       <div className="eyebrow">{page.label}</div><h1>{page.heading}</h1><p className="auth-copy">{page.description}</p>
       {success === "password-updated" && <div className="setup-alert">Your password was updated. Sign in with your new password.</div>}

@@ -1,3 +1,4 @@
+import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import { resendSignupConfirmation, signUp, verifySignupCode } from "@/app/auth/actions";
@@ -16,7 +17,7 @@ export default async function SignupPage({ searchParams }: Props) {
   const showResend = waitingForCode || resend === "1";
 
   return <div className="page-shell">
-    <header className="site-header"><Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link><div className="nav-actions"><span style={{ color: "var(--muted)", fontSize: 12 }}>Already a member?</span><Link className="button secondary" href={role === "employer" ? "/employer/login" : "/login"}>Log in</Link></div></header>
+    <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><div className="nav-actions"><span style={{ color: "var(--muted)", fontSize: 12 }}>Already a member?</span><Link className="button secondary" href={role === "employer" ? "/employer/login" : "/login"}>Log in</Link></div></header>
     <main className="auth-wrap"><section className="auth-card">
       <div className="eyebrow">Create your account</div><h1>Join Titonova</h1><p className="auth-copy">Set up your account to prepare for Nepal’s new work marketplace.</p>
       {error === "setup" && <div className="setup-alert">Account services are being connected. Please try again later.</div>}
