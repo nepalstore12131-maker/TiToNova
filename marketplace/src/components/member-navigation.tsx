@@ -7,12 +7,14 @@ export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer'
  const groups:{label:string;icon:string;items:Item[]}[]=[
   {label:'Work',icon:'briefcase',items:employer?[
    {href:'/dashboard/hiring',label:'Hiring dashboard'},
+   {href:'/dashboard/saved-workers',label:'Saved workers & hire again'},
+   {href:'/dashboard/invitations',label:'Hiring invitations'},
    {href:'/dashboard/jobs',label:'My job posts'},
    {href:'/dashboard/jobs/new',label:'Post a job'},
    {href:'/dashboard/applications',label:'Applications received'},
    {href:'/dashboard/interviews',label:'Interviews'},
    {href:'/dashboard/work',label:'My work'},
-  ]:[{href:'/jobs',label:'Find work'},{href:'/dashboard/applications',label:'My applications'},{href:'/dashboard/interviews',label:'Interviews'},{href:'/dashboard/work',label:'My work'}]},
+  ]:[{href:'/jobs',label:'Find work'},{href:'/dashboard/invitations',label:'Hiring invitations'},{href:'/dashboard/applications',label:'My applications'},{href:'/dashboard/interviews',label:'Interviews'},{href:'/dashboard/work',label:'My work'}]},
   {label:'Payments',icon:'wallet',items:employer?[{href:'/dashboard/billing',label:'Premium & billing'},{href:'/dashboard/promotions',label:'Promote a job'},{href:'/dashboard/advertising',label:'Advertise your business'}]:[{href:'/dashboard/earnings',label:'My earnings'}]},
   {label:'My account',icon:'profile',items:[{href:'/dashboard/profile',label:employer?'Hiring profile':'My profile'},{href:'/dashboard/reviews',label:'Ratings & feedback'},{href:'/dashboard/settings',label:'Account settings'}]},
   {label:'Support',icon:'message',items:[{href:'/dashboard/disputes',label:'Work problems & appeals'},{href:'/dashboard/support',label:'My support conversations'},{href:'/help',label:'Help centre'},{href:'/contact',label:'Contact Titonova'}]},
