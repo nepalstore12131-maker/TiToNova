@@ -1,3 +1,4 @@
+import { NotificationBell } from "@/components/notification-bell";
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { signOut } from "@/app/auth/actions";
@@ -45,12 +46,13 @@ export function PortalShell({ role, activePath, children }: Props) {
     <header className="site-header">
       <Link className="brand" href="/"><span className="brand-mark">↗</span> Titonova</Link>
       <nav className="nav-links" aria-label="Main navigation"><Link href="/jobs">Browse jobs</Link><Link href={role === "admin" ? "/admin" : "/dashboard"}>Workspace</Link></nav>
-      <div className="nav-actions"><span className="role-badge">{roleLabel[role]}</span><form action={signOut}><button className="text-button" type="submit">Log out</button></form></div>
+      <div className="nav-actions"><NotificationBell /><span className="role-badge">{roleLabel[role]}</span><form action={signOut}><button className="text-button" type="submit">Log out</button></form></div>
     </header>
     <div className="portal-layout">
       <aside className="portal-sidebar" aria-label="Workspace pages">
         <div className="portal-sidebar-label">{roleLabel[role]} workspace</div>
         <nav className="portal-nav">
+          <Link className={activePath === "/dashboard/notifications" ? "portal-nav-link active" : "portal-nav-link"} href="/dashboard/notifications">Notifications</Link>
           {navigation[role].map((item) => <Link key={item.href} className={activePath === item.href ? "portal-nav-link active" : "portal-nav-link"} href={item.href} aria-current={activePath === item.href ? "page" : undefined}>{item.label}</Link>)}
         </nav>
       </aside>

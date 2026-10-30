@@ -48,3 +48,9 @@ The web app includes PNG home-screen icons, a manifest, an install prompt where 
 ## Candidate careers and hiring board
 
 Migration 0008 adds private candidate career details and PDF CV storage, applicant-visible hiring stages, and private employer notes. Job seekers edit these in `/dashboard/profile`. Premium employers use `/dashboard/hiring` and application details to compare candidates and record stages/notes. CV files are private, limited to 5 MB, and downloaded through ten-minute signed links. Career details and CVs are limited to their owner, relevant active Premium employers, and admins. Stage/notes updates use an atomic RPC that checks employer ownership and active Premium; withdrawn applications cannot be reviewed. Marking a stage records a team decision and does not send a formal job offer.
+
+## In-app notifications
+
+Migration 0009 creates recipient-only notifications from trusted database triggers: applications, messages, hiring-stage changes, withdrawals, Premium payment reviews, and listing reviews. Members can mark only their own notifications read; clients cannot insert or alter event details. Alerts contain generic titles and workspace links, never private message text, CV data or employer notes. The workspace bell refreshes unread counts every 30 seconds while the page is visible. `/dashboard/notifications` supports all/unread views, pagination and marking one/all read. Email delivery and scheduled reminders are not included.
+
+`checks/notification-journey.sql` exercises the database journey using rolled-back fixtures: posting blocked before Premium, payment approval, employer job submission, admin publication, applicant submission, messaging, hiring stages, recipient isolation, forgery prevention, mark-read and note privacy. It does not validate real signup email delivery, payment-provider transfers, or browser CV upload.
