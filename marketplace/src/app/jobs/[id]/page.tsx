@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { publicMetadata } from "@/lib/seo";
 import {ApplicationWindowInfo} from "@/components/application-window";
 import {applicationAvailability} from "@/lib/application-window";
 import {SampleLinks} from "@/components/sample-links";
@@ -14,6 +16,17 @@ import { createClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return { title: "Job not found | Titonova", robots: { index: false } };
+  const db = await createClient();
+  const result = db ? await db.from("jobs").select("title,description,location").eq("id", id).eq("status", "published").maybeSingle() : null;
+  const job = result?.data;
+  if (!job) return { title: "Job unavailable | Titonova", robots: { index: false } };
+  const description = job.description.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160);
+  return publicMetadata(`${job.title}${job.location ? ` in ${job.location}` : ""} | Titonova`, description, `/jobs/${id}`);
+}
 
 export default async function JobDetailsPage({ params, searchParams }: Props) {
   const { id } = await params;

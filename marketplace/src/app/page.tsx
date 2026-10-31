@@ -1,3 +1,5 @@
+import { publicMetadata, siteDescription } from "@/lib/seo";
+export const metadata = { ...publicMetadata("Jobs in Nepal & Hiring | Titonova", siteDescription, "/"), alternates: { canonical: "/", languages: { en: "/", ne: "/ne", "x-default": "/" } } };
 import {ApplicationWindowInfo} from "@/components/application-window";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import {SponsorBanner} from '@/components/sponsor-banner';

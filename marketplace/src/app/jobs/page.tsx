@@ -1,3 +1,5 @@
+import { publicMetadata } from "@/lib/seo";
+export const metadata = publicMetadata("Find Jobs in Nepal | Titonova", "Browse jobs in Nepal by location, skills, category and pay. Find local and remote work, review job details and apply on Titonova.", "/jobs");
 import {ApplicationWindowInfo} from "@/components/application-window";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import {SponsorBanner} from '@/components/sponsor-banner';
