@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { publicMetadata, siteDescription, siteUrl } from "@/lib/seo";
 import Link from "next/link";
 import "./globals.css";
 import "./luxury.css";
@@ -10,11 +11,12 @@ import {TrafficTracker} from "@/components/traffic-tracker";
 import { InstallApp } from "@/components/install-app";
 
 export const metadata: Metadata = {
-  title: "Titonova — Work and talent, connected in Nepal",
+  ...publicMetadata("Jobs in Nepal & Hiring | Titonova", siteDescription, "/"),
+  metadataBase: new URL(siteUrl),
+  alternates: undefined,
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Titonova" },
   icons: { icon: [{ url: "/brand/titonova-icon.png", type: "image/png", sizes: "512x512" }], apple: "/brand/titonova-icon.png" },
-  description:
-    "A Nepal-focused marketplace connecting independent professionals with employers.",
+  description: siteDescription,
 };
 
 export const viewport: Viewport = { themeColor: "#2c302b", width: "device-width", initialScale: 1 };
