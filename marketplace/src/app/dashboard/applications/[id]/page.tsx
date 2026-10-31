@@ -1,3 +1,6 @@
+import {CandidateSummary} from '@/components/workflow/candidate-summary';
+import {NextStep} from "@/components/workflow/next-step";
+import {applicationStep} from "@/lib/workflow";
 import {HiringSteps} from '@/components/hiring-steps';
 import {ApplicationSamples} from "@/components/application-samples";
 import {assignWorker} from "@/app/dashboard/work/actions";
@@ -56,12 +59,14 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
     </section>);
   return <PortalShell role={role} activePath="/dashboard/applications">
     <p style={{ margin: "0 0 18px", fontSize: 12 }}><Link href="/dashboard/applications" style={{ color: "var(--green)" }}>← Applications</Link></p>
-    <div className="eyebrow">Application details</div><h1>{role === "employer" ? applicant?.full_name || "Freelancer" : job?.title || "Job application"}</h1>
+    <div className="eyebrow">Application details</div><h1>{job?.title || "Job application"}</h1>{role==='employer'&&<CandidateSummary id={application.applicant_id} name={applicant?.full_name||'Applicant'}/>}
+    {success === "submitted" && <div className="setup-alert" role="status">Application sent successfully. Your next step is shown below.</div>}
+    {assignmentError?<p className="form-alert">The current work status could not be loaded. Refresh before continuing.</p>:<NextStep flow={applicationStep(id,application.status,application.hiring_stage,role==='employer',assignment)} showLink={Boolean(assignment)||application.status==='rejected'}/>}
     {success === "updated" && <div className="setup-alert">The application status was updated.</div>}
     {error && <div className="form-alert">We couldn’t update this application. It may have already changed.</div>}
-    {role==='employer'?<HiringSteps key={`${id}-${success}-${error}-${one(paramsValue.chat)}-${one(paramsValue.interview)}`} initialStep={assignment?2:one(paramsValue.chat)||one(paramsValue.interview)?1:0} steps={[
- {title:'Review applicant',description:'Read their introduction, experience and work samples. Then continue when you are ready.',content:<>    {candidateDetails}    {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
-    <ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/></>},
+    {role==='employer'?<HiringSteps key={`${id}-${success}-${error}-${one(paramsValue.chat)}-${one(paramsValue.interview)}`} initialStep={assignment?2:one(paramsValue.chat)||one(paramsValue.interview)||one(paramsValue.step)==='interview'?1:0} steps={[
+ {title:'Review applicant',description:'Read their introduction, experience and work samples. Then continue when you are ready.',content:<><details><summary>View introduction, profile & work record</summary>    {candidateDetails}    {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
+    <ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/></details></>},
  {title:'Talk or interview',description:'Ask questions or arrange an interview if needed. You can skip this step and continue to Choose worker.',content:<>
     <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
     <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} /></>},
