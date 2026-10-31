@@ -17,7 +17,9 @@ export default async function AdminReportsPage({ searchParams }: Props) {
   const status = ["open", "resolved", "dismissed"].includes(requestedStatus) ? requestedStatus : "open";
   const page = Math.max(1, Math.min(10000, Number.parseInt(one(params.page) || "1", 10) || 1));
   const pageSize = 30;
+  const focusedReport = one(params.report);
   let query = sessionClient.from("job_reports").select("id,job_id,reporter_id,reason,details,status,created_at,reviewed_at,job:jobs!job_reports_job_id_fkey(id,title,status,employer:profiles!jobs_employer_id_fkey(full_name,company_name)),reporter:profiles!job_reports_reporter_id_fkey(full_name,role)").eq("status", status).order("created_at", { ascending: false }).range((page - 1) * pageSize, page * pageSize - 1);
+  if (/^[0-9a-f-]{36}$/i.test(focusedReport)) query = query.eq("id", focusedReport);
   let countQuery = sessionClient.from("job_reports").select("id", { count: "exact", head: true }).eq("status", status);
   const [{ data: reports, error }, { count }] = await Promise.all([query, countQuery]);
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / pageSize));
@@ -29,6 +31,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
     <p style={{ color: "var(--muted)", fontSize: 13 }}>Review member reports and update the moderation status. Changing a report status does not automatically change or remove the job listing.</p>
     {success === "updated" && <div className="setup-alert" style={{ marginTop: 16 }}>Report status updated.</div>}
     {errorKey && <div className="form-alert" style={{ marginTop: 16 }}>{errorKey === "invalid" ? "Choose a valid report status." : "The report could not be updated. Refresh and try again."}</div>}
+    {focusedReport && <p><Link href="/admin/reports?status=open">View all open reports →</Link></p>}
     <nav className="admin-view-tabs" aria-label="Report status">
       {(["open", "resolved", "dismissed"] as const).map((value) => <Link key={value} className={status === value ? "active" : ""} href={`/admin/reports?status=${value}`}>{value[0].toUpperCase() + value.slice(1)}</Link>)}
     </nav>
@@ -37,7 +40,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
         const job = Array.isArray(report.job) ? report.job[0] : report.job;
         const reporter = Array.isArray(report.reporter) ? report.reporter[0] : report.reporter;
         const employer = job && (Array.isArray(job.employer) ? job.employer[0] : job.employer);
-        return <article className="dashboard-card admin-member-card" key={report.id}>
+        return <article className="dashboard-card admin-member-card" key={report.id} id={`report-${report.id}`}>
           <div className="admin-member-heading"><div><strong>{job?.title || "Job listing removed"}</strong><span>{employer?.company_name || employer?.full_name || "Employer"} · Reported by {reporter?.full_name || "Member"}</span></div><span className={`status-tag status-${report.status}`}>{report.status}</span></div>
           <p className="admin-member-meta">{reportReasons[report.reason] || "Other"} · {date(report.created_at)}</p>
           {report.details && <p className="admin-content-copy">{report.details}</p>}
