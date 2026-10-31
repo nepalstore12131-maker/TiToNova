@@ -24,3 +24,5 @@ export async function archiveListing(form:FormData){
  if(error)redirect('/dashboard/jobs?error=archive');
  revalidatePath('/','layout');redirect(`/dashboard/jobs?success=${restore?'restored':'archived'}`);
 }
+
+export async function reopenPositions(form:FormData){const id=String(form.get('job_id')||'');if(!valid(id))redirect('/dashboard/jobs?error=invalid');const db=await client();const {error}=await db.rpc('request_reopen_positions',{p_job:id});if(error)redirect('/dashboard/jobs?error=reopen');revalidatePath('/','layout');redirect('/dashboard/jobs?success=reopen');}
