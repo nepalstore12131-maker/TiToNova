@@ -1,4 +1,5 @@
 "use server";
+import {scheduleNotificationEmails} from '@/lib/notification-email';
 
 import { redirect } from "next/navigation";
 import { requireAdminContext } from "@/lib/supabase/admin";
@@ -6,7 +7,7 @@ import { requireAdminContext } from "@/lib/supabase/admin";
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export async function adminSetJobStatus(formData: FormData) {
-  const { sessionClient } = await requireAdminContext();
+  const { sessionClient } = await requireAdminContext();scheduleNotificationEmails();
   const id = String(formData.get("job_id") ?? "");
   const status = String(formData.get("status") ?? "");
   if (!uuidPattern.test(id) || !["draft", "pending_review", "published", "closed", "rejected"].includes(status)) redirect("/admin/listings?error=invalid");
@@ -17,7 +18,7 @@ export async function adminSetJobStatus(formData: FormData) {
 }
 
 export async function adminDeleteJob(formData: FormData) {
-  const { sessionClient } = await requireAdminContext();
+  const { sessionClient } = await requireAdminContext();scheduleNotificationEmails();
   const id = String(formData.get("job_id") ?? "");
   if (!uuidPattern.test(id) || String(formData.get("confirmation") ?? "") !== "DELETE") redirect("/admin/listings?error=confirm");
 
@@ -27,7 +28,7 @@ export async function adminDeleteJob(formData: FormData) {
 }
 
 export async function adminSetApplicationStatus(formData: FormData) {
-  const { sessionClient } = await requireAdminContext();
+  const { sessionClient } = await requireAdminContext();scheduleNotificationEmails();
   const id = String(formData.get("application_id") ?? "");
   const status = String(formData.get("status") ?? "");
   if (!uuidPattern.test(id) || !["submitted", "shortlisted", "rejected", "withdrawn"].includes(status)) redirect("/admin/applications?error=invalid");
@@ -38,7 +39,7 @@ export async function adminSetApplicationStatus(formData: FormData) {
 }
 
 export async function adminSetEmployerReview(formData: FormData) {
-  const { sessionClient } = await requireAdminContext();
+  const { sessionClient } = await requireAdminContext();scheduleNotificationEmails();
   const id = String(formData.get("employer_id") ?? "");
   const reviewed = String(formData.get("reviewed") ?? "");
   if (!uuidPattern.test(id) || !["true", "false"].includes(reviewed)) redirect("/admin/employers?error=invalid");
@@ -55,7 +56,7 @@ export async function adminSetEmployerReview(formData: FormData) {
 }
 
 export async function adminSetReportStatus(formData: FormData) {
-  const { user, sessionClient } = await requireAdminContext();
+  const { user, sessionClient } = await requireAdminContext();scheduleNotificationEmails();
   const id = String(formData.get("report_id") ?? "");
   const status = String(formData.get("status") ?? "");
   if (!uuidPattern.test(id) || !["open", "resolved", "dismissed"].includes(status)) redirect("/admin/reports?error=invalid");

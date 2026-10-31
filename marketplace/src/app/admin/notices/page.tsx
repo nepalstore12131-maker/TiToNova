@@ -1,0 +1,13 @@
+import Link from 'next/link';
+import {requireAdminContext} from '@/lib/supabase/admin';
+import {PortalShell} from '@/components/portal-shell';
+import {AdminNoticeForm} from '@/components/admin-notice-form';
+export const dynamic='force-dynamic';
+export default async function Notices({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}){
+ const {sessionClient,serviceClient}=await requireAdminContext();const p=await searchParams;
+ const page=Math.max(1,Math.min(10000,parseInt(p.page||'1')||1));
+ const {data:items,error}=await sessionClient.from('admin_notices').select('id,title,audience,recipient_count,created_at').order('created_at',{ascending:false}).range((page-1)*20,page*20);
+ const enabled=process.env.NOTIFICATION_EMAIL_ENABLED==='true'&&!!process.env.RESEND_API_KEY&&!!process.env.NOTIFICATION_EMAIL_FROM;
+ const {count:failures}=serviceClient?await serviceClient.from('email_outbox').select('id',{count:'exact',head:true}).eq('status','failed'):{count:null};
+ return <PortalShell role="admin" activePath="/admin/notices"><span className="eyebrow">Support & communication</span><h1>Notices & email</h1><p>Share updates with workers, employers or both. Published messages stay in the recipient’s notice history.</p><p className="setup-alert">{enabled?'Email sending is enabled. Delivery depends on member preferences and provider acceptance.':'Email delivery is not enabled. In-app notices still work; emails remain queued until the sending service is configured.'}{failures?` ${failures} emails need delivery review.`:''}</p>{p.success&&<p role="status" className="setup-alert">Notice sent to the selected in-app audience. Eligible emails are queued.</p>}{p.error&&<p role="alert" className="form-alert">Notice not sent. Check the message and audience again; the audience may have changed or the daily limit of 10 notices was reached.</p>}{error?<p className="form-alert">Notice tools are temporarily unavailable.</p>:<><AdminNoticeForm/><h2>Sent notices</h2>{!items?.length?<p>No notices have been sent.</p>:items.slice(0,20).map(n=><article className="dashboard-card" key={n.id}><h3><Link href={'/admin/notices/'+n.id}>{n.title}</Link></h3><p>{n.audience==='both'?'Workers and employers':n.audience==='freelancer'?'Workers':'Employers'} · {n.recipient_count} recipients</p><time>{new Date(n.created_at).toLocaleString('en-NP',{timeZone:'Asia/Kathmandu'})} NPT</time></article>)}<nav className="admin-pagination">{page>1&&<Link href={'?page='+(page-1)}>Newer</Link>}<span>Page {page}</span>{(items?.length||0)>20&&<Link href={'?page='+(page+1)}>Older</Link>}</nav></>}</PortalShell>;
+}
