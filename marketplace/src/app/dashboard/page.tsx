@@ -12,7 +12,7 @@ export default async function Dashboard(){
  if(error||!profile)return <main className="dashboard"><div className="form-alert">We couldn’t load your workspace. Please refresh.</div></main>;
  if(profile.role==='admin')redirect('/admin');const employer=profile.role==='employer';const premium=employer&&!!profile.employer_premium_until&&new Date(profile.employer_premium_until).getTime()>Date.now();
  const [apps,jobs,unread,career]=await Promise.all([
-  employer?db.from('applications').select('id,status,hiring_stage,created_at,job:jobs(title),applicant:profiles(full_name)',{count:'exact'}).order('created_at',{ascending:false}).limit(5):db.from('applications').select('id,status,hiring_stage,created_at,job:jobs(title,location)',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(5),
+  employer?db.from('applications').select('id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey(title),applicant:profiles!applications_applicant_id_fkey(full_name)',{count:'exact'}).order('created_at',{ascending:false}).limit(5):db.from('applications').select('id,status,hiring_stage,created_at,job:jobs(title,location)',{count:'exact'}).eq('applicant_id',user.id).order('created_at',{ascending:false}).limit(5),
   employer?db.from('jobs').select('id,title,status,created_at',{count:'exact'}).eq('employer_id',user.id).order('created_at',{ascending:false}).limit(4):db.from('jobs').select('id',{count:'exact',head:true}).eq('status','published'),
   db.from('notifications').select('id',{count:'exact',head:true}).eq('recipient_id',user.id).is('read_at',null),
   employer?Promise.resolve({data:null,error:null}):db.from('candidate_profiles').select('resume_path,work_history,availability').eq('id',user.id).maybeSingle()
