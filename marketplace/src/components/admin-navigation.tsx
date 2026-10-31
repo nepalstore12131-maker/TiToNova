@@ -26,6 +26,8 @@ export const adminGroups = [
   ]},
   {label:'Support & communication',icon:'message',items:[
     {href:'/admin/support',label:'Support inbox'},
+    {href:'/admin/notices',label:'Notices & email'},
+    {href:'/dashboard/email-settings',label:'My email preferences'},
   ]},
   {label:'Reports & settings',icon:'grid',items:[
     {href:'/admin/insights',label:'Results & revenue'},

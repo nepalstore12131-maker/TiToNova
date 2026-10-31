@@ -1,4 +1,5 @@
 "use server";
+import {scheduleNotificationEmails} from '@/lib/notification-email';
 
 import {parseNepalDate} from "@/lib/application-window";
 import {parseSamples} from "@/lib/work-samples";
@@ -7,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 
 async function getSignedInMember() {
   const supabase = await createClient();
+  scheduleNotificationEmails();
   if (!supabase) redirect("/login?error=setup");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
