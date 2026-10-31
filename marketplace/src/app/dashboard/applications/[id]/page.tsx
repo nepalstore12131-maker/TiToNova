@@ -1,3 +1,4 @@
+import {HiringSteps} from '@/components/hiring-steps';
 import {ApplicationSamples} from "@/components/application-samples";
 import {assignWorker} from "@/app/dashboard/work/actions";
 import { InterviewPanel } from "@/components/interview-panel";
@@ -31,18 +32,13 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   if (applicationError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this application. Refresh the page and try again.</div><Link href="/dashboard/applications">Back to applications →</Link></main>;
   if (!application) notFound();
   const job = Array.isArray(application.job) ? application.job[0] : application.job;
-  const {data:assignment,error:assignmentError}=await supabase.from("job_assignments").select("id").eq("application_id",id).neq("state","cancelled").maybeSingle();
+  const {data:assignment,error:assignmentError}=await supabase.from("job_assignments").select("id,state").eq("application_id",id).neq("state","cancelled").maybeSingle();
   const applicant = Array.isArray(application.applicant) ? application.applicant[0] : application.applicant;
   const paramsValue = await searchParams;
   const success = one(paramsValue.success);
   const error = one(paramsValue.error);
 
-  return <PortalShell role={role} activePath="/dashboard/applications">
-    <p style={{ margin: "0 0 18px", fontSize: 12 }}><Link href="/dashboard/applications" style={{ color: "var(--green)" }}>← Applications</Link></p>
-    <div className="eyebrow">Application details</div><h1>{role === "employer" ? applicant?.full_name || "Freelancer" : job?.title || "Job application"}</h1>
-    {success === "updated" && <div className="setup-alert">The application status was updated.</div>}
-    {error && <div className="form-alert">We couldn’t update this application. It may have already changed.</div>}
-    <section className="dashboard-card">
+  const candidateDetails=(<section className="dashboard-card">
       {role === "employer" ? <>
         <div className="detail-label">Applied for</div><p style={{ margin: 0 }}><Link href={job?.status==="closed"||assignment?"/dashboard/work":`/dashboard/jobs/${job?.id}/edit`} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Your job"}</Link></p>
         {applicant?.headline && <><div className="detail-label">Headline</div><p style={{ margin: 0 }}>{applicant.headline}</p></>}
@@ -57,13 +53,25 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
       <div className="detail-label">{role === "employer" ? "Candidate introduction" : "Your introduction"}</div><p style={{ color: "var(--muted)", fontSize: 13, lineHeight: 1.7, whiteSpace: "pre-wrap" }}>{application.cover_note}</p>
 
       {role === "freelancer" && application.status === "submitted" && <form action={updateApplicationStatus} style={{ marginTop: 18 }}><input type="hidden" name="application_id" value={application.id} /><input type="hidden" name="status" value="withdrawn" /><button className="button secondary small" type="submit">Withdraw application</button></form>}
-    </section>
-    <p className="setup-alert">Hiring stage: <strong>{application.status === "withdrawn" ? "withdrawn" : application.hiring_stage}</strong></p>
-    {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
+    </section>);
+  return <PortalShell role={role} activePath="/dashboard/applications">
+    <p style={{ margin: "0 0 18px", fontSize: 12 }}><Link href="/dashboard/applications" style={{ color: "var(--green)" }}>← Applications</Link></p>
+    <div className="eyebrow">Application details</div><h1>{role === "employer" ? applicant?.full_name || "Freelancer" : job?.title || "Job application"}</h1>
+    {success === "updated" && <div className="setup-alert">The application status was updated.</div>}
+    {error && <div className="form-alert">We couldn’t update this application. It may have already changed.</div>}
+    {role==='employer'?<HiringSteps key={`${id}-${success}-${error}-${one(paramsValue.chat)}-${one(paramsValue.interview)}`} initialStep={assignment?2:one(paramsValue.chat)||one(paramsValue.interview)?1:0} steps={[
+ {title:'Review applicant',description:'Read their introduction, experience and work samples. Then continue when you are ready.',content:<>    {candidateDetails}    {role === "employer" && <CandidateReview candidateId={application.applicant_id} applicationId={id} stage={application.hiring_stage} status={application.status} />}
+    <ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/></>},
+ {title:'Talk or interview',description:'Ask questions or arrange an interview if needed. You can skip this step and continue to Choose worker.',content:<>
+    <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
+    <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} /></>},
+ {title:assignment?'Continue work':'Choose worker',description:assignment?'This person is already assigned. Continue with the agreement, progress or rating in My work.':'Assigning reserves a position. You will then send the work and payment terms from My work; the worker must accept before starting.',content:<>
     {role === "employer" && !assignmentError && !assignment && job?.status === "published" && !["withdrawn","rejected"].includes(application.status) && <section className="dashboard-card"><h2>Assign this job</h2><p>Reserve one position for this worker. This job allows {job.worker_count} worker(s), each with their own agreement and progress. The listing closes when all positions are assigned.</p><form action={assignWorker}><input type="hidden" name="application_id" value={id}/><button className="button">Assign this worker →</button></form><p><Link href="/dashboard/work">View existing assignments →</Link></p></section>}
-    {assignment && <p className="setup-alert">This application has an assigned worker. <Link href="/dashboard/work">Open work progress →</Link></p>}
+    {assignment && <p className="setup-alert">This application has an assigned worker. <Link className="button" href={assignment.state==='completed'?`/dashboard/work?view=history#work-${assignment.id}`:`/dashboard/work#work-${assignment.id}`}>{assignment.state==='completed'?'Completed — leave a rating →':assignment.state==='submitted'?'Review submitted work →':'Next: work terms & progress →'}</Link></p>}{assignmentError&&<p role="alert">Assignment status could not be loaded. Refresh before choosing a worker.</p>}{!assignment&&!assignmentError&&(job?.status!=='published'||['withdrawn','rejected'].includes(application.status))&&<p>This application cannot be assigned in its current state. Review the application and job status first.</p>}</>}
+ ]}/>:<>    {candidateDetails}<p className="setup-alert">Hiring stage: <strong>{application.status==='withdrawn'?'withdrawn':application.hiring_stage}</strong></p>
     <ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/>
     <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
-    <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} />
+    <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} /></>}
+
   </PortalShell>;
 }
