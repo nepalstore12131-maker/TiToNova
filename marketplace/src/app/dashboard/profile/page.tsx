@@ -1,3 +1,4 @@
+import {Reputation} from '@/components/reputation';
 import {WorkSampleLibrary} from "@/components/work-sample-library";
 import Link from "next/link";
 import { ProfileAvatar } from "@/components/profile-avatar";
@@ -26,7 +27,7 @@ export default async function ProfilePage({ searchParams }: Props) {
   if (role === "admin") redirect("/admin");
 
   return <PortalShell role={role} activePath="/dashboard/profile">
-    <div className="eyebrow">Your public details</div><h1>{role === "employer" ? "Company profile" : "My profile"}</h1>
+    <div className="eyebrow">Your public details</div><h1>{role === "employer" ? "Company profile" : "My profile"}</h1><Reputation id={user.id} compact/>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>These details help people understand who they’re working with. Your email stays private.</p>
     {one(params.success) === "saved" && <div className="setup-alert">Your profile was updated.</div>}
     {one(params.error) && <div className="form-alert">{one(params.error) === "invalid" ? "Check field lengths and enter full website links beginning with http:// or https://." : "We couldn’t save your profile. Please try again."}</div>}
