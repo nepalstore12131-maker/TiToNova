@@ -19,4 +19,4 @@
 @media(max-width:380px){.items{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.chevron{transition:none}}
 
-.item{display:flex;align-items:center;justify-content:space-between;gap:8px}.unread{flex:none!important;background:#a5382d;color:#fff;font-size:10px;font-weight:800;line-height:1.4;border-radius:99px;padding:3px 7px;white-space:nowrap}.group summary>.unread{margin-left:auto}
+.item{display:flex;align-items:center;justify-content:space-between;gap:8px}.unread{flex:none!important;background:#285d9b;color:#fff;font-size:10px;font-weight:800;line-height:1.4;border-radius:99px;padding:3px 7px;white-space:nowrap}.group summary>.unread{margin-left:auto}

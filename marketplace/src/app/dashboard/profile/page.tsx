@@ -1,3 +1,4 @@
+import {WorkspaceTabs} from '@/components/workspace-tabs';
 import {Reputation} from '@/components/reputation';
 import {WorkSampleLibrary} from "@/components/work-sample-library";
 import Link from "next/link";
@@ -27,22 +28,30 @@ export default async function ProfilePage({ searchParams }: Props) {
   if (role === "admin") redirect("/admin");
 
   return <PortalShell role={role} activePath="/dashboard/profile">
-    <div className="eyebrow">Your public details</div><h1>{role === "employer" ? "Company profile" : "My profile"}</h1><Reputation id={user.id} compact/>
+    <div className="eyebrow">Your public details</div><h1>{role === "employer" ? "Hiring profile" : "My profile"}</h1>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>These details help people understand who they’re working with. Your email stays private.</p>
     {one(params.success) === "saved" && <div className="setup-alert">Your profile was updated.</div>}
     {one(params.error) && <div className="form-alert">{one(params.error) === "invalid" ? "Check field lengths and enter full website links beginning with http:// or https://." : "We couldn’t save your profile. Please try again."}</div>}
     <section className="dashboard-card" style={{display:"flex",alignItems:"center",gap:18}}><ProfileAvatar id={user.id} name={profile.full_name} size={68}/><div><strong>Profile photo and sign-in details</strong><p><Link href="/dashboard/settings">Manage photo, email and password →</Link></p></div></section>
-    <section className="dashboard-card"><form action={saveProfile} className="auth-form">
+    <WorkspaceTabs initial={one(params.samples)?'samples':one(params.section)==='career'?'career':'profile'} tabs={[
+ {id:'profile',label:'Profile',icon:'profile',content:<>    <section className="dashboard-card"><form action={saveProfile} className="auth-form">
       <label htmlFor="full_name">{role === "employer" ? "Contact person" : "Full name"}</label><input id="full_name" name="full_name" defaultValue={profile?.full_name ?? ""} maxLength={80} required />
       {role === "employer" && <><label htmlFor="company_name">Company or team name</label><input id="company_name" name="company_name" defaultValue={profile?.company_name ?? ""} maxLength={120} /></>}
       <label htmlFor="headline">{role === "employer" ? "Short company introduction" : "Professional headline"}</label><input id="headline" name="headline" defaultValue={profile?.headline ?? ""} maxLength={120} placeholder={role === "employer" ? "A short description of your team" : "e.g. Frontend developer focused on accessible web apps"} />
       <label htmlFor="bio">About</label><textarea className="cover-note" id="bio" name="bio" defaultValue={profile?.bio ?? ""} maxLength={3000} placeholder="Tell people about your experience, team, or the work you do…" />
       <label htmlFor="location">Location</label><input id="location" name="location" defaultValue={profile?.location ?? ""} maxLength={120} placeholder="Kathmandu, Pokhara, or Remote" />
       {role === "freelancer" && <><label htmlFor="skills">Skills</label><textarea className="cover-note" id="skills" name="skills" defaultValue={(profile?.skills ?? []).join(", ")} maxLength={1200} placeholder="Add up to 20 skills, separated by commas" /></>}
-      <label htmlFor="portfolio_url">Portfolio or website</label><input id="portfolio_url" name="portfolio_url" type="url" defaultValue={profile?.portfolio_url ?? ""} maxLength={300} placeholder="https://example.com" />
+      <details><summary>Website & social links</summary><label htmlFor="portfolio_url">Portfolio or website</label><input id="portfolio_url" name="portfolio_url" type="url" defaultValue={profile?.portfolio_url ?? ""} maxLength={300} placeholder="https://example.com" />
       {role === "freelancer" && <><label htmlFor="linkedin_url">LinkedIn profile</label><input id="linkedin_url" name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} maxLength={300} placeholder="https://linkedin.com/in/your-name" /></>}
-      <button className="button" type="submit">Save profile →</button>
+      </details><button className="button" type="submit">Save profile →</button>
     </form></section>
-    {role === "freelancer" && <><WorkSampleLibrary id={user.id} feedback={one(params.samples)}/><CareerProfile id={user.id} /></>}
+</>},
+ ...(role==='freelancer'?[
+ {id:'samples',label:'Work samples',icon:'briefcase',content:<WorkSampleLibrary id={user.id} feedback={one(params.samples)}/>},
+ {id:'career',label:'Experience & CV',icon:'grid',content:<CareerProfile id={user.id}/>}
+ ]:[]),
+ {id:'reputation',label:'Work record',icon:'check',content:<Reputation id={user.id} compact/>}
+ ]}/>
+
   </PortalShell>;
 }
