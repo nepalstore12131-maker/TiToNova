@@ -1,3 +1,4 @@
+import {SectionSeen} from '@/components/section-seen';
 import {CandidateSummary} from '@/components/workflow/candidate-summary';
 import {NextStep} from "@/components/workflow/next-step";
 import {applicationStep} from "@/lib/workflow";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
 const date = (value: string) => new Date(value).toLocaleDateString("en-NP");
 
 export default async function ApplicationsPage() {
+  const openedAt=new Date().toISOString();
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to view applications.</div></main>;
   const { data: { user } } = await supabase.auth.getUser();
@@ -43,7 +45,7 @@ export default async function ApplicationsPage() {
   const assignments=new Map<string,any>();
   for(const work of assignmentResult.data||[])if(!assignments.has(work.application_id))assignments.set(work.application_id,work);
   return <PortalShell role={role} activePath="/dashboard/applications">
-    <div className="eyebrow">{role === "employer" ? "Hiring workspace" : "Your job search"}</div>
+    {!loadFailed&&!assignmentResult.error&&<SectionSeen section="applications" openedAt={openedAt}/>}<div className="eyebrow">{role === "employer" ? "Hiring workspace" : "Your job search"}</div>
     <h1>{role === "employer" ? "Applications received" : "My applications"}</h1>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Follow each candidate’s next step below. New updates are marked in the Work menu." : "Follow your application here. Each card shows whether to wait, respond or continue in My work."}</p>
     {loadFailed ? <div className="form-alert" role="alert">We couldn’t load applications. Refresh the page and try again.</div> : !applications.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>No applications yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Applications to your published jobs will appear here." : "Find a role that fits and send your first application."}</p>{role === "freelancer" && <Link className="button" href="/jobs">Browse jobs →</Link>}</section> :

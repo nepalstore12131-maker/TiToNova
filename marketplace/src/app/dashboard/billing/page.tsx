@@ -52,7 +52,7 @@ export default async function EmployerBillingPage({ searchParams }: Props) {
   return <PortalShell role="employer" activePath="/dashboard/billing">
     <div className="eyebrow">Employer workspace</div><h1>Payments &amp; billing</h1>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>Premium lets your team post jobs and use employer hiring tools. Pay using one of the account details below, then send the transaction code and proof for review.</p>
-    <PaymentOverview summary={summary}/><section className="dashboard-card premium-status-card">
+    <details className="dashboard-card"><summary>Payment totals</summary><PaymentOverview summary={summary}/></details><section className="dashboard-card premium-status-card">
       <div><div className="detail-label" style={{ marginTop: 0 }}>Account status</div><h2 style={{ margin: "4px 0 6px" }}>{isPremium ? "Premium active" : "Not active yet"}</h2><p style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>{isPremium ? `Access through ${date(profile.employer_premium_until)}.` : "Job posting stays locked until an administrator approves your payment."}</p></div>
       {isPremium && <span className="status-tag status-published">Eligible to post</span>}
     </section>
@@ -60,9 +60,9 @@ export default async function EmployerBillingPage({ searchParams }: Props) {
     {success === "submitted" && <div className="setup-alert" style={{ marginTop: 16 }}>Your payment proof was sent. An administrator will review it before Premium access is enabled.</div>}
     {errorKey && <div className="form-alert" style={{ marginTop: 16 }} role="alert">{paymentErrors[errorKey] || "We couldn’t submit your payment proof. Please try again."}</div>}
 
-    <div className="billing-grid">
+    <details open={!isPremium||!!errorKey||hasPending} className="dashboard-card"><summary>{isPremium?'Renew Premium / submit a payment':'Activate Premium: payment and proof'}</summary><div className="billing-grid">
       <section className="dashboard-card">
-        <div className="eyebrow">Employer Premium</div><h2 style={{ margin: "6px 0" }}>{settings?.premium_price_npr ? amount(settings.premium_price_npr) : "Price not set"}</h2>
+        <div className="eyebrow">1. Check price & pay</div><h2 style={{ margin: "6px 0" }}>{settings?.premium_price_npr ? amount(settings.premium_price_npr) : "Price not set"}</h2>
         <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 0 }}>{settings?.premium_duration_days || 30} days of access after approval</p>
         {settings?.payment_instructions && <p className="admin-content-copy">{settings.payment_instructions}</p>}
         {settings?.esewa_account_id && <div className="payment-detail"><strong>eSewa</strong><span>{settings.esewa_account_name || "Account"} · {settings.esewa_account_id}</span></div>}
@@ -72,7 +72,7 @@ export default async function EmployerBillingPage({ searchParams }: Props) {
       </section>
 
       <section className="dashboard-card">
-        <div className="eyebrow">Submit a payment</div><h2 style={{ margin: "6px 0" }}>Send proof for review</h2>
+        <div className="eyebrow">2. Send payment proof</div><h2 style={{ margin: "6px 0" }}>Send proof for review</h2>
         <p style={{ color: "var(--muted)", fontSize: 12 }}>{settings?.premium_price_npr ? <><strong>Amount due: {amount(settings.premium_price_npr)}.</strong> Pay this amount exactly. Your request records it with the current plan length.</> : "The amount due will appear here after Premium is configured."}</p>
         {hasPending ? <div className="setup-alert">One payment request is already waiting for admin review. You can submit another after it is reviewed.</div> : paymentReady && summary ? <form action={submitEmployerPayment} className="auth-form" encType="multipart/form-data">
           <label htmlFor="payment_method">Payment method</label><select id="payment_method" name="payment_method" required defaultValue=""><option value="" disabled>Choose a method</option>{methods.map((method) => <option key={method.id} value={method.id}>{method.name}</option>)}</select>
@@ -82,11 +82,11 @@ export default async function EmployerBillingPage({ searchParams }: Props) {
         </form> : <p style={{ color: "var(--muted)", fontSize: 12 }}>Payment submission is unavailable until payment settings and your history can be loaded.</p>}
         {isPremium && <p className="auth-footer"><Link href="/dashboard/jobs/new">Post a job →</Link></p>}
       </section>
-    </div>
+    </div></details>
 
-    <section style={{ marginTop: 30 }}><div className="admin-section-heading"><div><div className="eyebrow">Payment history</div><h2 style={{ margin: "5px 0" }}>Your requests</h2></div></div>
+    <details open={page>1||hasPending||!!success} style={{ marginTop: 30 }}><summary>Payment requests & history</summary><section><div className="admin-section-heading"><div><div className="eyebrow">Payment history</div><h2 style={{ margin: "5px 0" }}>Your requests</h2></div></div>
       {requestsError ? <div className="form-alert">Payment history could not be loaded.</div> : !requests?.length ? <section className="dashboard-card"><p style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>No payment requests yet.</p></section> : <div className="portal-table"><table><thead><tr><th>Submitted</th><th>Method</th><th>Amount</th><th>Transaction code</th><th>Status</th><th>Admin note</th></tr></thead><tbody>{requests.map((request) => <tr key={request.id}><td>{date(request.created_at)}</td><td>{request.payment_method}</td><td>{amount(request.amount_npr)} / {request.plan_duration_days} days</td><td>{request.transaction_code}</td><td><span className={`status-tag status-${request.status}`}>{request.status}</span></td><td>{request.review_note || "—"}</td></tr>)}</tbody></table></div>}
       {!requestsError && <nav className="admin-pagination" aria-label="Payment history pages">{page>1&&<Link href={`/dashboard/billing?page=${page-1}`}>← Previous</Link>}<span>Page {page} of {Math.max(1,Math.ceil((requestCount??0)/10))}</span>{page*10<(requestCount??0)&&<Link href={`/dashboard/billing?page=${page+1}`}>Next →</Link>}</nav>}
-    </section>
+    </section></details>
   </PortalShell>;
 }
