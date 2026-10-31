@@ -1,9 +1,14 @@
+'use client';
+import {useEffect,useState} from 'react';
 import Link from 'next/link';
 import {UiIcon} from './workspace-ui';
 import styles from './member-navigation.module.css';
 type Item={href:string;label:string};
 export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer';activePath:string}){
  const employer=role==='employer';
+ const [sections,setSections]=useState<Record<string,number>>({});
+ useEffect(()=>{let live=true;const controller=new AbortController();const refresh=async()=>{if(document.visibilityState!=='visible')return;try{const r=await fetch('/api/notifications/count',{cache:'no-store',signal:controller.signal});if(!r.ok){if(live)setSections({});return;}const data=await r.json();if(live)setSections(data.sections||{});}catch{if(live)setSections({});}};void refresh();const timer=setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);window.addEventListener('focus',refresh);return()=>{live=false;controller.abort();clearInterval(timer);document.removeEventListener('visibilitychange',refresh);window.removeEventListener('focus',refresh);};},[activePath]);
+ const badge=(count:number|undefined)=>count&&count>0?<span className={styles.unread} aria-label={`${count} unread updates`}>{count>99?'99+':count} new</span>:null;
  const groups:{label:string;icon:string;items:Item[]}[]=[
   {label:'Work',icon:'briefcase',items:employer?[
    
@@ -25,8 +30,8 @@ export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer'
  return <nav className={styles.navigation} aria-label="Workspace navigation" key={activePath}>
   <Link href="/dashboard" className={`${styles.overview} ${activePath==='/dashboard'?styles.current:''}`} aria-current={activePath==='/dashboard'?'page':undefined}><UiIcon name="grid" size={18}/><span>Home</span></Link>
   <div className={styles.groups}>{groups.map(group=>{const active=group.items.some(i=>i.href===selected);return <details className={styles.group} key={group.label} name="workspace-sections" open={active}>
-   <summary className={active?styles.activeGroup:undefined}><UiIcon name={group.icon} size={18}/><span>{group.label}</span><svg className={styles.chevron} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></summary>
-   <div className={styles.items}>{group.items.map(item=><Link className={`${styles.item} ${selected===item.href?styles.current:''}`} href={item.href} key={item.href} aria-current={selected===item.href?'page':undefined}>{item.label}</Link>)}</div>
+   <summary className={active?styles.activeGroup:undefined}><UiIcon name={group.icon} size={18}/><span>{group.label}</span>{group.label==='Work'&&badge(Object.values(sections).reduce((a,b)=>a+b,0))}<svg className={styles.chevron} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></summary>
+   <div className={styles.items}>{group.items.map(item=><Link className={`${styles.item} ${selected===item.href?styles.current:''}`} href={item.href} key={item.href} aria-current={selected===item.href?'page':undefined}><span>{item.label}</span>{badge(sections[item.href])}</Link>)}</div>
   </details>;})}</div>
  </nav>;
 }

@@ -89,7 +89,8 @@ export async function applyToJob(formData: FormData) {
     if (error.code === "23505") redirect(`/jobs/${jobId}?error=duplicate`);
     redirect(`/jobs/${jobId}?error=apply`);
   }
-  redirect("/dashboard?success=application-submitted");
+  const {data:sent}=await supabase.from("applications").select("id").eq("job_id",jobId).eq("applicant_id",user.id).maybeSingle();
+  redirect(sent?`/dashboard/applications/${sent.id}?success=submitted`:"/dashboard/applications?success=submitted");
 }
 
 export async function reportJob(formData: FormData) {

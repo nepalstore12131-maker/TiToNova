@@ -16,5 +16,5 @@ export async function changeAgreement(form:FormData){
   const {data:record}=await db.from('work_agreements').select('id').eq('id',agreement).eq('assignment_id',id).maybeSingle();if(!record)redirect(resultUrl('error'));
   result=await db.rpc('respond_work_agreement',{p_agreement:agreement,p_accept:action==='accept',p_note:note});
  }else redirect(resultUrl('invalid'));
- if(result.error)redirect(resultUrl('error'));revalidatePath('/dashboard/work');revalidatePath(`/dashboard/work/${id}`);redirect(resultUrl('saved'));
+ if(result.error)redirect(resultUrl('error'));revalidatePath('/dashboard/work');revalidatePath(`/dashboard/work/${id}`);redirect(action==='accept'?`/dashboard/work?agreement=saved&assignment=${id}#work-${id}`:resultUrl('saved'));
 }
