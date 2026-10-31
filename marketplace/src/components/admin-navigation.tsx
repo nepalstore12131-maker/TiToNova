@@ -6,7 +6,7 @@ export const adminGroups = [
   {label:'Jobs & hiring',icon:'briefcase',items:[
     {href:'/admin/jobs',label:'Review jobs'},
     {href:'/admin/listings',label:'All job posts'},
-    {href:'/admin/services',label:'Service review'},
+    
     {href:'/admin/applications',label:'Applications'},
     {href:'/dashboard/interviews',label:'Interviews'},
     {href:'/dashboard/work',label:'Work & agreements'},
