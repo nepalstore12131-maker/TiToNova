@@ -15,7 +15,7 @@ export async function updateWork(form:FormData){
  if(!valid(id)||!['start','progress','submit','complete','revise','cancel'].includes(action)||!Number.isInteger(progress)||progress<0||progress>100||note.length>2000)redirect('/dashboard/work?error=invalid');
  const db=await client();const {error}=await db.rpc('update_job_work',{p_assignment:id,p_action:action,p_progress:progress,p_note:note});
  if(error)redirect('/dashboard/work?error=update');
- revalidatePath('/','layout');redirect('/dashboard/work?success=updated');
+ revalidatePath('/','layout');redirect(action==='complete'?`/dashboard/work?view=history#work-${id}`:'/dashboard/work?success=updated');
 }
 export async function archiveListing(form:FormData){
  const id=String(form.get('job_id')||'');if(!valid(id))redirect('/dashboard/jobs?error=invalid');
