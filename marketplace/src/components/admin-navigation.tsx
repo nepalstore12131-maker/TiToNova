@@ -31,6 +31,7 @@ export const adminGroups = [
   ]},
   {label:'Reports & settings',icon:'grid',items:[
     {href:'/admin/insights',label:'Results & revenue'},
+    {href:'/admin/traffic',label:'Traffic & growth'},
     {href:'/admin/settings',label:'Marketplace settings'},
     {href:'/admin/payments/settings',label:'Premium settings'},
     {href:'/admin/categories',label:'Job categories'},
