@@ -1,3 +1,4 @@
+import {WorkspaceMenu} from '@/components/workspace-menu';
 import experience from '@/components/member-experience.module.css';
 import {SectionSeen} from '@/components/section-seen';
 import {notificationSections,type NotificationSection} from '@/lib/notification-sections';
@@ -37,7 +38,7 @@ export async function PortalShell({ role, activePath, children, seenReady=true }
     <div className="portal-layout">
       <aside className="portal-sidebar" aria-label="Workspace pages">
         <div className="ws-sidebar-profile">{user&&role!=="admin"?<ProfileAvatar id={user.id} name={roleLabel[role]}/>:<span className="ws-sidebar-avatar"><UiIcon name="shield"/></span>}<div><strong>{roleLabel[role]}</strong><small>Your Titonova workspace</small></div></div><div className="portal-sidebar-label">WORKSPACE</div>
-        {role === "admin" ? <AdminNavigation activePath={activePath}/> : <MemberNavigation role={role} activePath={activePath}/>}
+        {role === "admin" ? <AdminNavigation activePath={activePath}/> : <WorkspaceMenu key={activePath} activePath={activePath}><MemberNavigation role={role} activePath={activePath}/></WorkspaceMenu>}
         {role==="admin"&&<Link className="ws-sidebar-discover" href="/jobs"><UiIcon name="spark" size={17}/><span>Explore opportunities</span><UiIcon size={14}/></Link>}
       </aside>
       <main className="dashboard portal-main"><NotificationSync stamp={openedAt}/>{role!=="admin"&&seenReady&&seenSection&&<SectionSeen section={seenSection} openedAt={openedAt}/>}{restriction&&<section className="form-alert" role="status"><strong>Marketplace access temporarily suspended</strong><p>{restriction.reason}</p><p>Until {new Date(restriction.ends_at).toLocaleString('en-NP',{timeZone:'Asia/Kathmandu'})} NPT. You can still read your records, respond to your case and contact Support.</p><Link href="/dashboard/disputes">View restriction and appeal options →</Link></section>}{children}</main>
