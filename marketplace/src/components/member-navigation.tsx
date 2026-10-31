@@ -6,8 +6,8 @@ export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer'
  const employer=role==='employer';
  const groups:{label:string;icon:string;items:Item[]}[]=[
   {label:'Work',icon:'briefcase',items:employer?[
-   {href:'/services',label:'Find a service'},
-   {href:'/dashboard/service-requests',label:'Service requests'},
+   
+   
    {href:'/dashboard/hiring',label:'Hiring dashboard'},
    {href:'/dashboard/saved-workers',label:'Saved workers & hire again'},
    {href:'/dashboard/invitations',label:'Hiring invitations'},
@@ -16,7 +16,7 @@ export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer'
    {href:'/dashboard/applications',label:'Applications received'},
    {href:'/dashboard/interviews',label:'Interviews'},
    {href:'/dashboard/work',label:'My work'},
-  ]:[{href:'/dashboard/availability',label:'My availability'},{href:'/dashboard/services',label:'My services'},{href:'/dashboard/service-requests',label:'Service requests'},{href:'/jobs',label:'Find work'},{href:'/dashboard/invitations',label:'Hiring invitations'},{href:'/dashboard/applications',label:'My applications'},{href:'/dashboard/interviews',label:'Interviews'},{href:'/dashboard/work',label:'My work'}]},
+  ]:[{href:'/dashboard/availability',label:'My availability'},{href:'/jobs',label:'Find work'},{href:'/dashboard/invitations',label:'Hiring invitations'},{href:'/dashboard/applications',label:'My applications'},{href:'/dashboard/interviews',label:'Interviews'},{href:'/dashboard/work',label:'My work'}]},
   {label:'Payments',icon:'wallet',items:employer?[{href:'/dashboard/billing',label:'Premium & billing'},{href:'/dashboard/promotions',label:'Promote a job'},{href:'/dashboard/advertising',label:'Advertise your business'}]:[{href:'/dashboard/earnings',label:'My earnings'}]},
   {label:'My account',icon:'profile',items:[{href:'/dashboard/profile',label:employer?'Hiring profile':'My profile'},{href:'/dashboard/reviews',label:'Ratings & feedback'},{href:'/dashboard/settings',label:'Account settings'},{href:'/dashboard/email-settings',label:'Email & job alerts'}]},
   {label:'Support',icon:'message',items:[{href:'/dashboard/disputes',label:'Work problems & appeals'},{href:'/dashboard/support',label:'My support conversations'},{href:'/help',label:'Help centre'},{href:'/contact',label:'Contact Titonova'}]},

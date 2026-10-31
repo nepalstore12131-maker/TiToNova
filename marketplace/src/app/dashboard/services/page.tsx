@@ -1,12 +1,6 @@
-import {ServiceForm} from '@/components/service-form';
-import Link from 'next/link';
 import {redirect} from 'next/navigation';
-import {PortalShell} from '@/components/portal-shell';
-import {createClient} from '@/lib/supabase/server';
-import {getJobCategories} from '@/lib/job-categories';
-import {AccountSubmit} from '@/components/account-form-controls';
-import {serviceAction} from './actions';
-export default async function MyServices({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}){
- const db=await createClient();if(!db)redirect('/login');const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login');const {data:p}=await db.from('profiles').select('role').eq('id',user.id).maybeSingle();if(p?.role!=='freelancer')redirect('/dashboard');const [q,categories,{data:items,error}]=await Promise.all([searchParams,getJobCategories(db),db.from('worker_services').select('*').eq('worker_id',user.id).order('created_at',{ascending:false})]);const edit=items?.find(i=>i.id===q.edit);
- return <PortalShell role="freelancer" activePath="/dashboard/services"><div className="eyebrow">Let people find your skills</div><h1>My services</h1><p>Offer a service for homes or businesses. Your public name, description, price, location and sample links appear after admin review. Keep private addresses and contact details out of your listing.</p><p><Link href="/services">Browse services →</Link> · <Link href="/dashboard/service-requests">My service requests →</Link></p>{q.error&&<p className="form-alert">Could not save. Check the details, use an active category and a unique title. Up to 10 services per worker.</p>}{q.success&&<p className="setup-alert">Saved. New and edited listings need admin review before publication.</p>}{error?<p className="form-alert">Services could not be loaded.</p>:<><section className="dashboard-card"><h2>{edit?'Edit service':'Create a service'}</h2><ServiceForm edit={edit} categories={categories}/></section>{items?.map(s=><section key={s.id} className="dashboard-card"><span className="status-tag">{s.status}</span><h2>{s.title}</h2><p>{s.location} · NPR {s.starting_price.toLocaleString()} / {s.price_unit}</p>{s.review_note&&<p>Admin note: {s.review_note}</p>}<Link href={`?edit=${s.id}`}>Edit and resubmit →</Link>{s.status!=='paused'&&<form action={serviceAction}><input type="hidden" name="id" value={s.id}/><input type="hidden" name="action" value="pause"/><AccountSubmit>Pause service</AccountSubmit></form>}</section>)}</>}</PortalShell>;
+
+// Services have been retired. Existing tracked work remains in My work.
+export default function RetiredServicePage(){
+ redirect('/dashboard/work');
 }
