@@ -1,3 +1,4 @@
+import {ApplicationOptions} from '@/components/application-options';
 import {CandidateSummary} from '@/components/workflow/candidate-summary';
 import {NextStep} from "@/components/workflow/next-step";
 import {applicationStep} from "@/lib/workflow";
@@ -61,7 +62,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
     <p style={{ margin: "0 0 18px", fontSize: 12 }}><Link href="/dashboard/applications" style={{ color: "var(--green)" }}>← Applications</Link></p>
     <div className="eyebrow">Application details</div><h1>{job?.title || "Job application"}</h1>{role==='employer'&&<CandidateSummary id={application.applicant_id} name={applicant?.full_name||'Applicant'}/>}
     {success === "submitted" && <div className="setup-alert" role="status">Application sent successfully. Your next step is shown below.</div>}
-    {assignmentError?<p className="form-alert">The current work status could not be loaded. Refresh before continuing.</p>:<NextStep flow={applicationStep(id,application.status,application.hiring_stage,role==='employer',assignment)} showLink={Boolean(assignment)||application.status==='rejected'}/>}
+    {assignmentError?<p className="form-alert">The current work status could not be loaded. Refresh before continuing.</p>:<NextStep flow={applicationStep(id,application.status,application.hiring_stage,role==='employer',assignment)} showLink={Boolean(assignment)||application.status==='rejected'} compact={role==='freelancer'}/>}
     {success === "updated" && <div className="setup-alert">The application status was updated.</div>}
     {error && <div className="form-alert">We couldn’t update this application. It may have already changed.</div>}
     {role==='employer'?<HiringSteps key={`${id}-${success}-${error}-${one(paramsValue.chat)}-${one(paramsValue.interview)}`} initialStep={assignment?2:one(paramsValue.chat)||one(paramsValue.interview)||one(paramsValue.step)==='interview'?1:0} steps={[
@@ -73,10 +74,15 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
  {title:assignment?'Continue work':'Choose worker',description:assignment?'This person is already assigned. Continue with the agreement, progress or rating in My work.':'Assigning reserves a position. You will then send the work and payment terms from My work; the worker must accept before starting.',content:<>
     {role === "employer" && !assignmentError && !assignment && job?.status === "published" && !["withdrawn","rejected"].includes(application.status) && <section className="dashboard-card"><h2>Assign this job</h2><p>Reserve one position for this worker. This job allows {job.worker_count} worker(s), each with their own agreement and progress. The listing closes when all positions are assigned.</p><form action={assignWorker}><input type="hidden" name="application_id" value={id}/><button className="button">Assign this worker →</button></form><p><Link href="/dashboard/work">View existing assignments →</Link></p></section>}
     {assignment && <p className="setup-alert">This application has an assigned worker. <Link className="button" href={assignment.state==='completed'?`/dashboard/work?view=history#work-${assignment.id}`:`/dashboard/work#work-${assignment.id}`}>{assignment.state==='completed'?'Completed — leave a rating →':assignment.state==='submitted'?'Review submitted work →':'Next: work terms & progress →'}</Link></p>}{assignmentError&&<p role="alert">Assignment status could not be loaded. Refresh before choosing a worker.</p>}{!assignment&&!assignmentError&&(job?.status!=='published'||['withdrawn','rejected'].includes(application.status))&&<p>This application cannot be assigned in its current state. Review the application and job status first.</p>}</>}
- ]}/>:<>    {candidateDetails}<p className="setup-alert">Hiring stage: <strong>{application.status==='withdrawn'?'withdrawn':application.hiring_stage}</strong></p>
-    <ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/>
-    <InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)} />
-    <ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))} /></>}
+ ]}/>:<>
+    {!assignment&&!assignmentError&&application.status==='submitted'&&<p className="field-help">Application sent. Wait for the employer’s reply; use the options below only when needed.</p>}
+    <ApplicationOptions key={id} initial={one(paramsValue.chat)||one(paramsValue.messages_page)?'messages':one(paramsValue.samples)?'samples':one(paramsValue.interview)||one(paramsValue.step)==='interview'?'interview':error||success==='updated'?'details':''} options={[
+      {id:'messages',label:'Messages',content:<ApplicationConversation id={id} userId={user.id} status={application.status} chat={one(paramsValue.chat)} page={Math.max(1,Math.min(10000,parseInt(one(paramsValue.messages_page)||"1")||1))}/>},
+      {id:'interview',label:'Interview invitations',content:<InterviewPanel applicationId={id} role={role} status={application.status} stage={application.hiring_stage} feedback={one(paramsValue.interview)}/>},
+      {id:'samples',label:'Work samples & examples · optional',content:<ApplicationSamples id={id} userId={user.id} feedback={one(paramsValue.samples)}/>},
+      {id:'details',label:'My application & introduction',content:candidateDetails},
+    ]}/>
+    </>}
 
   </PortalShell>;
 }
