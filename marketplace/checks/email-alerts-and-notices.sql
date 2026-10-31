@@ -1,3 +1,4 @@
+begin;
 do $$
 declare e uuid:=gen_random_uuid(); w uuid:=gen_random_uuid(); x uuid:=gen_random_uuid(); ad uuid:=gen_random_uuid(); j uuid; n uuid; note uuid:=gen_random_uuid(); total integer; before_count integer;
 begin
@@ -40,3 +41,5 @@ begin
  reset role;perform set_config('request.jwt.claims','{}',true);
 end $$;
 select 'Email preferences, category matches, deduplication, notice audience and private access checks passed; all changes rolled back' as result;
+
+rollback;

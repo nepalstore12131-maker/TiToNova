@@ -8,10 +8,10 @@ import { createClient } from "@/lib/supabase/server";
 
 async function getSignedInMember() {
   const supabase = await createClient();
-  scheduleNotificationEmails();
   if (!supabase) redirect("/login?error=setup");
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
+  scheduleNotificationEmails();
   const { data: profile } = await supabase.from("profiles").select("role,employer_premium_until").eq("id", user.id).maybeSingle();
   return { supabase, user, role: profile?.role as string | undefined, premiumUntil: profile?.employer_premium_until as string | null | undefined };
 }
