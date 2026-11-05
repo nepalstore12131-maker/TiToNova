@@ -31,7 +31,7 @@ export default async function ApplicationsPage() {
   let applications: any[] = [];
   let loadFailed = false;
   if (role === "employer") {
-    const result = await supabase.from("applications").select("id,applicant_id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey(id,title),applicant:profiles!applications_applicant_id_fkey(full_name,headline)").order("created_at", { ascending: false }).limit(100);
+    const result = await supabase.from("applications").select("id,applicant_id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey!inner(id,title,employer_id),applicant:profiles!applications_applicant_id_fkey(full_name,headline)").eq("job.employer_id",user.id).order("created_at", { ascending: false }).limit(100);
     loadFailed = Boolean(result.error);
     applications = result.data ?? [];
   } else {
