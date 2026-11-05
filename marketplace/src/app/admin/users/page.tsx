@@ -10,6 +10,8 @@ const one = (value: string | string[] | undefined) => Array.isArray(value) ? val
 const date = (value?: string | null) => value ? new Date(value).toLocaleDateString("en-NP") : "Never";
 
 const messages: Record<string, string> = {
+  membership: "Employer membership saved.",
+  "membership-role": "Membership can only be changed for an employer account.",
   created: "The account was created and is ready to use.",
   updated: "The account details were saved.",
   deleted: "The account and its associated marketplace data were removed.",
@@ -32,7 +34,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
   const page = Math.max(1, Math.min(10000, Number.parseInt(one(params.page) || "1", 10) || 1));
   const perPage = 50;
   const success = messages[one(params.success)];
-  const error = messages[one(params.error)];
+  const error = one(params.error)==="membership" ? "Membership could not be saved. Reload and try again." : messages[one(params.error)];
 
   let accounts: Array<{
     id: string;

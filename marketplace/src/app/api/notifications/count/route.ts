@@ -13,5 +13,5 @@ export async function GET(){
  // Never present a partial per-section count as exact for a very large inbox.
  const sections:Record<string,number>|null=(count||0)>1000?null:{};
  if(sections)for(const n of data||[]){const path=sectionForNotification(n.kind,n.href);if(path)sections[path]=(sections[path]||0)+1;}
- return NextResponse.json({count:count||0,sections,messageCount:(data||[]).filter(item=>item.kind==='message').length},{headers});
+ return NextResponse.json({count:count||0,sections,messageCount:sections===null?null:(data||[]).filter(item=>item.kind==='message').length},{headers});
 }

@@ -12,7 +12,7 @@ export async function deliverNotificationEmails(){
   try{
    const [{data:p,error:pe},{data:n,error:ne},auth]=await Promise.all([db.from('notification_preferences').select('email_kinds,job_alerts').eq('user_id',row.recipient_id).maybeSingle(),db.from('notifications').select('title,href').eq('id',row.notification_id).maybeSingle(),db.auth.admin.getUserById(row.recipient_id)]);
    if(pe||ne||auth.error)throw new Error('Recipient temporarily unavailable');
-   if(!(p?.email_kinds ?? ['invitation','application','message','interview','work','service','payment','promotion','advertising','listing','review','support','moderation','announcement']).includes(row.kind)||!n||!auth.data.user?.email_confirmed_at||!auth.data.user.email||(row.kind==='job_alert'&&!p?.job_alerts)){await finish({status:'skipped',last_error:null});continue;}
+   if(!p?.email_kinds?.includes(row.kind)||!n||!auth.data.user?.email_confirmed_at||!auth.data.user.email||(row.kind==='job_alert'&&!p?.job_alerts)){await finish({status:'skipped',last_error:null});continue;}
    if(row.kind==='job_alert'){
     const {data:job,error:je}=await db.from('jobs').select('status,archived_at,applications_close_at').eq('id',n.href.split('/').pop()).maybeSingle();
     if(je)throw new Error('Job temporarily unavailable');

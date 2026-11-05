@@ -118,6 +118,7 @@ export async function adminUpdateAccount(formData: FormData) {
     full_name: fullName,
     company_name: companyName,
     role,
+    ...(role !== "employer" ? {employer_premium_until: null} : {}),
     headline,
     bio,
     location,
@@ -169,11 +170,11 @@ export async function adminSetEmployerMembership(formData: FormData) {
   if (!uuidPattern.test(id) || !["free", "premium"].includes(plan)) redirect(`${usersPath}?error=invalid`);
   const { data: profile, error: lookupError } = await serviceClient.from("profiles").select("role").eq("id", id).maybeSingle();
   if (lookupError || profile?.role !== "employer") redirect(`${usersPath}?error=membership-role`);
-  const { error } = await serviceClient.from("profiles").update({
+  const { data: changed, error } = await serviceClient.from("profiles").update({
     employer_premium_until: plan === "premium" ? "2099-12-31T23:59:59.000Z" : null,
-  }).eq("id", id).eq("role", "employer");
-  if (error) {
-    console.error("Titonova admin membership change failed", { code: error.code });
+  }).eq("id", id).eq("role", "employer").select("id").maybeSingle();
+  if (error || !changed) {
+    console.error("Titonova admin membership change failed", { code: error?.code });
     redirect(`${usersPath}?error=membership`);
   }
   redirect(`${usersPath}?success=membership`);

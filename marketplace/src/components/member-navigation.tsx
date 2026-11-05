@@ -1,7 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
-import {createBrowserClient} from '@supabase/ssr';
 import {UiIcon} from './workspace-ui';
 import styles from './member-navigation.module.css';
 type Item={href:string;label:string};
@@ -10,18 +9,7 @@ export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer'
  const [sections,setSections]=useState<Record<string,number>>({});
  const [unreadMessages,setUnreadMessages]=useState(0);
  useEffect(()=>{let live=true;let generation=0;const controller=new AbortController();const refresh=async()=>{if(document.visibilityState!=='visible')return;const version=++generation;try{const r=await fetch('/api/notifications/count',{cache:'no-store',signal:controller.signal});if(!r.ok){if(live&&version===generation)setSections({});return;}const data=await r.json();if(live&&version===generation)setSections(data.sections||{});if(live&&version===generation)setUnreadMessages(data.messageCount||0);}catch{if(live&&version===generation)setSections({});}};void refresh();
- // Realtime invalidates the unread counts; polling remains a fallback if replication is unavailable.
- const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
- const key=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
- const client=url&&key?createBrowserClient(url,key):null;
- let channel:ReturnType<NonNullable<typeof client>['channel']>|null=null;
- if(client){void client.auth.getUser().then(({data:{user}})=>{
-  if(!live||!user)return;
-  channel=client.channel(`navigation-notifications-${user.id}`)
-   .on('postgres_changes',{event:'*',schema:'public',table:'notifications',filter:`recipient_id=eq.${user.id}`},()=>{void refresh();})
-   .subscribe();
- }).catch(()=>{});}
- const timer=setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);window.addEventListener('titonova:notifications-read',refresh);window.addEventListener('focus',refresh);return()=>{live=false;if(channel&&client)void client.removeChannel(channel);controller.abort();clearInterval(timer);document.removeEventListener('visibilitychange',refresh);window.removeEventListener('titonova:notifications-read',refresh);window.removeEventListener('focus',refresh);};},[activePath]);
+ const timer=setInterval(refresh,30000);document.addEventListener('visibilitychange',refresh);window.addEventListener('titonova:notifications-read',refresh);window.addEventListener('focus',refresh);return()=>{live=false;controller.abort();clearInterval(timer);document.removeEventListener('visibilitychange',refresh);window.removeEventListener('titonova:notifications-read',refresh);window.removeEventListener('focus',refresh);};},[activePath]);
  const badge=(count:number|undefined)=>count&&count>0?<span className={styles.unread} aria-label={`${count} unread updates`}>{count>99?'99+':count} new</span>:null;
  const groups:{label:string;icon:string;items:Item[]}[]=[
   {label:'Work',icon:'briefcase',items:employer?[

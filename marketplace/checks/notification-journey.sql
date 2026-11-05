@@ -12,6 +12,7 @@ declare
   message uuid := gen_random_uuid();
   payment uuid := gen_random_uuid();
   n integer;
+  listing_was_pending boolean;
 begin
   perform set_config('request.jwt.claims','{"role":"service_role"}',true);
   insert into auth.users(id,email,raw_user_meta_data) values
@@ -37,6 +38,7 @@ begin
   if not public.has_active_employer_premium() then raise exception 'Payment approval did not activate Premium'; end if;
   insert into public.jobs(id,employer_id,title,description,category,status) values(job,employer,'Access check role','Temporary job description for permission verification only.','Development','pending_review');
   perform set_config('request.jwt.claims',json_build_object('sub',administrator,'role','authenticated')::text,true);
+  select status='pending_review' into listing_was_pending from public.jobs where id=job;
   update public.jobs set status='published' where id=job;
   perform set_config('request.jwt.claims',json_build_object('sub',applicant,'role','authenticated')::text,true);
   insert into public.applications(id,job_id,applicant_id,cover_note) values(application,job,applicant,'Temporary application used only within this transaction.');
@@ -72,7 +74,8 @@ begin
   select count(*) into n from public.application_messages where id=message;
   if n<>1 then raise exception 'Premium employer cannot read conversation'; end if;
   select count(*) into n from public.notifications where recipient_id=employer;
-  if n<>4 then raise exception 'Expected approval, listing, application and message notifications; got %',n; end if;
+  if n<>(case when listing_was_pending then 4 else 3 end) then raise exception 'Notification count does not match review mode; got %',n; end if;
+  if (select count(distinct kind) from public.notifications where recipient_id=employer and kind in ('payment','application','message'))<>3 then raise exception 'Approval/application/message notification missing';end if;
   perform public.save_hiring_review(application,'interview','Private test note');
   perform public.save_hiring_review(application,'interview','Edited private note');
   select count(*) into n from public.hiring_reviews where application_id=application;

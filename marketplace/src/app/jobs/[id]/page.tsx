@@ -41,7 +41,8 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
   const {data:photoRows}=await supabase.from('job_photos').select('object_path').eq('job_id',id).order('created_at',{ascending:true}).limit(4);
-  const photoUrls=(photoRows||[]).map(photo=>supabase.storage.from('job-photos').getPublicUrl(photo.object_path).data.publicUrl);
+  const photoLinks=await Promise.all((photoRows||[]).map(photo=>supabase.storage.from('job-photos').createSignedUrl(photo.object_path,300)));
+  const photoUrls=photoLinks.flatMap(result=>result.data?.signedUrl?[result.data.signedUrl]:[]);
   const {data:filled,error:capacityError}=await supabase.rpc("job_filled_seats",{p_job:id});
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };

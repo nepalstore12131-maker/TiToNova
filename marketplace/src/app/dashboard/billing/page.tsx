@@ -46,21 +46,22 @@ export default async function EmployerBillingPage({ searchParams }: Props) {
     { id: "khalti", name: "Khalti", available: Boolean(settings?.khalti_account_id || settings?.khalti_payment_url) },
     { id: "bank", name: "Bank transfer", available: Boolean(settings?.bank_name && settings?.bank_account_number) },
   ].filter((method) => method.available);
+  const freeOffer = !settingsError && settings?.premium_price_npr === 0;
   const paymentReady = !settingsError && Boolean(settings && settings.premium_price_npr > 0 && methods.length);
   const hasPending = (summary?.pendingCount ?? 0) > 0;
 
   return <PortalShell role="employer" activePath="/dashboard/billing">
     <div className="eyebrow">Employer workspace</div><h1>Payments &amp; billing</h1>
-    <p style={{ color: "var(--muted)", fontSize: 13 }}>Premium lets your team post jobs and use employer hiring tools. Pay using one of the account details below, then send the transaction code and proof for review.</p>
+    <p style={{ color: "var(--muted)", fontSize: 13 }}>Premium lets your team post jobs and use employer hiring tools. {freeOffer?"The current offer is free with administrator approval. Request access below.":"Pay using one of the account details below, then send the transaction code and proof for review."}</p>
     <details className="dashboard-card"><summary>Payment totals</summary><PaymentOverview summary={summary}/></details><section className="dashboard-card premium-status-card">
-      <div><div className="detail-label" style={{ marginTop: 0 }}>Account status</div><h2 style={{ margin: "4px 0 6px" }}>{isPremium ? "Premium active" : "Not active yet"}</h2><p style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>{isPremium ? `Access through ${date(profile.employer_premium_until)}.` : "Job posting stays locked until an administrator approves your payment."}</p></div>
+      <div><div className="detail-label" style={{ marginTop: 0 }}>Account status</div><h2 style={{ margin: "4px 0 6px" }}>{isPremium ? "Premium active" : "Not active yet"}</h2><p style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>{isPremium ? `Access through ${date(profile.employer_premium_until)}.` : (freeOffer?"An administrator must approve your access before you can post and hire.":"Job posting stays locked until an administrator approves your payment.")}</p></div>
       {isPremium && <span className="status-tag status-published">Eligible to post</span>}
     </section>
 
     {success === "submitted" && <div className="setup-alert" style={{ marginTop: 16 }}>Your payment proof was sent. An administrator will review it before Premium access is enabled.</div>}
     {errorKey && <div className="form-alert" style={{ marginTop: 16 }} role="alert">{paymentErrors[errorKey] || "We couldn’t submit your payment proof. Please try again."}</div>}
 
-    <details open={!isPremium||!!errorKey||hasPending} className="dashboard-card"><summary>{isPremium?'Renew Premium / submit a payment':'Activate Premium: payment and proof'}</summary><div className="billing-grid">
+    {freeOffer?<section className="dashboard-card"><h2>Free Premium offer</h2><p>No payment or proof is needed. Send a request to the Titonova team; access starts after approval.</p><Link className="button" href="/dashboard/support?premium=1">Request Premium access →</Link></section>:<details open={!isPremium||!!errorKey||hasPending} className="dashboard-card"><summary>{isPremium?'Renew Premium / submit a payment':'Activate Premium: payment and proof'}</summary><div className="billing-grid">
       <section className="dashboard-card">
         <div className="eyebrow">1. Check price & pay</div><h2 style={{ margin: "6px 0" }}>{settings?.premium_price_npr ? amount(settings.premium_price_npr) : "Price not set"}</h2>
         <p style={{ color: "var(--muted)", fontSize: 12, marginTop: 0 }}>{settings?.premium_duration_days || 30} days of access after approval</p>
@@ -82,7 +83,7 @@ export default async function EmployerBillingPage({ searchParams }: Props) {
         </form> : <p style={{ color: "var(--muted)", fontSize: 12 }}>Payment submission is unavailable until payment settings and your history can be loaded.</p>}
         {isPremium && <p className="auth-footer"><Link href="/dashboard/jobs/new">Post a job →</Link></p>}
       </section>
-    </div></details>
+    </div></details>}
 
     <details open={page>1||hasPending||!!success} style={{ marginTop: 30 }}><summary>Payment requests & history</summary><section><div className="admin-section-heading"><div><div className="eyebrow">Payment history</div><h2 style={{ margin: "5px 0" }}>Your requests</h2></div></div>
       {requestsError ? <div className="form-alert">Payment history could not be loaded.</div> : !requests?.length ? <section className="dashboard-card"><p style={{ margin: 0, color: "var(--muted)", fontSize: 12 }}>No payment requests yet.</p></section> : <div className="portal-table"><table><thead><tr><th>Submitted</th><th>Method</th><th>Amount</th><th>Transaction code</th><th>Status</th><th>Admin note</th></tr></thead><tbody>{requests.map((request) => <tr key={request.id}><td>{date(request.created_at)}</td><td>{request.payment_method}</td><td>{amount(request.amount_npr)} / {request.plan_duration_days} days</td><td>{request.transaction_code}</td><td><span className={`status-tag status-${request.status}`}>{request.status}</span></td><td>{request.review_note || "—"}</td></tr>)}</tbody></table></div>}

@@ -14,6 +14,7 @@ export async function saveJobPhotos(db:SupabaseClient,ownerId:string,jobId:strin
    if(file.size>MAX_BYTES||!['image/jpeg','image/png','image/webp'].includes(file.type))return false;
    const original=Buffer.from(await file.arrayBuffer());
    const metadata=await sharp(original,{limitInputPixels:16000000}).metadata();
+   if(!['jpeg','png','webp'].includes(metadata.format||''))return false;
    if(!metadata.width||!metadata.height||(metadata.pages&&metadata.pages>1))return false;
    const image=await sharp(original,{limitInputPixels:16000000}).rotate()
     .resize({width:1600,height:1600,fit:'inside',withoutEnlargement:true})
