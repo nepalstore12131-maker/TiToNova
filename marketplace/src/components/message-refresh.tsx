@@ -1,13 +1,35 @@
 "use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-export function MessageRefresh() {
+import { createBrowserClient } from "@supabase/ssr";
+
+export function MessageRefresh({ applicationId }: { applicationId: string }) {
   const router = useRouter();
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (document.visibilityState === "visible" && !["TEXTAREA", "INPUT", "SELECT"].includes(document.activeElement?.tagName || "")) router.refresh();
-    }, 20000);
-    return () => clearInterval(timer);
-  }, [router]);
+    let active = true;
+    const refresh = () => {
+      if (active && document.visibilityState === "visible" &&
+        !["TEXTAREA", "INPUT", "SELECT"].includes(document.activeElement?.tagName || "")) {
+        router.refresh();
+      }
+    };
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    const client = url && key ? createBrowserClient(url, key) : null;
+    const channel = client?.channel(`application-messages-${applicationId}`)
+      .on("postgres_changes", {
+        event: "INSERT", schema: "public", table: "application_messages",
+        filter: `application_id=eq.${applicationId}`,
+      }, refresh)
+      .subscribe();
+    const timer = setInterval(refresh, 20000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      active = false;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", refresh);
+      if (channel && client) void client.removeChannel(channel);
+    };
+  }, [router, applicationId]);
   return <button className="button secondary small" type="button" onClick={() => router.refresh()}>Refresh messages ↻</button>;
 }
