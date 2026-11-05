@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { adminCreateAccount, adminDeleteAccount, adminUpdateAccount } from "@/app/admin/users/actions";
+import { adminCreateAccount, adminDeleteAccount, adminUpdateAccount, adminSetEmployerMembership } from "@/app/admin/users/actions";
 import { PortalShell } from "@/components/portal-shell";
 import { requireAdminContext } from "@/lib/supabase/admin";
 
@@ -40,6 +40,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
     fullName: string;
     companyName: string;
     role: string;
+    premiumUntil: string | null;
     headline: string;
     bio: string;
     location: string;
@@ -62,7 +63,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
       hasNext = data.users.length === perPage;
       const ids = data.users.map((member) => member.id);
       const { data: profiles, error: profilesError } = ids.length
-        ? await serviceClient.from("profiles").select("id,full_name,company_name,role,headline,bio,location,skills,portfolio_url,linkedin_url").in("id", ids)
+        ? await serviceClient.from("profiles").select("id,full_name,company_name,role,employer_premium_until,headline,bio,location,skills,portfolio_url,linkedin_url").in("id", ids)
         : { data: [], error: null };
       if (profilesError) {
         loadFailed = true;
@@ -77,6 +78,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
             fullName: profile?.full_name || String(member.user_metadata?.full_name ?? ""),
             companyName: profile?.company_name || String(member.user_metadata?.company_name ?? ""),
             role: profile?.role ?? "freelancer",
+            premiumUntil: profile?.employer_premium_until ?? null,
             headline: profile?.headline ?? "",
             bio: profile?.bio ?? "",
             location: profile?.location ?? "",
@@ -120,6 +122,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           {accounts.map((account) => <article className="dashboard-card admin-member-card" key={account.id}>
             <div className="admin-member-heading"><div><strong>{account.fullName || "Unnamed account"}</strong><span>{account.email}</span></div><span className="status-tag">{account.role}</span></div>
             <p className="admin-member-meta">{account.emailConfirmedAt ? "Email confirmed" : "Email not confirmed"} · Joined {date(account.createdAt)} · Last sign in {date(account.lastSignInAt)}</p>
+            {account.role === "employer" && <form action={adminSetEmployerMembership}><input type="hidden" name="user_id" value={account.id}/><label>Membership <select name="membership" defaultValue={account.premiumUntil && Date.parse(account.premiumUntil)>Date.now()?"premium":"free"}><option value="free">Free</option><option value="premium">Premium</option></select></label><button type="submit">Save membership</button></form>}
             <form action={adminUpdateAccount} className="auth-form admin-account-grid admin-account-edit">
               <input type="hidden" name="user_id" value={account.id} />
               <div><label htmlFor={`name-${account.id}`}>Full name</label><input id={`name-${account.id}`} name="full_name" defaultValue={account.fullName} required maxLength={80} /></div>
