@@ -1,4 +1,5 @@
 "use server";
+import {saveJobPhotos} from '@/lib/job-photos';
 import {scheduleNotificationEmails} from '@/lib/notification-email';
 
 import {parseNepalDate} from "@/lib/application-window";
@@ -63,13 +64,15 @@ export async function createJob(formData: FormData) {
     pay_min: payMin,
     pay_max: payMax,
     status: "pending_review",
-  }).select("status").single();
+  }).select("id,status").single();
 
   if(error?.code==="23505"){
     const {data:previous}=await supabase.from("jobs").select("id").eq("employer_id",user.id).eq("submission_key",submissionKey).maybeSingle();
     if(previous)redirect("/dashboard/jobs?success=already-posted");
   }
-  if (error) redirect("/dashboard/jobs/new?error=save");
+  if (error || !created) redirect("/dashboard/jobs/new?error=save");
+  const photosSaved=await saveJobPhotos(supabase,user.id,created.id,formData.getAll("job_photos"));
+  if(!photosSaved)redirect("/dashboard/jobs?success=submitted&warning=photos");
   redirect(`/dashboard/jobs?success=${created?.status === "published" ? "published" : "submitted"}`);
 }
 
