@@ -23,3 +23,5 @@
 .market-jobs-main:lang(ne) h1,.market-jobs-main:lang(ne) h2,.market-jobs-main:lang(ne) .market-overline{letter-spacing:normal;line-height:1.45}
 .market-jobs-main:lang(ne) h1 em{font-family:inherit;font-style:normal}
 @media(max-width:600px){.market-jobs-main:lang(ne) h1{font-size:32px;padding-right:0}.market-jobs-main:lang(ne) .market-result-card h2{line-height:1.4}}
+
+.market-result-card .job-card-photo{display:block;overflow:hidden;aspect-ratio:16/9;border-radius:12px;background:var(--surface,#f3f4f0);margin-bottom:16px}.market-result-card .job-card-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s ease}.job-card-photo:hover img{transform:scale(1.025)}.job-card-photo:focus-visible{outline:3px solid var(--green);outline-offset:3px}@media(prefers-reduced-motion:reduce){.market-result-card .job-card-photo img{transition:none}}
