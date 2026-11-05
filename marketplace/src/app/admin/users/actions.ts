@@ -159,3 +159,22 @@ export async function adminDeleteAccount(formData: FormData) {
   }
   redirect(`${usersPath}?success=deleted`);
 }
+
+/** Only authenticated administrators can grant or revoke employer Premium. */
+export async function adminSetEmployerMembership(formData: FormData) {
+  const { serviceClient } = await requireAdminContext();
+  if (!serviceClient) redirect(`${usersPath}?error=setup`);
+  const id = String(formData.get("user_id") ?? "");
+  const plan = String(formData.get("membership") ?? "");
+  if (!uuidPattern.test(id) || !["free", "premium"].includes(plan)) redirect(`${usersPath}?error=invalid`);
+  const { data: profile, error: lookupError } = await serviceClient.from("profiles").select("role").eq("id", id).maybeSingle();
+  if (lookupError || profile?.role !== "employer") redirect(`${usersPath}?error=membership-role`);
+  const { error } = await serviceClient.from("profiles").update({
+    employer_premium_until: plan === "premium" ? "2099-12-31T23:59:59.000Z" : null,
+  }).eq("id", id).eq("role", "employer");
+  if (error) {
+    console.error("Titonova admin membership change failed", { code: error.code });
+    redirect(`${usersPath}?error=membership`);
+  }
+  redirect(`${usersPath}?success=membership`);
+}
