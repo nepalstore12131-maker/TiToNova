@@ -22,3 +22,5 @@
 .item{display:flex;align-items:center;justify-content:space-between;gap:8px}.unread{flex:none!important;background:#285d9b;color:#fff;font-size:10px;font-weight:800;line-height:1.4;border-radius:99px;padding:3px 7px;white-space:nowrap}.group summary>.unread{margin-left:auto}
 
 .item>svg{flex-shrink:0;color:var(--green,#386448)}.item>span:first-of-type{flex:1}.item{padding-left:14px}.current{box-shadow:inset 3px 0 0 var(--green,#386448)}
+
+@media(max-width:800px){.item:has(.unread){grid-column:1/-1}.item>span:first-of-type{min-width:0;overflow-wrap:normal}}
