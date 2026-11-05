@@ -40,6 +40,8 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,worker_count,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
   if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
+  const {data:photoRows}=await supabase.from('job_photos').select('object_path').eq('job_id',id).order('created_at',{ascending:true}).limit(4);
+  const photoUrls=(photoRows||[]).map(photo=>supabase.storage.from('job-photos').getPublicUrl(photo.object_path).data.publicUrl);
   const {data:filled,error:capacityError}=await supabase.rpc("job_filled_seats",{p_job:id});
   const { data: { user } } = await supabase.auth.getUser();
   const { data: profile } = user ? await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle() : { data: null };
@@ -57,6 +59,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
       <div className="job-detail-grid">
         <article className="dashboard-card" style={{ marginTop: 0 }}>
           <div className="eyebrow">{job.category}</div><h1 style={{ marginTop: 10 }}>{job.title}</h1>
+          {photoUrls.length>0&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10,margin:"16px 0"}}>{photoUrls.map((url,index)=><a href={url} key={url} target="_blank" rel="noopener noreferrer"><img src={url} alt={`Job photo ${index+1}`} style={{width:"100%",height:190,objectFit:"cover",borderRadius:12}}/></a>)}</div>}
           <div className="job-meta" style={{ margin: "14px 0 22px" }}><div className="company"><ProfileAvatar id={job.employer_id} name={company} size={48}/><div><Link className="company-name" href={`/companies/${job.employer_id}`}>{company}</Link><span className="company-place">{job.location}</span>{employer?.employer_verified && <span className="verified-badge" title="This employer was reviewed by Titonova">✓ Titonova reviewed</span>}</div></div><span className="badge">{job.work_type.replaceAll("_", " ")}</span></div>
           {employer?.employer_verified && <p className="trust-copy">Titonova has reviewed this employer’s company details.</p>}
           <p>{capacityError?"Position availability is temporarily unavailable.":`${Math.max(0,job.worker_count-(filled||0))} of ${job.worker_count} positions available`} · advertised pay is per person.</p><ApplicationWindowInfo job={job}/>
