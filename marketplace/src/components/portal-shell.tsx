@@ -30,7 +30,7 @@ export async function PortalShell({ role, activePath, children, seenReady=true }
   const db=await createClient();
   const user=db?(await db.auth.getUser()).data.user:null;
   const {data:restriction}=db&&user?await db.from('account_suspensions').select('ends_at,reason').eq('account_id',user.id).is('revoked_at',null).gt('ends_at',new Date().toISOString()).order('ends_at',{ascending:false}).limit(1).maybeSingle():{data:null};
-  return <div className={`page-shell premium-workspace workspace-${role} ${role!=="admin"?experience.workspace:""}`}>
+  return <div className={`page-shell premium-workspace workspace-${role} ${experience.workspace}`}>
     <header className="site-header">
       <Link className="brand" href="/"><BrandMark /> Titonova<span className="brand-country">WORKSPACE</span></Link>
       <nav className="nav-links" aria-label="Main navigation"><Link href="/jobs">Browse jobs</Link><Link href={role === "admin" ? "/admin" : "/dashboard"}>Workspace</Link></nav>
@@ -39,7 +39,7 @@ export async function PortalShell({ role, activePath, children, seenReady=true }
     <div className="portal-layout">
       <aside className="portal-sidebar" aria-label="Workspace pages">
         <div className="ws-sidebar-profile">{user&&role!=="admin"?<ProfileAvatar id={user.id} name={roleLabel[role]}/>:<span className="ws-sidebar-avatar"><UiIcon name="shield"/></span>}<div><strong>{roleLabel[role]}</strong><small>Your Titonova workspace</small></div></div><div className="portal-sidebar-label">WORKSPACE</div>
-        {role === "admin" ? <AdminNavigation activePath={activePath}/> : <WorkspaceMenu key={activePath} activePath={activePath}><MemberNavigation role={role} activePath={activePath}/></WorkspaceMenu>}
+        {role === "admin" ? <WorkspaceMenu key={activePath} activePath={activePath}><AdminNavigation activePath={activePath}/></WorkspaceMenu> : <WorkspaceMenu key={activePath} activePath={activePath}><MemberNavigation role={role} activePath={activePath}/></WorkspaceMenu>}
         {role==="admin"&&<Link className="ws-sidebar-discover" href="/jobs"><UiIcon name="spark" size={17}/><span>Explore opportunities</span><UiIcon size={14}/></Link>}
       </aside>
       <main className="dashboard portal-main"><NotificationSync stamp={openedAt}/>{role!=="admin"&&seenReady&&seenSection&&<SectionSeen section={seenSection} openedAt={openedAt}/>}{restriction&&<section className="form-alert" role="status"><strong>Marketplace access temporarily suspended</strong><p>{restriction.reason}</p><p>Until {new Date(restriction.ends_at).toLocaleString('en-NP',{timeZone:'Asia/Kathmandu'})} NPT. You can still read your records, respond to your case and contact Support.</p><Link href="/dashboard/disputes">View restriction and appeal options →</Link></section>}{children}</main>

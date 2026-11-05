@@ -48,7 +48,7 @@ export function AdminNavigation({activePath}:{activePath:string}) {
       const active=group.items.some(item=>item.href===selected);
       return <details className={styles.group} key={group.label} name="admin-sections" open={active}>
         <summary className={active?styles.activeGroup:undefined}><UiIcon name={group.icon} size={18}/><span>{group.label}</span><svg className={styles.chevron} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></summary>
-        <div className={styles.items}>{group.items.map(item=><Link className={`${styles.item} ${selected===item.href?styles.current:''}`} href={item.href} key={item.href} aria-current={selected===item.href?'page':undefined}>{item.label}</Link>)}</div>
+        <div className={styles.items}>{group.items.map(item=><Link className={`${styles.item} ${selected===item.href?styles.current:''}`} href={item.href} key={item.href} aria-current={selected===item.href?'page':undefined}><LabelIcon label={item.label}/><span>{item.label}</span></Link>)}</div>
       </details>;
     })}</div>
   </nav>;

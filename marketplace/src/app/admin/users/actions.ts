@@ -1,5 +1,6 @@
 "use server";
 
+import {deleteAccountWithFiles} from "@/lib/account-deletion";
 import { redirect } from "next/navigation";
 import { requireAdminContext } from "@/lib/supabase/admin";
 
@@ -143,7 +144,11 @@ export async function adminDeleteAccount(formData: FormData) {
   if (!uuidPattern.test(id) || confirmation !== "DELETE") redirect(`${usersPath}?error=confirm`);
   if (id === adminUser.id) redirect(`${usersPath}?error=self-delete`);
 
-  const { data: targetProfile } = await serviceClient.from("profiles").select("role").eq("id", id).maybeSingle();
+  const { data: targetProfile,error: profileLookupError } = await serviceClient.from("profiles").select("role").eq("id", id).maybeSingle();
+  if (profileLookupError) {
+    logAdminError("check account before deletion",profileLookupError);
+    redirect(`${usersPath}?error=delete`);
+  }
   if (targetProfile?.role === "admin") {
     const { count, error: countError } = await serviceClient.from("profiles").select("id", { count: "exact", head: true }).eq("role", "admin");
     if (countError) {
@@ -153,10 +158,10 @@ export async function adminDeleteAccount(formData: FormData) {
     if ((count ?? 0) <= 1) redirect(`${usersPath}?error=last-admin`);
   }
 
-  const { error } = await serviceClient.auth.admin.deleteUser(id);
+  const { error,stage } = await deleteAccountWithFiles(serviceClient,id);
   if (error) {
     logAdminError("delete account", error);
-    redirect(`${usersPath}?error=delete`);
+    redirect(`${usersPath}?error=${stage==='files'?'delete-files':'delete'}`);
   }
   redirect(`${usersPath}?success=deleted`);
 }

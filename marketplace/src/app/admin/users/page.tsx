@@ -1,4 +1,4 @@
-import {LabelIcon} from "@/components/workspace-ui";
+import {LabelIcon,UiIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { adminCreateAccount, adminDeleteAccount, adminUpdateAccount, adminSetEmployerMembership } from "@/app/admin/users/actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -26,7 +26,8 @@ const messages: Record<string, string> = {
   "self-delete": "You cannot delete the administrator account you are currently using.",
   "last-admin": "Keep at least one administrator account active.",
   confirm: "Type DELETE exactly to confirm account removal.",
-  delete: "The account could not be removed. Reload and try again.",
+  delete: "Account removal did not finish. Some uploads may already be removed. Retry deletion to finish.",
+  "delete-files": "Upload cleanup did not finish. The account has not been deleted. Retry to finish removal.",
 };
 
 export default async function AdminUsersPage({ searchParams }: Props) {
@@ -99,13 +100,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
 
   return <PortalShell role="admin" activePath="/admin/users">
     <div className="eyebrow">Platform administration</div>
-    <h1>Accounts</h1>
+    <h1 className="icon-title"><UiIcon name="people" size={28}/>Accounts</h1>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>Manage job seekers, employers, and administrator access. Passwords are never displayed; setting a new password replaces the old one.</p>
     {success && <div className="setup-alert" style={{ marginTop: 16 }}>{success}</div>}
     {error && <div className="form-alert" style={{ marginTop: 16 }}>{error}</div>}
 
     {!serviceClient ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>Finish secure setup</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>{messages.setup} Get the secret from Supabase project settings and add it only to Vercel as a server environment variable. Do not put it in a `NEXT_PUBLIC_` variable or share it in chat.</p></section> : <>
-      <section className="dashboard-card admin-create-card">
+      <details className="dashboard-card admin-create-card"><summary className="admin-action-summary"><UiIcon name="plus"/>Create an account</summary>
         <div className="eyebrow">New account</div>
         <h2 style={{ margin: "6px 0 4px", fontSize: 21 }}>Create an account</h2>
         <p style={{ color: "var(--muted)", fontSize: 12 }}>This creates a confirmed account. Give its temporary password to the account owner through a safe channel.</p>
@@ -117,7 +118,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           <div><label htmlFor="new_password">Temporary password</label><input id="new_password" name="password" type="password" required minLength={10} maxLength={72} autoComplete="new-password" /></div>
           <button className="button" type="submit"><LabelIcon label='Create account →'/>Create account →</button>
         </form>
-      </section>
+      </details>
 
       <section style={{ marginTop: 30 }}>
         <div className="admin-section-heading"><div><div className="eyebrow">Member directory</div><h2 style={{ margin: "6px 0", fontSize: 22 }}>All accounts</h2></div><span style={{ color: "var(--muted)", fontSize: 12 }}>Page {page}</span></div>
@@ -126,7 +127,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
             <div className="admin-member-heading"><div><strong>{account.fullName || "Unnamed account"}</strong><span>{account.email}</span></div><span className="status-tag">{account.role}</span></div>
             <p className="admin-member-meta">{account.emailConfirmedAt ? "Email confirmed" : "Email not confirmed"} · Joined {date(account.createdAt)} · Last sign in {date(account.lastSignInAt)}</p>
             {account.role === "employer" && <form action={adminSetEmployerMembership}><input type="hidden" name="user_id" value={account.id}/><label>Membership <select name="membership" defaultValue={account.premiumUntil && Date.parse(account.premiumUntil)>Date.now()?"premium":"free"}><option value="free">Free</option><option value="premium">Premium</option></select></label><button type="submit"><LabelIcon label='Save membership'/>Save membership</button></form>}
-            <form action={adminUpdateAccount} className="auth-form admin-account-grid admin-account-edit">
+            <details className="admin-account-disclosure"><summary className="admin-action-summary"><UiIcon name="edit"/>Edit account</summary><form action={adminUpdateAccount} className="auth-form admin-account-grid admin-account-edit">
               <input type="hidden" name="user_id" value={account.id} />
               <div><label htmlFor={`name-${account.id}`}>Full name</label><input id={`name-${account.id}`} name="full_name" defaultValue={account.fullName} required maxLength={80} /></div>
               <div><label htmlFor={`email-${account.id}`}>Email address</label><input id={`email-${account.id}`} name="email" type="email" defaultValue={account.email} required maxLength={254} /></div>
@@ -136,12 +137,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               <details className="admin-profile-details"><summary>Profile details</summary><div className="admin-account-grid"><div><label htmlFor={`headline-${account.id}`}>Headline</label><input id={`headline-${account.id}`} name="headline" defaultValue={account.headline} maxLength={120} /></div><div><label htmlFor={`location-${account.id}`}>Location</label><input id={`location-${account.id}`} name="location" defaultValue={account.location} maxLength={120} /></div><div className="admin-profile-wide"><label htmlFor={`bio-${account.id}`}>About</label><textarea className="cover-note" id={`bio-${account.id}`} name="bio" defaultValue={account.bio} maxLength={3000} /></div><div className="admin-profile-wide"><label htmlFor={`skills-${account.id}`}>Skills (comma separated)</label><textarea className="cover-note admin-short-textarea" id={`skills-${account.id}`} name="skills" defaultValue={account.skills.join(", ")} maxLength={1200} /></div><div><label htmlFor={`portfolio-${account.id}`}>Portfolio URL</label><input id={`portfolio-${account.id}`} name="portfolio_url" type="url" defaultValue={account.portfolioUrl} maxLength={300} /></div><div><label htmlFor={`linkedin-${account.id}`}>LinkedIn URL</label><input id={`linkedin-${account.id}`} name="linkedin_url" type="url" defaultValue={account.linkedinUrl} maxLength={300} /></div></div></details>
               <button className="button small" type="submit"><LabelIcon label='Save changes'/>Save changes</button>
             </form>
-            <form action={adminDeleteAccount} className="admin-delete-row">
+            </details>
+            <details className="admin-danger-zone"><summary className="admin-action-summary"><UiIcon name="close"/>Delete account permanently</summary><p>This removes the account, uploads and linked marketplace records, including pending or ongoing work, agreements and shared work history. This cannot be undone.</p><form action={adminDeleteAccount} className="admin-delete-row">
               <input type="hidden" name="user_id" value={account.id} />
-              <label htmlFor={`delete-${account.id}`}>Permanently remove this account and its job posts and applications: type DELETE</label>
+              <label htmlFor={`delete-${account.id}`}>Confirm removal: type DELETE</label>
               <input id={`delete-${account.id}`} name="confirmation" required pattern="DELETE" title="Type DELETE exactly" />
               <button className="button small danger" type="submit"><LabelIcon label='Remove account'/>Remove account</button>
-            </form>
+            </form></details>
           </article>)}
         </div>}
         <nav className="admin-pagination" aria-label="Account pages">
