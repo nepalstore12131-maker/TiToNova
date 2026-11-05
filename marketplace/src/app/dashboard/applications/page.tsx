@@ -12,7 +12,8 @@ export const dynamic = "force-dynamic";
 
 const date = (value: string) => new Date(value).toLocaleDateString("en-NP");
 
-export default async function ApplicationsPage() {
+export default async function ApplicationsPage({searchParams}:{searchParams:Promise<Record<string,string|undefined>>}) {
+  const history=(await searchParams).view==="history";
   const openedAt=new Date().toISOString();
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Connect the shared database to view applications.</div></main>;
@@ -31,15 +32,17 @@ export default async function ApplicationsPage() {
   let applications: any[] = [];
   let loadFailed = false;
   if (role === "employer") {
-    const result = await supabase.from("applications").select("id,applicant_id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey!inner(id,title,employer_id),applicant:profiles!applications_applicant_id_fkey(full_name,headline)").eq("job.employer_id",user.id).order("created_at", { ascending: false }).limit(100);
+    const result = await supabase.from("applications").select("id,applicant_id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey!inner(id,title,employer_id,completed_at),applicant:profiles!applications_applicant_id_fkey(full_name,headline)").eq("job.employer_id",user.id).order("created_at", { ascending: false }).limit(100);
     loadFailed = Boolean(result.error);
     applications = result.data ?? [];
   } else {
-    const result = await supabase.from("applications").select("id,applicant_id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey(id,title,location)").eq("applicant_id", user.id).order("created_at", { ascending: false }).limit(100);
+    const result = await supabase.from("applications").select("id,applicant_id,status,hiring_stage,created_at,job:jobs!applications_job_id_fkey(id,title,location,completed_at)").eq("applicant_id", user.id).order("created_at", { ascending: false }).limit(100);
     loadFailed = Boolean(result.error);
     applications = result.data ?? [];
   }
 
+  const allApplications=applications;
+  applications=applications.filter(a=>{const j=Array.isArray(a.job)?a.job[0]:a.job;const archived=!!j?.completed_at||!["submitted","shortlisted"].includes(a.status);return history?archived:!archived;});
   const ids=applications.map(a=>a.id);
   const assignmentResult=ids.length?await supabase.from("job_assignments").select("id,application_id,state,agreement_required").in("application_id",ids).order("created_at",{ascending:false}):{data:[],error:null};
   const assignments=new Map<string,any>();
@@ -48,15 +51,16 @@ export default async function ApplicationsPage() {
     {!loadFailed&&!assignmentResult.error&&<SectionSeen section="applications" openedAt={openedAt}/>}<div className="eyebrow">{role === "employer" ? "Hiring workspace" : "Your job search"}</div>
     <h1>{role === "employer" ? "Applications received" : "My applications"}</h1>
     <p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Follow each candidate’s next step below. New updates are marked in the Work menu." : "Follow your application here. Each card shows whether to wait, respond or continue in My work."}</p>
-    {loadFailed ? <div className="form-alert" role="alert">We couldn’t load applications. Refresh the page and try again.</div> : !applications.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>No applications yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Applications to your published jobs will appear here." : "Find a role that fits and send your first application."}</p>{role === "freelancer" && <Link className="button" href="/jobs">Browse jobs →</Link>}</section> :
+    <nav className="admin-view-tabs"><Link className={!history?"active":""} href="/dashboard/applications">Active</Link><Link className={history?"active":""} href="?view=history">Completed / History</Link></nav>
+    {loadFailed ? <div className="form-alert" role="alert">We couldn’t load applications. Refresh the page and try again.</div> : !applications.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>No applications in this view</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>{role === "employer" ? "Applications to your published jobs will appear here." : "Find a role that fits and send your first application."}</p>{role === "freelancer" && <Link className="button" href="/jobs">Browse jobs →</Link>}</section> :
       <div className={styles.cards}>
         {applications.map((application) => {
           const job = Array.isArray(application.job) ? application.job[0] : application.job;
           const applicant = "applicant" in application ? (Array.isArray(application.applicant) ? application.applicant[0] : application.applicant) : null;
           const flow=applicationStep(application.id,application.status,application.hiring_stage,role==='employer',assignments.get(application.id));
-          return <article className={styles.card} key={application.id}>{role==='employer'?<CandidateSummary id={application.applicant_id} name={applicant?.full_name||'Applicant'}/>:<h2>{job?.title||'Job listing'}</h2>}<p>{role==='employer'?job?.title:job?.location}</p><small>Applied {date(application.created_at)}</small>{assignmentResult.error?<p className="form-alert">Work status could not be loaded. <Link href={`/dashboard/applications/${application.id}`}>Open application to check →</Link></p>:<NextStep flow={flow} compact/>}</article>;
+          return <article className={styles.card} key={application.id}>{role==='employer'?<CandidateSummary id={application.applicant_id} name={applicant?.full_name||'Applicant'}/>:<h2>{job?.title||'Job listing'}</h2>}<p>{role==='employer'?job?.title:job?.location}</p><small>Applied {date(application.created_at)}</small>{assignmentResult.error?<p className="form-alert">Work status could not be loaded. <Link href={`/dashboard/applications/${application.id}`}>Open application to check →</Link></p>:job?.completed_at?<><span className="status-tag status-completed">Completed</span><Link href={`/dashboard/applications/${application.id}`}>View history →</Link></>:<NextStep flow={flow} compact/>}</article>;
         })}
       </div>}
-    {applications.length===100&&<p>Showing the 100 most recent applications.</p>}
+    {allApplications.length===100&&<p>Showing the 100 most recent applications.</p>}
   </PortalShell>;
 }

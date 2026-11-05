@@ -32,7 +32,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   if (role === "admin") redirect("/admin");
   if (role === "employer" && (!profile.employer_premium_until || new Date(profile.employer_premium_until).getTime() <= Date.now())) redirect("/dashboard/billing?required=1");
 
-  const { data: application, error: applicationError } = await supabase.from("applications").select("id,applicant_id,hiring_stage,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id,status,worker_count),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
+  const { data: application, error: applicationError } = await supabase.from("applications").select("id,applicant_id,hiring_stage,status,created_at,cover_note,job:jobs!applications_job_id_fkey(id,title,description,location,employer_id,status,worker_count,completed_at),applicant:profiles!applications_applicant_id_fkey(full_name,headline,bio,location,skills,portfolio_url,linkedin_url)").eq("id", id).maybeSingle();
   if (applicationError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this application. Refresh the page and try again.</div><Link href="/dashboard/applications">Back to applications →</Link></main>;
   if (!application) notFound();
   const job = Array.isArray(application.job) ? application.job[0] : application.job;
@@ -42,6 +42,7 @@ export default async function ApplicationDetailPage({ params, searchParams }: Pr
   const success = one(paramsValue.success);
   const error = one(paramsValue.error);
 
+  if(job?.completed_at) return <PortalShell role={role} activePath="/dashboard/applications"><Link href="/dashboard/applications?view=history">← Application history</Link><h1>{job.title}</h1><span className="status-tag status-completed">Completed</span><section className="dashboard-card"><h2>Application history</h2><p>This job is completed. This application is kept as a read-only record.</p><p style={{whiteSpace:"pre-wrap"}}>{application.cover_note}</p><small>Applied {new Date(application.created_at).toLocaleDateString("en-NP")}</small></section>{assignment&&<Link className="button secondary" href={`/dashboard/work?view=history#work-${assignment.id}`}>View completed work & rating</Link>}</PortalShell>;
   const candidateDetails=(<section className="dashboard-card">
       {role === "employer" ? <>
         <div className="detail-label">Applied for</div><p style={{ margin: 0 }}><Link href={job?.status==="closed"||assignment?"/dashboard/work":`/dashboard/jobs/${job?.id}/edit`} style={{ color: "var(--green)", fontWeight: 700 }}>{job?.title || "Your job"}</Link></p>
