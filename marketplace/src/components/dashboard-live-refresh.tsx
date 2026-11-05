@@ -1,5 +1,6 @@
 "use client";
 
+import { workspaceLiveTables } from "@/lib/workspace-live-tables";
 import { useEffect } from "react";
 import { createBrowserClient } from "@supabase/ssr";
 import { usePathname, useRouter } from "next/navigation";
@@ -36,6 +37,10 @@ export function DashboardLiveRefresh() {
           event: "UPDATE", schema: "public", table: "profiles", filter: `id=eq.${user.id}`,
         }, schedule)
         ;
+      for (const table of workspaceLiveTables(path)) {
+        channel.on("postgres_changes", { event: "INSERT", schema: "public", table }, schedule)
+          .on("postgres_changes", { event: "UPDATE", schema: "public", table }, schedule);
+      }
       channel.subscribe(status => { if (status === "SUBSCRIBED") schedule(); });
     }).catch(() => {});
     const timer = setInterval(schedule, 15000);
