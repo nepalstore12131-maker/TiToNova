@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { saveEmployerPaymentSettings } from "@/app/admin/payment-actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -48,7 +49,7 @@ export default async function AdminPaymentSettingsPage({ searchParams }: Props) 
         <h2 className="payment-settings-heading">Bank transfer</h2>
         <label htmlFor="bank_name">Bank name</label><input id="bank_name" name="bank_name" maxLength={120} defaultValue={value.bank_name} />
         <div className="pay-fields"><div><label htmlFor="bank_account_name">Account holder</label><input id="bank_account_name" name="bank_account_name" maxLength={120} defaultValue={value.bank_account_name} /></div><div><label htmlFor="bank_account_number">Account number</label><input id="bank_account_number" name="bank_account_number" maxLength={120} defaultValue={value.bank_account_number} /></div></div>
-        <button className="button" type="submit">Save payment settings →</button>
+        <button className="button" type="submit"><LabelIcon label='Save payment settings →'/>Save payment settings →</button>
       </form>
     </section>
   </PortalShell>;

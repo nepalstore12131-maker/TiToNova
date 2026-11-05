@@ -1,12 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 
 export function MessageRefresh({ applicationId, latestMessageId }: { applicationId: string; latestMessageId: string }) {
   const router = useRouter();
-  const [hasUpdates,setHasUpdates]=useState(false);
-  useEffect(()=>setHasUpdates(false),[latestMessageId]);
   useEffect(() => {
     let active = true;
     const refresh = () => {
@@ -15,7 +13,7 @@ export function MessageRefresh({ applicationId, latestMessageId }: { application
         router.refresh();
       }
     };
-    const onMessage=()=>{setHasUpdates(true);refresh();};
+    const onMessage=refresh;
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     const client = url && key ? createBrowserClient(url, key) : null;
@@ -37,5 +35,5 @@ export function MessageRefresh({ applicationId, latestMessageId }: { application
       if (channel && client) void client.removeChannel(channel);
     };
   }, [router, applicationId]);
-  return <small role="status">{hasUpdates ? "New message — updates when you finish typing" : "Messages update automatically"}</small>;
+  return null;
 }

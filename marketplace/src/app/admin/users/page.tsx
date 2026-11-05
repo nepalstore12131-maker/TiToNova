@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { adminCreateAccount, adminDeleteAccount, adminUpdateAccount, adminSetEmployerMembership } from "@/app/admin/users/actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -114,7 +115,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           <div><label htmlFor="new_role">Account type</label><select id="new_role" name="role" defaultValue="freelancer"><option value="freelancer">Job seeker</option><option value="employer">Employer</option><option value="admin">Administrator</option></select></div>
           <div><label htmlFor="new_company">Company or team (optional)</label><input id="new_company" name="company_name" maxLength={120} /></div>
           <div><label htmlFor="new_password">Temporary password</label><input id="new_password" name="password" type="password" required minLength={10} maxLength={72} autoComplete="new-password" /></div>
-          <button className="button" type="submit">Create account →</button>
+          <button className="button" type="submit"><LabelIcon label='Create account →'/>Create account →</button>
         </form>
       </section>
 
@@ -124,7 +125,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
           {accounts.map((account) => <article className="dashboard-card admin-member-card" key={account.id}>
             <div className="admin-member-heading"><div><strong>{account.fullName || "Unnamed account"}</strong><span>{account.email}</span></div><span className="status-tag">{account.role}</span></div>
             <p className="admin-member-meta">{account.emailConfirmedAt ? "Email confirmed" : "Email not confirmed"} · Joined {date(account.createdAt)} · Last sign in {date(account.lastSignInAt)}</p>
-            {account.role === "employer" && <form action={adminSetEmployerMembership}><input type="hidden" name="user_id" value={account.id}/><label>Membership <select name="membership" defaultValue={account.premiumUntil && Date.parse(account.premiumUntil)>Date.now()?"premium":"free"}><option value="free">Free</option><option value="premium">Premium</option></select></label><button type="submit">Save membership</button></form>}
+            {account.role === "employer" && <form action={adminSetEmployerMembership}><input type="hidden" name="user_id" value={account.id}/><label>Membership <select name="membership" defaultValue={account.premiumUntil && Date.parse(account.premiumUntil)>Date.now()?"premium":"free"}><option value="free">Free</option><option value="premium">Premium</option></select></label><button type="submit"><LabelIcon label='Save membership'/>Save membership</button></form>}
             <form action={adminUpdateAccount} className="auth-form admin-account-grid admin-account-edit">
               <input type="hidden" name="user_id" value={account.id} />
               <div><label htmlFor={`name-${account.id}`}>Full name</label><input id={`name-${account.id}`} name="full_name" defaultValue={account.fullName} required maxLength={80} /></div>
@@ -133,13 +134,13 @@ export default async function AdminUsersPage({ searchParams }: Props) {
               <div><label htmlFor={`company-${account.id}`}>Company or team</label><input id={`company-${account.id}`} name="company_name" defaultValue={account.companyName} maxLength={120} /></div>
               <div><label htmlFor={`password-${account.id}`}>Set new password (optional)</label><input id={`password-${account.id}`} name="password" type="password" minLength={10} maxLength={72} autoComplete="new-password" placeholder="Leave blank to keep current" /></div>
               <details className="admin-profile-details"><summary>Profile details</summary><div className="admin-account-grid"><div><label htmlFor={`headline-${account.id}`}>Headline</label><input id={`headline-${account.id}`} name="headline" defaultValue={account.headline} maxLength={120} /></div><div><label htmlFor={`location-${account.id}`}>Location</label><input id={`location-${account.id}`} name="location" defaultValue={account.location} maxLength={120} /></div><div className="admin-profile-wide"><label htmlFor={`bio-${account.id}`}>About</label><textarea className="cover-note" id={`bio-${account.id}`} name="bio" defaultValue={account.bio} maxLength={3000} /></div><div className="admin-profile-wide"><label htmlFor={`skills-${account.id}`}>Skills (comma separated)</label><textarea className="cover-note admin-short-textarea" id={`skills-${account.id}`} name="skills" defaultValue={account.skills.join(", ")} maxLength={1200} /></div><div><label htmlFor={`portfolio-${account.id}`}>Portfolio URL</label><input id={`portfolio-${account.id}`} name="portfolio_url" type="url" defaultValue={account.portfolioUrl} maxLength={300} /></div><div><label htmlFor={`linkedin-${account.id}`}>LinkedIn URL</label><input id={`linkedin-${account.id}`} name="linkedin_url" type="url" defaultValue={account.linkedinUrl} maxLength={300} /></div></div></details>
-              <button className="button small" type="submit">Save changes</button>
+              <button className="button small" type="submit"><LabelIcon label='Save changes'/>Save changes</button>
             </form>
             <form action={adminDeleteAccount} className="admin-delete-row">
               <input type="hidden" name="user_id" value={account.id} />
               <label htmlFor={`delete-${account.id}`}>Permanently remove this account and its job posts and applications: type DELETE</label>
               <input id={`delete-${account.id}`} name="confirmation" required pattern="DELETE" title="Type DELETE exactly" />
-              <button className="button small danger" type="submit">Remove account</button>
+              <button className="button small danger" type="submit"><LabelIcon label='Remove account'/>Remove account</button>
             </form>
           </article>)}
         </div>}

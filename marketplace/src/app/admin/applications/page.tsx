@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { adminSetApplicationStatus } from "@/app/admin/content-actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -36,7 +37,7 @@ export default async function AdminApplicationsPage({ searchParams }: Props) {
           <div className="admin-member-heading"><div><strong>{applicant?.full_name || "Job seeker"}</strong><span>{applicant?.headline || ""}{applicant?.location ? ` · ${applicant.location}` : ""}</span></div><span className={`status-tag status-${application.status}`}>{application.status}</span></div>
           <p className="admin-member-meta">Applied for <strong>{job?.title || "Job post removed"}</strong>{employer?.company_name || employer?.full_name ? ` · ${employer.company_name || employer.full_name}` : ""} · {date(application.created_at)}</p>
           <div className="admin-content-copy">{application.cover_note}</div>
-          <form action={adminSetApplicationStatus} className="admin-inline-form"><input type="hidden" name="application_id" value={application.id} /><label htmlFor={`application-status-${application.id}`}>Application status</label><select id={`application-status-${application.id}`} name="status" defaultValue={application.status}><option value="submitted">Submitted</option><option value="shortlisted">Shortlisted</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select><button className="button small" type="submit">Save status</button></form>
+          <form action={adminSetApplicationStatus} className="admin-inline-form"><input type="hidden" name="application_id" value={application.id} /><label htmlFor={`application-status-${application.id}`}>Application status</label><select id={`application-status-${application.id}`} name="status" defaultValue={application.status}><option value="submitted">Submitted</option><option value="shortlisted">Shortlisted</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select><button className="button small" type="submit"><LabelIcon label='Save status'/>Save status</button></form>
         </article>;
       })}
     </div>}

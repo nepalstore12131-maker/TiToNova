@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import {WorkerCountField} from '@/components/worker-count-field';
 import {ApplicationWindowFields} from "@/components/application-window";
 import {SampleHelp} from "@/components/sample-links";
@@ -45,7 +46,7 @@ export default async function EditJobPage({ params, searchParams }: Props) {
 <label htmlFor="pay_period">Pay period</label><select id="pay_period" name="pay_period" defaultValue={job.pay_period}><option value="month">Per month</option><option value="hour">Per hour</option><option value="project">Per project</option><option value="unspecified">To discuss</option></select><div className="pay-fields"><div><label htmlFor="pay_min">Minimum pay (NPR)</label><input id="pay_min" name="pay_min" type="number" min="0" step="1" defaultValue={job.pay_min ?? ""} /></div><div><label htmlFor="pay_max">Maximum pay (NPR)</label><input id="pay_max" name="pay_max" type="number" min="0" step="1" defaultValue={job.pay_max ?? ""} /></div></div>
       <label htmlFor="description">Role description</label><textarea className="cover-note" id="description" name="description" minLength={30} maxLength={12000} defaultValue={job.description} required />
       <ApplicationWindowFields job={job}/><label htmlFor="reference_links">Example of the work you want (optional)</label><textarea id="reference_links" name="reference_links" rows={3} maxLength={3000} defaultValue={(job.reference_links||[]).join("\n")} placeholder="Google Drive or YouTube video links"/><SampleHelp/><small>These examples will be public when your job is published. Do not include confidential files or private addresses. Candidates do not have to provide a demo to apply.</small>
-        <button className="button full" type="submit">Save changes →</button>
+        <button className="button full" type="submit"><LabelIcon label='Save changes →'/>Save changes →</button>
     </form></section>
   </PortalShell>;
 }

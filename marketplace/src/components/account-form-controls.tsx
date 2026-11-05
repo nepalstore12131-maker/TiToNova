@@ -1,4 +1,5 @@
 'use client';
+import {LabelIcon,UiIcon} from './workspace-ui';
 import {useState} from 'react';
 import {useFormStatus} from 'react-dom';
 export function PasswordField({id,label,name,autoComplete='current-password',minLength=1}:{id:string;label:string;name:string;autoComplete?:string;minLength?:number}) {
@@ -7,5 +8,5 @@ export function PasswordField({id,label,name,autoComplete='current-password',min
 }
 export function AccountSubmit({children,pendingLabel='Saving…'}:{children:React.ReactNode;pendingLabel?:string}) {
  const {pending}=useFormStatus();
- return <button className="button" type="submit" disabled={pending}>{pending?pendingLabel:children}</button>;
+ return <button className="button" type="submit" disabled={pending}><UiIcon name={pending?"clock":"check"} size={17}/>{pending?pendingLabel:children}</button>;
 }

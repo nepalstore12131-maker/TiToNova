@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import { redirect } from "next/navigation";
 import { reviewJob } from "@/app/jobs/actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -29,7 +30,7 @@ export default async function AdminJobsPage({ searchParams }: Props) {
       {jobs.map((job) => {
         const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
         const pay = job.pay_min === null && job.pay_max === null ? "Pay discussed" : `${job.currency} ${job.pay_min ?? "—"}–${job.pay_max ?? "—"}`;
-        return <article className="dashboard-card admin-review-row" key={job.id}><div><div className="eyebrow">{job.category} · {job.work_type.replaceAll("_", " ")}</div><h2 style={{ margin: "8px 0", fontSize: 20 }}>{job.title}</h2><div style={{ color: "var(--muted)", fontSize: 12 }}>{employer?.company_name || employer?.full_name || "Employer"} · {job.location} · {pay}</div><p>{job.description}</p><small style={{ color: "var(--muted)" }}>Submitted {date(job.created_at)}</small></div><div className="review-buttons"><form action={reviewJob}><input type="hidden" name="job_id" value={job.id} /><input type="hidden" name="status" value="published" /><button className="button small" type="submit">Approve</button></form><form action={reviewJob}><input type="hidden" name="job_id" value={job.id} /><input type="hidden" name="status" value="rejected" /><button className="button small danger" type="submit">Reject</button></form></div></article>;
+        return <article className="dashboard-card admin-review-row" key={job.id}><div><div className="eyebrow">{job.category} · {job.work_type.replaceAll("_", " ")}</div><h2 style={{ margin: "8px 0", fontSize: 20 }}>{job.title}</h2><div style={{ color: "var(--muted)", fontSize: 12 }}>{employer?.company_name || employer?.full_name || "Employer"} · {job.location} · {pay}</div><p>{job.description}</p><small style={{ color: "var(--muted)" }}>Submitted {date(job.created_at)}</small></div><div className="review-buttons"><form action={reviewJob}><input type="hidden" name="job_id" value={job.id} /><input type="hidden" name="status" value="published" /><button className="button small" type="submit"><LabelIcon label='Approve'/>Approve</button></form><form action={reviewJob}><input type="hidden" name="job_id" value={job.id} /><input type="hidden" name="status" value="rejected" /><button className="button small danger" type="submit"><LabelIcon label='Reject'/>Reject</button></form></div></article>;
       })}
     </div>}
   </PortalShell>;

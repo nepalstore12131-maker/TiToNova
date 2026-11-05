@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import Link from 'next/link';
-import {UiIcon} from './workspace-ui';
+import {UiIcon,LabelIcon} from './workspace-ui';
 import styles from './member-navigation.module.css';
 type Item={href:string;label:string};
 export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer';activePath:string}){
@@ -33,7 +33,7 @@ export function MemberNavigation({role,activePath}:{role:'freelancer'|'employer'
   <Link href="/dashboard" className={`${styles.overview} ${activePath==='/dashboard'?styles.current:''}`} aria-current={activePath==='/dashboard'?'page':undefined}><UiIcon name="grid" size={18}/><span>Home</span></Link>
   <div className={styles.groups}>{groups.map(group=>{const active=group.items.some(i=>i.href===selected);return <details className={styles.group} key={group.label} name="workspace-sections" open={active}>
    <summary className={active?styles.activeGroup:undefined}><UiIcon name={group.icon} size={18}/><span>{group.label}</span>{badge(group.items.reduce((total,item)=>total+(sections[item.href]||0),0))}<svg className={styles.chevron} viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg></summary>
-   <div className={styles.items}>{group.items.map(item=><Link className={`${styles.item} ${selected===item.href?styles.current:''}`} href={item.href} key={item.href} aria-current={selected===item.href?'page':undefined}><span>{item.label}</span>{item.href==='/dashboard/notifications'?badge(unreadMessages):badge(sections[item.href])}</Link>)}</div>
+   <div className={styles.items}>{group.items.map(item=><Link className={`${styles.item} ${selected===item.href?styles.current:''}`} href={item.href} key={item.href} aria-current={selected===item.href?'page':undefined}><LabelIcon label={item.label}/><span>{item.label}</span>{item.href==='/dashboard/notifications'?badge(unreadMessages):badge(sections[item.href])}</Link>)}</div>
   </details>;})}</div>
  </nav>;
 }

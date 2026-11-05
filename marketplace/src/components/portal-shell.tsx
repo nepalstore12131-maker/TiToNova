@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import {WorkspaceMenu} from '@/components/workspace-menu';
 import experience from '@/components/member-experience.module.css';
 import {SectionSeen} from '@/components/section-seen';
@@ -33,7 +34,7 @@ export async function PortalShell({ role, activePath, children, seenReady=true }
     <header className="site-header">
       <Link className="brand" href="/"><BrandMark /> Titonova<span className="brand-country">WORKSPACE</span></Link>
       <nav className="nav-links" aria-label="Main navigation"><Link href="/jobs">Browse jobs</Link><Link href={role === "admin" ? "/admin" : "/dashboard"}>Workspace</Link></nav>
-      <div className="nav-actions"><NotificationBell /><span className="role-badge">{roleLabel[role]}</span><form action={signOut}><button className="text-button" type="submit">Log out</button></form></div>
+      <div className="nav-actions"><NotificationBell /><span className="role-badge">{roleLabel[role]}</span><form action={signOut}><button className="text-button" type="submit"><LabelIcon label='Log out'/>Log out</button></form></div>
     </header>
     <div className="portal-layout">
       <aside className="portal-sidebar" aria-label="Workspace pages">

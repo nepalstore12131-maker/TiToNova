@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {UiIcon} from './workspace-ui';
+import {UiIcon,LabelIcon} from './workspace-ui';
 import styles from './member-navigation.module.css';
 
 export const adminGroups = [

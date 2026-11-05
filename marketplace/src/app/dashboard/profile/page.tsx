@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import {WorkspaceTabs} from '@/components/workspace-tabs';
 import {Reputation} from '@/components/reputation';
 import {WorkSampleLibrary} from "@/components/work-sample-library";
@@ -43,7 +44,7 @@ export default async function ProfilePage({ searchParams }: Props) {
       {role === "freelancer" && <><label htmlFor="skills">Skills</label><textarea className="cover-note" id="skills" name="skills" defaultValue={(profile?.skills ?? []).join(", ")} maxLength={1200} placeholder="Add up to 20 skills, separated by commas" /></>}
       <details><summary>Website & social links</summary><label htmlFor="portfolio_url">Portfolio or website</label><input id="portfolio_url" name="portfolio_url" type="url" defaultValue={profile?.portfolio_url ?? ""} maxLength={300} placeholder="https://example.com" />
       {role === "freelancer" && <><label htmlFor="linkedin_url">LinkedIn profile</label><input id="linkedin_url" name="linkedin_url" type="url" defaultValue={profile?.linkedin_url ?? ""} maxLength={300} placeholder="https://linkedin.com/in/your-name" /></>}
-      </details><button className="button" type="submit">Save profile →</button>
+      </details><button className="button" type="submit"><LabelIcon label='Save profile →'/>Save profile →</button>
     </form></section>
 </>},
  ...(role==='freelancer'?[

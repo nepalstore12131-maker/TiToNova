@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { adminDeleteJob, adminSetJobStatus } from "@/app/admin/content-actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -36,8 +37,8 @@ export default async function AdminListingsPage({ searchParams }: Props) {
           <div className="admin-member-heading"><div><strong>{job.title}</strong><span>{employer?.company_name || employer?.full_name || "Employer"} · {job.category} · {job.location}</span></div><span className={`status-tag status-${job.status}`}>{job.status.replaceAll("_", " ")}</span></div>
           <p className="admin-member-meta">{job.work_type.replaceAll("_", " ")} · {pay} · Submitted {date(job.created_at)}</p>
           <p className="admin-content-copy">{job.description}</p>
-          <form action={adminSetJobStatus} className="admin-inline-form"><input type="hidden" name="job_id" value={job.id} /><label htmlFor={`job-status-${job.id}`}>Listing status</label><select id={`job-status-${job.id}`} name="status" defaultValue={job.status}><option value="draft">Draft</option><option value="pending_review">Pending review</option><option value="published">Published</option><option value="closed">Closed</option><option value="rejected">Rejected</option></select><button className="button small" type="submit">Save status</button></form>
-          <details className="admin-delete-details"><summary>Remove this job post</summary><form action={adminDeleteJob} className="admin-delete-row"><input type="hidden" name="job_id" value={job.id} /><label htmlFor={`delete-job-${job.id}`}>Type DELETE to permanently remove this post and its applications</label><input id={`delete-job-${job.id}`} name="confirmation" required pattern="DELETE" title="Type DELETE exactly" /><button className="button small danger" type="submit">Remove post</button></form></details>
+          <form action={adminSetJobStatus} className="admin-inline-form"><input type="hidden" name="job_id" value={job.id} /><label htmlFor={`job-status-${job.id}`}>Listing status</label><select id={`job-status-${job.id}`} name="status" defaultValue={job.status}><option value="draft">Draft</option><option value="pending_review">Pending review</option><option value="published">Published</option><option value="closed">Closed</option><option value="rejected">Rejected</option></select><button className="button small" type="submit"><LabelIcon label='Save status'/>Save status</button></form>
+          <details className="admin-delete-details"><summary>Remove this job post</summary><form action={adminDeleteJob} className="admin-delete-row"><input type="hidden" name="job_id" value={job.id} /><label htmlFor={`delete-job-${job.id}`}>Type DELETE to permanently remove this post and its applications</label><input id={`delete-job-${job.id}`} name="confirmation" required pattern="DELETE" title="Type DELETE exactly" /><button className="button small danger" type="submit"><LabelIcon label='Remove post'/>Remove post</button></form></details>
         </article>;
       })}
     </div>}

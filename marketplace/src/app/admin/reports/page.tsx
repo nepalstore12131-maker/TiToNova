@@ -1,3 +1,4 @@
+import {LabelIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { adminSetReportStatus } from "@/app/admin/content-actions";
 import { PortalShell } from "@/components/portal-shell";
@@ -45,7 +46,7 @@ export default async function AdminReportsPage({ searchParams }: Props) {
           <p className="admin-member-meta">{reportReasons[report.reason] || "Other"} · {date(report.created_at)}</p>
           {report.details && <p className="admin-content-copy">{report.details}</p>}
           {job && <p className="admin-member-meta"><Link href={`/jobs/${job.id}`}>Open job listing →</Link></p>}
-          <form action={adminSetReportStatus} className="admin-inline-form"><input type="hidden" name="report_id" value={report.id} /><label htmlFor={`report-status-${report.id}`}>Report status</label><select id={`report-status-${report.id}`} name="status" defaultValue={report.status}><option value="open">Open</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select><button className="button small" type="submit">Save status</button></form>
+          <form action={adminSetReportStatus} className="admin-inline-form"><input type="hidden" name="report_id" value={report.id} /><label htmlFor={`report-status-${report.id}`}>Report status</label><select id={`report-status-${report.id}`} name="status" defaultValue={report.status}><option value="open">Open</option><option value="resolved">Resolved</option><option value="dismissed">Dismissed</option></select><button className="button small" type="submit"><LabelIcon label='Save status'/>Save status</button></form>
         </article>;
       })}
     </div>}
