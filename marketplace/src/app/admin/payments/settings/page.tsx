@@ -39,6 +39,13 @@ export default async function AdminPaymentSettingsPage({ searchParams }: Props) 
     {error && <div className="form-alert" style={{ marginTop: 16 }}>{error === "invalid" ? "Enter a valid price, duration, and secure Khalti link." : "Settings could not be saved. Check the values and try again."}</div>}
     <section className="dashboard-card">
       <form action={saveEmployerPaymentSettings} className="auth-form">
+        <label>Free posts per employer<input type="number" name="free_posts" required min="0" max="10000" defaultValue={settings?.free_posts ?? 0}/></label>
+        <label>Free allowance renews<select name="free_period" defaultValue={settings?.free_period || "lifetime"}><option value="lifetime">Once per account</option><option value="month">Each calendar month (UTC)</option></select></label>
+        <label>Single post price (NPR, 0 disables)<input name="single_post_npr" type="number" required min="0" max="100000000" defaultValue={settings?.single_post_npr ?? 0}/></label>
+        <label>Premium posts per calendar month (blank for unlimited)<input type="number" name="premium_monthly_limit" min="1" max="10000" defaultValue={settings?.premium_monthly_limit ?? ""}/></label>
+        <fieldset><legend>International payment links (optional)</legend><p>Use your merchant’s hosted checkout for the exact advertised NPR amount. Verify settlement before approval.</p>
+        <label>Single post checkout URL<input name="single_checkout_url" type="url" defaultValue={settings?.single_checkout_url || ""}/></label>
+        <label>Premium checkout URL<input name="premium_checkout_url" type="url" defaultValue={settings?.premium_checkout_url || ""}/></label></fieldset>
         <div className="pay-fields"><div><label htmlFor="premium_price_npr">Premium price (NPR)</label><input id="premium_price_npr" name="premium_price_npr" type="number" min="0" max="100000000" step="1" defaultValue={value.premium_price_npr} required /><small className="field-help">This is the exact amount shown to employers. Use 0 to keep payments disabled until ready.</small></div><div><label htmlFor="premium_duration_days">Access duration (days)</label><input id="premium_duration_days" name="premium_duration_days" type="number" min="1" max="365" step="1" defaultValue={value.premium_duration_days} required /></div></div>
         <label htmlFor="payment_instructions">Payment instructions (optional)</label><textarea className="cover-note" id="payment_instructions" name="payment_instructions" maxLength={1500} defaultValue={value.payment_instructions} placeholder="For example: Please pay the exact amount, then submit your transaction code and a screenshot." />
         <h2 className="payment-settings-heading">eSewa account</h2>

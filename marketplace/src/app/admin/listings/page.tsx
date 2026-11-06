@@ -1,3 +1,4 @@
+import {MoneyRange} from "@/components/currency-display";
 import {LabelIcon} from "@/components/workspace-ui";
 import Link from "next/link";
 import { adminDeleteJob, adminSetJobStatus } from "@/app/admin/content-actions";
@@ -32,7 +33,7 @@ export default async function AdminListingsPage({ searchParams }: Props) {
     {jobsError ? <div className="form-alert">The listings could not be loaded. Try again.</div> : !jobs?.length ? <section className="dashboard-card"><h2 style={{ marginTop: 0 }}>No job posts yet</h2><p style={{ color: "var(--muted)", fontSize: 13 }}>New employer submissions will appear here.</p></section> : <div className="admin-account-list">
       {jobs.map((job) => {
         const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
-        const pay = job.pay_min === null && job.pay_max === null ? "Pay discussed" : `${job.currency} ${job.pay_min ?? "—"}–${job.pay_max ?? "—"}`;
+        const pay = <MoneyRange min={job.pay_min} max={job.pay_max} currency={job.currency}/>;
         return <article className="dashboard-card admin-member-card" key={job.id}>
           <div className="admin-member-heading"><div><strong>{job.title}</strong><span>{employer?.company_name || employer?.full_name || "Employer"} · {job.category} · {job.location}</span></div><span className={`status-tag status-${job.status}`}>{job.status.replaceAll("_", " ")}</span></div>
           <p className="admin-member-meta">{job.work_type.replaceAll("_", " ")} · {pay} · Submitted {date(job.created_at)}</p>

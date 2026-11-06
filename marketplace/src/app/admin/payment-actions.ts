@@ -21,6 +21,12 @@ export async function saveEmployerPaymentSettings(formData: FormData) {
   const duration = Number(String(formData.get("premium_duration_days") ?? ""));
   const settings = {
     id: 1,
+    free_posts: Number(formData.get("free_posts")),
+    free_period: String(formData.get("free_period") || "lifetime"),
+    premium_monthly_limit: formData.get("premium_monthly_limit") ? Number(formData.get("premium_monthly_limit")) : null,
+    single_post_npr: Number(formData.get("single_post_npr")),
+    single_checkout_url: field(formData,"single_checkout_url",500),
+    premium_checkout_url: field(formData,"premium_checkout_url",500),
     premium_price_npr: price,
     premium_duration_days: duration,
     payment_instructions: field(formData, "payment_instructions", 1500),
@@ -34,7 +40,7 @@ export async function saveEmployerPaymentSettings(formData: FormData) {
     bank_account_number: field(formData, "bank_account_number", 120),
     updated_at: new Date().toISOString(),
   };
-  if (!Number.isInteger(price) || price < 0 || price > 100_000_000 || !Number.isInteger(duration) || duration < 1 || duration > 365 || !validHttpsUrl(settings.khalti_payment_url)) {
+  if (!validHttpsUrl(settings.single_checkout_url) || !validHttpsUrl(settings.premium_checkout_url) || !Number.isInteger(price) || price < 0 || price > 100_000_000 || !Number.isInteger(duration) || duration < 1 || duration > 365 || !validHttpsUrl(settings.khalti_payment_url)) {
     redirect("/admin/payments/settings?error=invalid");
   }
 

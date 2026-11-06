@@ -1,5 +1,7 @@
 "use server";
 
+import { readWorkerPreferences } from "@/lib/worker-preferences";
+import { getJobCategories } from "@/lib/job-categories";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -59,11 +61,13 @@ export async function signUp(formData: FormData) {
   const supabase = await createClient();
   if (!supabase) redirect(`${signupPath}${signupPath.includes("?") ? "&" : "?"}error=setup`);
 
+  const preferences = role === "freelancer" ? readWorkerPreferences(formData, await getJobCategories(supabase)) : null;
+  if (role === "freelancer" && !preferences) redirect("/signup?error=preferences");
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      data: { full_name: fullName, company_name: companyName, account_type: role },
+      data: { full_name: fullName, company_name: companyName, account_type: role, ...preferences },
       emailRedirectTo: await getEmailRedirect("/dashboard"),
     },
   });

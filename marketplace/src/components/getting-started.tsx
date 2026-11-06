@@ -10,7 +10,7 @@ export function GettingStarted({accountId,employer,profileReady,premium,hasActiv
  function toggle(){const next=!open;setOpen(next);try{localStorage.setItem(key,next?'open':'hidden');}catch{}}
  const steps=employer?[
   {title:'Introduce yourself',copy:'Hiring for your home or business? Add a short introduction. A company name is optional.',href:'/dashboard/profile',action:'Edit hiring profile',done:profileReady},
-  {title:'Activate hiring access',copy:premium?'Your Premium access is active. You can post a job.':'Check the price and payment instructions. Posting opens after your Premium payment is approved.',href:'/dashboard/billing',action:'View Premium',done:premium},
+  {title:'Check your posting allowance',copy:premium?'Your Premium access is active. You can post a job.':'See your free allowance and compare a single post with Premium.',href:'/dashboard/billing',action:'View posting options',done:premium},
   {title:'Post your first job',copy:'Describe the work, location and pay. Application dates and a work deadline are optional.',href:'/dashboard/jobs/new',action:premium?'Post a job':'View posting form',done:activityKnown&&hasActivity},
   {title:'Choose a worker',copy:'Open Applications received and choose a worker. Then open My work to send terms, follow progress and confirm completion.',href:'/dashboard/applications',action:'View applications',done:false},
  ]:[

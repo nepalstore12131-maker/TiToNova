@@ -1,3 +1,5 @@
+import {MoneyRange} from "@/components/currency-display";
+import { remoteEligibility } from "@/lib/remote-job";
 import type { Metadata } from "next";
 import { publicMetadata } from "@/lib/seo";
 import {ApplicationWindowInfo} from "@/components/application-window";
@@ -8,7 +10,6 @@ import {AccountSubmit} from "@/components/account-form-controls";
 import { ProfileAvatar } from "@/components/profile-avatar";
 import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
-import { formatNpr } from "@/lib/discovery";
 import { notFound } from "next/navigation";
 import { applyToJob, reportJob } from "@/app/jobs/actions";
 import { createClient } from "@/lib/supabase/server";
@@ -37,7 +38,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const supabase = await createClient();
   if (!supabase) return <main className="dashboard"><div className="setup-alert">Job details will be available after the shared database is connected.</div><Link href="/jobs">Back to jobs</Link></main>;
 
-  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,worker_count,category,location,work_type,work_mode,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
+  const { data: job, error: jobError } = await supabase.from("jobs").select("id,title,description,reference_links,applications_open_at,applications_close_at,urgent,worker_count,category,location,work_type,work_mode,remote_scope,eligible_regions,required_timezone,experience_level,pay_period,currency,pay_min,pay_max,created_at,employer_id,employer:profiles!jobs_employer_id_fkey(full_name,company_name,employer_verified)").eq("id", id).eq("status", "published").maybeSingle();
   if (jobError) return <main className="dashboard"><div className="form-alert" role="alert">We couldn’t load this job. Refresh the page and try again.</div><Link href="/jobs">Back to jobs →</Link></main>;
   if (!job) notFound();
   const {data:photoRows}=await supabase.from('job_photos').select('object_path').eq('job_id',id).order('created_at',{ascending:true}).limit(4);
@@ -51,7 +52,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
   const employer = Array.isArray(job.employer) ? job.employer[0] : job.employer;
   const company = employer?.company_name || employer?.full_name || "Titonova employer";
   const accepting=!capacityError&&typeof filled==='number'&&filled<job.worker_count&&applicationAvailability(job)==='open';
-  const pay = formatNpr(job.pay_min,job.pay_max,false,job.currency);
+  const pay = <MoneyRange min={job.pay_min} max={job.pay_max} ne={false} currency={job.currency}/>;
 
   return <div className="page-shell">
     <header className="site-header"><Link className="brand" href="/"><BrandMark /> Titonova</Link><nav className="nav-links"><Link href="/jobs">Browse jobs</Link><Link href="/dashboard">Dashboard</Link></nav><div className="nav-actions">{user ? <Link className="button" href="/dashboard">My workspace</Link> : <><Link className="text-button" href="/login">Log in</Link><Link className="button" href="/signup">Join Titonova</Link></>}</div></header>
@@ -65,7 +66,7 @@ export default async function JobDetailsPage({ params, searchParams }: Props) {
           {employer?.employer_verified && <p className="trust-copy">Titonova has reviewed this employer’s company details.</p>}
           <p>{capacityError?"Position availability is temporarily unavailable.":`${Math.max(0,job.worker_count-(filled||0))} of ${job.worker_count} positions available`} · advertised pay is per person.</p><ApplicationWindowInfo job={job}/>
           <div className="job-detail-pay">{pay} {job.pay_min !== null || job.pay_max !== null ? <span>{job.pay_period === "month" ? "/ month" : job.pay_period === "hour" ? "/ hour" : job.pay_period === "project" ? "/ project" : ""}</span> : null}</div>
-          <div className="tag-row"><span className="tag">{job.work_mode}</span><span className="tag">{job.experience_level === "any" ? "Any experience" : `${job.experience_level} level`}</span></div><h2 style={{ fontSize: 17, margin: "28px 0 10px" }}>About the role</h2><p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
+          <div className="tag-row"><span className="tag">{job.work_mode}</span>{remoteEligibility(job)&&<span className="tag">{remoteEligibility(job)}</span>}{job.required_timezone&&<span className="tag">Working hours · {job.required_timezone}</span>}<span className="tag">{job.experience_level === "any" ? "Any experience" : `${job.experience_level} level`}</span></div><h2 style={{ fontSize: 17, margin: "28px 0 10px" }}>About the role</h2><p style={{ color: "var(--muted)", fontSize: 14, lineHeight: 1.8, whiteSpace: "pre-wrap" }}>{job.description}</p>
           {job.reference_links?.length>0&&<section><h2>Examples from the hirer</h2><p>Reference material to explain the task. Providing your own samples is optional.</p><SampleLinks links={job.reference_links}/></section>}
         </article>
         <aside className="dashboard-card" style={{ marginTop: 0, alignSelf: "start" }}>

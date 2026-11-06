@@ -1,3 +1,5 @@
+import {CurrencySettings} from "@/components/currency-settings";
+import {saveCurrencyPreference} from "./actions";
 import {WorkspaceTabs} from '@/components/workspace-tabs';
 import Link from 'next/link';
 import {redirect} from 'next/navigation';
@@ -9,6 +11,7 @@ import {changeEmail,changePassword,savePhoto,removePhoto,signOutOtherDevices} fr
 import './settings.css';
 export const dynamic='force-dynamic';
 const errors:Record<string,string>={
+ 'currency':'Currency preference could not be saved.',
  'unavailable':'Account settings are temporarily unavailable. Please try again.',
  'current-password':'Your current password could not be verified. Check it and try again.',
  'rate-limit':'Too many attempts. Please wait before trying again.',
@@ -24,6 +27,7 @@ const errors:Record<string,string>={
  'photo-upload':'The image could not be uploaded. Please try again.', 'photo-save':'Your photo could not be updated. Please try again.'
 };
 const success:Record<string,string>={
+ 'currency':'Display currency saved.',
  'email-sent':'Email change requested. Follow the confirmation messages sent to your current and new email addresses. Your current address stays active until confirmation is complete.',
  'password-updated':'Password updated. Other devices must sign in again when their current access expires. This device stays signed in.',
  'password-only':'Password updated, but we couldn’t sign out other devices. Use the Other devices section below to try again.',
@@ -37,13 +41,14 @@ export default async function SettingsPage({searchParams}:{searchParams:Promise<
  const {data:{user}}=await db.auth.getUser();if(!user)redirect('/login?next=%2Fdashboard%2Fsettings');
  const {data:profile}=await db.from('profiles').select('full_name,company_name,role').eq('id',user.id).maybeSingle();
  if(!profile)return <main className="dashboard"><p>Your profile could not be loaded. Please refresh.</p></main>;
- if(!['freelancer','employer'].includes(profile.role))redirect('/dashboard');
+ if(!['freelancer','employer','admin'].includes(profile.role))redirect('/dashboard');
  const params=await searchParams,err=errors[one(params.error)||''],notice=success[one(params.success)||''];
  const {data:photo,error:photoError}=await db.from('profile_photos').select('object_path').eq('id',user.id).maybeSingle();
  const name=profile.role==='employer'?(profile.company_name||profile.full_name):profile.full_name;
  return <PortalShell role={profile.role as AccountRole} activePath="/dashboard/settings"><div className="eyebrow">Your account, your control</div><h1>Account settings</h1><p className="settings-intro">Keep your profile recognizable and your sign-in details up to date.</p>
  {err&&<div className="form-alert" role="alert">{err}</div>}{notice&&<div className="setup-alert" role="status">{notice}</div>}
 
+ <CurrencySettings country={user.user_metadata.country||""} currency={user.user_metadata.display_currency||"NPR"} action={saveCurrencyPreference}/>
  <section className="dashboard-card account-summary"><ProfileAvatar id={user.id} name={name} size={76}/><div><h2>{name}</h2><p>{profile.role==='employer'?'Employer':'Job seeker'} · {user.email_confirmed_at?'Email verified':'Email not verified'}</p><Link href="/dashboard/profile">Edit {profile.role==='employer'?'company':'career'} profile ↗</Link></div></section>
  <p><Link href="/dashboard/email-settings">Manage email & job alert preferences →</Link></p><WorkspaceTabs initial={String(one(params.error)||one(params.success)||'').includes('password')?'password':String(one(params.error)||one(params.success)||'').includes('email')?'email':String(one(params.error)||one(params.success)||'').includes('sessions')?'devices':'photo'} tabs={[
 {id:'photo',label:'Photo',icon:'profile',content:<><section className="dashboard-card settings-card" id="photo"><span className="eyebrow">Make it personal</span><h2>{profile.role==='employer'?'Company photo or logo':'Profile photo'}</h2><p>{profile.role==='employer'?'Your photo appears on your company page once you have a published job.':'Your photo is visible to you, admins, and active Premium employers whose roles you apply to.'}</p><p className="field-help">JPG, PNG or WebP · up to 3 MB. Photos are centered in a square, resized to 512 pixels, and location metadata is removed.</p>

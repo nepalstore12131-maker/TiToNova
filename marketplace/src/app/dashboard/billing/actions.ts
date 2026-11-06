@@ -18,17 +18,21 @@ export async function submitEmployerPayment(formData: FormData) {
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).maybeSingle();
   if (profile?.role !== "employer") redirect("/dashboard?error=employer-only");
 
+  const product = String(formData.get("product") || "premium");
+  if (!["premium","post"].includes(product)) redirect("/dashboard/billing?error=invalid");
   const paymentMethod = String(formData.get("payment_method") ?? "");
   const transactionCode = String(formData.get("transaction_code") ?? "").trim();
   const proof = formData.get("proof");
-  if (!(["esewa", "khalti", "bank"] as const).includes(paymentMethod as "esewa" | "khalti" | "bank") || transactionCode.length < 4 || transactionCode.length > 120 || !(proof instanceof File) || proof.size < 1 || proof.size > 5 * 1024 * 1024 || !proofTypes[proof.type]) {
+  if (!(["esewa", "khalti", "bank", "international"] as const).includes(paymentMethod as "esewa" | "khalti" | "bank") || transactionCode.length < 4 || transactionCode.length > 120 || !(proof instanceof File) || proof.size < 1 || proof.size > 5 * 1024 * 1024 || !proofTypes[proof.type]) {
     redirect("/dashboard/billing?error=invalid");
   }
 
-  const { data: settings, error: settingsError } = await supabase.from("employer_payment_settings").select("premium_price_npr,premium_duration_days,esewa_account_id,khalti_account_id,khalti_payment_url,bank_name,bank_account_number").eq("id", 1).maybeSingle();
-  if (settingsError || !settings || settings.premium_price_npr < 1) redirect("/dashboard/billing?error=not-ready");
+  const { data: settings, error: settingsError } = await supabase.from("employer_payment_settings").select("single_checkout_url,premium_checkout_url,single_post_npr,premium_price_npr,premium_duration_days,esewa_account_id,khalti_account_id,khalti_payment_url,bank_name,bank_account_number").eq("id", 1).maybeSingle();
+  const price = product === "post" ? settings?.single_post_npr : settings?.premium_price_npr;
+  const duration = product === "post" ? 1 : settings?.premium_duration_days;
+  if (settingsError || !settings || !price || price !== Number(formData.get("quoted_price")) || duration !== Number(formData.get("quoted_duration"))) redirect("/dashboard/billing?error=not-ready");
 
-  const methodReady = paymentMethod === "esewa"
+  const methodReady = paymentMethod === "international" ? Boolean(product === "post" ? settings.single_checkout_url : settings.premium_checkout_url) : paymentMethod === "esewa"
     ? Boolean(settings.esewa_account_id)
     : paymentMethod === "khalti"
       ? Boolean(settings.khalti_account_id || settings.khalti_payment_url)
@@ -50,8 +54,8 @@ export async function submitEmployerPayment(formData: FormData) {
     employer_id: user.id,
     payment_method: paymentMethod,
     transaction_code: transactionCode,
-    amount_npr: settings.premium_price_npr,
-    plan_duration_days: settings.premium_duration_days,
+    product, amount_npr: price,
+    plan_duration_days: duration,
     proof_path: proofPath,
   });
   if (error) {

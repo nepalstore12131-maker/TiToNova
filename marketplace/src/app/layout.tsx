@@ -1,3 +1,6 @@
+import {CurrencyDisplayProvider} from "@/components/currency-display";
+import {createClient} from "@/lib/supabase/server";
+import {isCurrency} from "@/lib/currency";
 import type { Metadata, Viewport } from "next";
 import { publicMetadata, siteDescription, siteUrl } from "@/lib/seo";
 import Link from "next/link";
@@ -21,13 +24,16 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#2c302b", width: "device-width", initialScale: 1 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const db=await createClient();
+  const user=db?(await db.auth.getUser()).data.user:null;
+  const preferred=user?.user_metadata.display_currency;
   return (
     <html lang="en" suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{__html:`try{document.documentElement.dataset.theme=localStorage.getItem('titonova-theme')==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}`}}/></head>
-      <body><TrafficTracker/>{children}<nav className="site-languages" aria-label="Language"><span>Language / भाषा</span><Link href="/" lang="en">English</Link><Link href="/ne" lang="ne">नेपाली</Link></nav><nav className="support-footer-links" aria-label="Support"><Link href="/help">Help centre</Link><Link href="/contact">Contact us</Link></nav><InstallApp /><ThemeToggle/><HelpButton /></body>
+      <body><CurrencyDisplayProvider currency={isCurrency(preferred)?preferred:"NPR"}><TrafficTracker/>{children}<nav className="site-languages" aria-label="Language"><span>Language / भाषा</span><Link href="/" lang="en">English</Link><Link href="/ne" lang="ne">नेपाली</Link></nav><nav className="support-footer-links" aria-label="Support"><Link href="/help">Help centre</Link><Link href="/contact">Contact us</Link></nav><InstallApp /><ThemeToggle/><HelpButton /></CurrencyDisplayProvider></body>
     </html>
   );
 }

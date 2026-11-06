@@ -1,4 +1,5 @@
 'use server';
+import {isCurrency,countryCurrencies} from "@/lib/currency";
 import {redirect} from 'next/navigation';
 import {revalidatePath} from 'next/cache';
 import {createClient} from '@/lib/supabase/server';
@@ -60,4 +61,16 @@ export async function removePhoto(){
  const {error}=await db.from('profile_photos').delete().eq('id',user.id);if(error)fail('photo-save');
  if(old?.object_path){const {error:cleanupError}=await db.storage.from('profile-photos').remove([old.object_path]);if(cleanupError){revalidatePath('/','layout');redirect(`${settings}?success=photo-hidden`);}}
  revalidatePath('/','layout');redirect(`${settings}?success=photo-removed`);
+}
+
+export async function saveCurrencyPreference(form:FormData) {
+ const db=await createClient();if(!db)redirect("/login");
+ const {data:{user}}=await db.auth.getUser();if(!user)redirect("/login");
+ const currency=String(form.get("display_currency")||"");
+ const country=String(form.get("country")||"");
+ if(!isCurrency(currency)||(country && !countryCurrencies[country]))redirect("/dashboard/settings?error=currency");
+ const {error}=await db.auth.updateUser({data:{display_currency:currency,country}});
+ if(error)redirect("/dashboard/settings?error=currency");
+ revalidatePath("/","layout");
+ redirect("/dashboard/settings?success=currency");
 }

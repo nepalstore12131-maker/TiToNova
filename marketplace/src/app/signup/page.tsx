@@ -1,3 +1,5 @@
+import { SignupRole } from "@/components/worker-preferences";
+import { getJobCategories } from "@/lib/job-categories";
 import { BrandMark } from "@/components/brand-mark";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -28,6 +30,7 @@ export default async function SignupPage({ searchParams }: Props) {
     <main className="auth-wrap"><section className="auth-card">
       <div className="eyebrow">Create your account</div><h1>Join Titonova</h1><p className="auth-copy">Find work or hire someone for your home, personal task or business. A company is not required.</p>
       {error === "setup" && <div className="setup-alert">Account services are being connected. Please try again later.</div>}
+      {error === "preferences" && <div className="form-alert">Add an introduction and choose at least one interest and work arrangement.</div>}
       {error === "invalid" && <div className="form-alert">Check your details. Use a valid email, choose an account type, and use a password with at least 10 characters.</div>}
       {error === "exists" && <div className="form-alert">An account already uses this email address. Log in or use a different email.</div>}
       {error === "rate-limit" && <div className="form-alert">Too many signup or confirmation attempts were made recently. Please wait before requesting another email, then try again.</div>}
@@ -59,7 +62,7 @@ export default async function SignupPage({ searchParams }: Props) {
       {!waitingForCode && <form action={signUp} className="auth-form">
         <label htmlFor="full_name">Full name</label><input id="full_name" name="full_name" autoComplete="name" required maxLength={80} placeholder="Your name" />
         <label htmlFor="email">Email address</label><input id="email" name="email" type="email" autoComplete="email" required placeholder="you@example.com" />
-        <label htmlFor="account_type">I’m joining as</label><select id="account_type" name="account_type" defaultValue={role}><option value="freelancer">Freelancer / job seeker</option><option value="employer">Hiring — individual or business</option></select>
+        <SignupRole initial={role} categories={await getJobCategories(db)}/>
         <label htmlFor="company_name">Company or team name <span style={{ color: "var(--muted)", fontWeight: 400 }}>(optional)</span></label><input id="company_name" name="company_name" autoComplete="organization" maxLength={120} placeholder="Leave blank if you are hiring as an individual" />
         <label htmlFor="password">Password</label><input id="password" name="password" type="password" autoComplete="new-password" minLength={10} required placeholder="At least 10 characters" />
         <button className="button full" type="submit">Create account <span aria-hidden="true">→</span></button>

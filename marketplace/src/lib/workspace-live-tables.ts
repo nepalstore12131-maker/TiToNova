@@ -10,7 +10,7 @@ export function workspaceLiveTables(path: string): string[] {
     [["/invitations", "/saved-workers"], ["rehire_invitations", "saved_workers", "job_assignments"]],
     [["/settings", "/profile"], ["profile_photos", "candidate_profiles", "candidate_sample_library"]],
     [["/availability"], ["worker_availability"]],
-    [["/jobs"], ["jobs", "applications", "job_photos"]],
+    [["/jobs"], ["jobs", "applications", "job_photos", "employer_payment_requests", "employer_payment_settings"]],
     [["/promotions"], ["job_promotion_requests", "job_promotions", "promotion_plans"]],
     [["/advertising"], ["advertising_requests", "advertising_plans", "sponsor_banners"]],
     [["/email-settings"], ["notification_preferences"]],

@@ -1,4 +1,4 @@
 import {UiIcon} from './workspace-ui';
-const names:Record<string,string>={esewa:'eSewa',khalti:'Khalti',bank:'Bank transfer'};
+const names:Record<string,string>={esewa:'eSewa',khalti:'Khalti',bank:'Bank transfer',international:'International checkout'};
 export function PaymentMethod({method}:{method:string}){return <span className={`payment-method-label payment-method-${method}`}><span className="payment-method-icon"><UiIcon name={method==='bank'?'bank':'wallet'} size={19}/></span><span>{names[method]||method}</span></span>;}
 export function PaymentMethodOptions({methods,name='method'}:{methods:string[];name?:string}){return <fieldset className="payment-method-options"><legend>Payment method</legend><div>{methods.map((method,i)=><label key={method}><input type="radio" name={name} value={method} required defaultChecked={i===0}/><PaymentMethod method={method}/></label>)}</div></fieldset>;}
