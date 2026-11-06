@@ -25,7 +25,7 @@ export default function GlobalHiringPage() {
         <div className="market-hero-copy">
           <span className="market-overline"><i /> INTERNATIONAL REMOTE HIRING</span>
           <h1>Your team.<br />From anywhere.<br /><em>Powered by Nepali talent.</em></h1>
-          <p>Run a business anywhere in the world? Find people based in Nepal for remote projects, part-time support or longer-term work. No country-specific signup restriction is imposed by this page.</p>
+          <p>Run a business anywhere in the world? Find people based in Nepal for remote projects, part-time support or longer-term work. Whether you are an individual, a startup or a business, you can begin here.</p>
           <div className="market-hiring-actions">
             <Link className="button" href="/signup?role=employer">Start hiring <UiIcon size={18}/></Link>
             <Link href="/jobs?mode=remote">Explore remote opportunities ↗</Link>
@@ -84,5 +84,6 @@ export default function GlobalHiringPage() {
         <p style={{fontSize:13,marginTop:16}}>The remote jobs filter includes all remote listings, not only those posted by international employers. Always review the employer and job details before applying.</p>
       </section>
     </main>
+    <footer className="market-footer"><div><strong>Titonova</strong><p>Nepali talent. Worldwide opportunities.</p></div><nav aria-label="Footer navigation"><Link href="/jobs">Find work</Link><Link href="/signup?role=employer">Hire talent</Link><Link href="/ne">नेपाली</Link><Link href="/contact">Contact</Link></nav></footer>
   </div>;
 }
