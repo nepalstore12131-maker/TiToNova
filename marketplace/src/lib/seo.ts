@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const siteUrl = "https://www.titonova.com";
-export const siteDescription = "Find jobs in Nepal or hire people for your home and business. Browse local and remote opportunities, apply, and manage work with Titonova.";
+export const siteDescription = "Find jobs in Nepal and remote opportunities with employers worldwide. Hire Nepal-based professionals from anywhere, browse local work, and manage hiring on Titonova.";
 
 export function publicMetadata(title: string, description: string, path: string): Metadata {
   const url = `${siteUrl}${path}`;
