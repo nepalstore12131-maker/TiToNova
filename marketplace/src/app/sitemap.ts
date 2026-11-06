@@ -6,7 +6,7 @@ import { siteUrl } from "@/lib/seo";
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const pages: MetadataRoute.Sitemap = ["/", "/ne", "/jobs", "/help", "/contact"].map(path => ({ url: `${siteUrl}${path}` }));
+  const pages: MetadataRoute.Sitemap = ["/", "/ne", "/jobs", "/hire-global", "/help", "/contact"].map(path => ({ url: `${siteUrl}${path}` }));
   const config = getSupabaseConfig();
   if (!config) return pages;
   // Anonymous access uses the same public row policies as visitors, never an admin key.
